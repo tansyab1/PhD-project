@@ -1,0 +1,8 @@
+label: Generic data generation
+image: python:3.7
+build:
+    - ADD ../../deepkit:/deepkit-sdk/deepkit
+    - ADD ../../setup.py:/deepkit-sdk/setup.py
+    - pip install -e /deepkit-sdk/
+
+command: python train.py
