@@ -35,7 +35,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-
+import deepkit
 
 # In[ ]:
 
@@ -57,7 +57,9 @@ import os
 
 
 tf.__version__
+experiment = deepkit.experiment()
 
+experiment.add_label('resnet-50', 'keras')
 
 # In[ ]:
 
@@ -66,7 +68,7 @@ tf.__version__
 
 train_data_dir = "\\hyper-kvasir\\splits\\all\\1"
 test_data_dir = "\\hyper-kvasir\\splits\\all\\0"
-
+experiment.watch_keras_model(model)
 
 # In[ ]:
 
@@ -162,6 +164,7 @@ x = tf.keras.layers.GlobalAveragePooling2D()(x)
 x = tf.keras.layers.Dense(num_classes,activation='softmax')(x)
 
 model = tf.keras.models.Model(inputs=base_model.input, outputs=x)
+experiment.watch_keras_model(model)
 
 base_learning_rate = 0.001
 model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
