@@ -60,8 +60,8 @@ tf.__version__
 
 #Train and test data folder
 
-train_data_dir = "/home/nguyentansy/PhD-work/Datasets/all/1"
-test_data_dir = "/home/nguyentansy/PhD-work/Datasets/all/0"
+train_data_dir = "/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1/1"
+test_data_dir = "/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1/0"
 
 
 # In[8]:
