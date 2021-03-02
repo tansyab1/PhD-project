@@ -26,7 +26,7 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
     split_file.write("file-name;class-name;split-index\n")
 
-    for class_path in glob.glob("%s/*" % src_dir):
+    for class_path in glob.glob("%s/*/*/*" % src_dir):
 
         class_name = os.path.basename(class_path)
         file_paths = list(glob.glob("%s/*" % class_path))
