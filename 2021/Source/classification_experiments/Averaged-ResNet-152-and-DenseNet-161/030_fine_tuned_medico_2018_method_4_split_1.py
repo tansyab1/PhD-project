@@ -24,7 +24,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms, utils
-import pickle
+import pickle5 as pickle
 from pandas_ml import ConfusionMatrix
 import matplotlib as mpl
 import matplotlib.pyplot as plt
