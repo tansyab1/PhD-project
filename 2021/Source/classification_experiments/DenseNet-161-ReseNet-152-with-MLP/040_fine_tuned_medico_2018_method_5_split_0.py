@@ -54,9 +54,7 @@ import string
 #======================================
 
 experiment = deepkit.experiment()
-start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or last checkpoint epoch
 
-batch_size = experiment.intconfig('batch_size', 32)
 #======================================
 # Get and set all input parameters
 #======================================
@@ -81,11 +79,11 @@ parser.add_argument("--data_to_inference",
                 help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir", 
-                default="/work/vajira/DATA/hyper_kvasir/output",
+                default="./output",
                 help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir", 
-                default="/work/vajira/DATA/hyper_kvasir/tensorboard",
+                default="./Tensorboard-res",
                 help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -211,7 +209,8 @@ def prepare_data():
 #==========================================================
 # Train model
 #===========================================================
-
+start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or last checkpoint epoch
+batch_size = experiment.intconfig('batch_size', 32)
 def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_acc=0.0, start_epoch = 0):
 
     best_model_wts = copy.deepcopy(model.state_dict())
