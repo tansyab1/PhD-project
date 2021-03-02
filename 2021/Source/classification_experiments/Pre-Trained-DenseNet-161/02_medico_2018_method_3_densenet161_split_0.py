@@ -25,7 +25,6 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms, utils
 import pickle
-from pandas_ml import ConfusionMatrix
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import time
@@ -46,7 +45,7 @@ from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
 
-from dataset.Dataloader_with_path import ImageFolderWithPaths as dataset
+from Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
 
@@ -65,19 +64,20 @@ parser.add_argument("--py_file",default=os.path.abspath(__file__)) # store curre
 
 # Directories
 parser.add_argument("--data_root", 
-                default="/work/vajira/DATA/hyper_kvasir/data_new/splits",
+                default="/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1",
                 help="Video data root with three subfolders (fold 1,2 and 3)")
 
+
 parser.add_argument("--data_to_inference", 
-                default="/work/vajira/DATA/hyper_kvasir/data_new/unlabelled/data",
+                default="/home/nguyentansy/PhD-work/Datasets/hyper-kvasir/unlabeled-images/images",
                 help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir", 
-                default="/work/vajira/DATA/hyper_kvasir/output",
+                default="./output",
                 help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir", 
-                default="/work/vajira/DATA/hyper_kvasir/tensorboard",
+                default="./Tensorboard-res",
                 help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -95,8 +95,8 @@ parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs t
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
 parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
-parser.add_argument("--val_fold", type=str, default="split_0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
-parser.add_argument("--all_folds", default=["split_0", "split_1"], help="list of all folds available in data folder")
+parser.add_argument("--val_fold", type=str, default="0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
+parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
 opt = parser.parse_args()
 
 #==========================================

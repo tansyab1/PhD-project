@@ -24,8 +24,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms, utils
-import pickle5 as pickle
-from pandas_ml import ConfusionMatrix
+import pickle5 as pickle5
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import time
@@ -45,9 +44,10 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
-from dataset.Dataloader_with_path import ImageFolderWithPaths as dataset
+from Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
+import deepkit
 
 #======================================
 # Deepkit
@@ -70,12 +70,12 @@ parser.add_argument("--py_file",default=os.path.abspath(__file__)) # store curre
 
 # Directories
 parser.add_argument("--data_root", 
-                default="/work/vajira/DATA/hyper_kvasir/data_new/splits",
+                default="/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1",
                 help="Video data root with three subfolders (fold 1,2 and 3)")
 
 
 parser.add_argument("--data_to_inference", 
-                default="/work/vajira/DATA/hyper_kvasir/data_new/unlabelled/data",
+                default="/home/nguyentansy/PhD-work/Datasets/hyper-kvasir/unlabeled-images/images",
                 help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir", 
@@ -99,13 +99,13 @@ parser.add_argument("--lr_sch_patience", type=int, default=10, help="Num of epoc
 # Action handling 
 parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
+parser.add_argument("--action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
-parser.add_argument("--val_fold", type=str, default="split_0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
-parser.add_argument("--all_folds", default=["split_0", "split_1"], help="list of all folds available in data folder")
+parser.add_argument("--val_fold", type=str, default="0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
+parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
 
-parser.add_argument("--best_resnet", default="/work/vajira/DATA/hyper_kvasir/output/01_medico_2018_method_3_resnet152_split_0.py/checkpoints/01_medico_2018_method_3_resnet152_split_0.py_epoch:38.pt", help="Resnet best weight file")
-parser.add_argument("--best_densenet", default="/work/vajira/DATA/hyper_kvasir/output/02_medico_2018_method_3_densenet161_split_0.py/checkpoints/02_medico_2018_method_3_densenet161_split_0.py_epoch:22.pt", help="Best densenet")
+parser.add_argument("--best_resnet", default="./output/01_medico_2018_method_3_resnet152_split_0.py/checkpoints/01_medico_2018_method_3_resnet152_split_0.py_epoch:38.pt", help="Resnet best weight file")
+parser.add_argument("--best_densenet", default="./output/02_medico_2018_method_3_densenet161_split_0.py/checkpoints/02_medico_2018_method_3_densenet161_split_0.py_epoch:22.pt", help="Best densenet")
 
 opt = parser.parse_args()
 
@@ -838,15 +838,15 @@ if __name__ == '__main__':
 
     # Train or retrain or inference
     if opt.action == "train":
-        print("Training process is strted..!")
+        print("Training process is started..!")
         run_train()
        # pass
     elif opt.action == "retrain":
-        print("Retrainning process is strted..!")
+        print("Retrainning process is started..!")
         run_train(retrain=True)
        # pass
     elif opt.action == "test":
-        print("Inference process is strted..!")
+        print("Inference process is started..!")
         test_model()
     elif opt.action == "check":
         check_model_graph()
