@@ -7,24 +7,13 @@
 #Importing all required libraries
 
 
-# In[ ]:
+# In[1]:
 
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-# In[ ]:
-
-
-#Checking for correct cuda and tf versions
-from tensorflow.python.platform import build_info as tf_build_info
-print(tf_build_info.cuda_version_number)
-# 9.0 in v1.10.0
-print(tf_build_info.cudnn_version_number)
-# 7 in v1.10.0
-
-
-# In[ ]:
+# In[2]:
 
 
 import tensorflow as tf
@@ -35,15 +24,15 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import deepkit
 
-# In[ ]:
+
+# In[3]:
 
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
-# In[ ]:
+# In[4]:
 
 
 import IPython.display as display
@@ -53,31 +42,36 @@ import matplotlib.pyplot as plt
 import os
 
 
-# In[ ]:
+# In[5]:
+
+
+physical_devices = tf.config.list_physical_devices('GPU') 
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+
+# In[6]:
 
 
 tf.__version__
-experiment = deepkit.experiment()
 
-experiment.add_label('resnet-50', 'keras')
 
-# In[ ]:
+# In[7]:
 
 
 #Train and test data folder
 
-train_data_dir = "\\hyper-kvasir\\splits\\all\\1"
-test_data_dir = "\\hyper-kvasir\\splits\\all\\0"
-experiment.watch_keras_model(model)
+train_data_dir = "/home/nguyentansy/PhD-work/Datasets/all/1"
+test_data_dir = "/home/nguyentansy/PhD-work/Datasets/all/0"
 
-# In[ ]:
+
+# In[8]:
 
 
 train_data_dir = pathlib.Path(train_data_dir)
 test_data_dir = pathlib.Path(test_data_dir)
 
 
-# In[ ]:
+# In[9]:
 
 
 #count how many images are there
@@ -85,14 +79,14 @@ image_count = len(list(train_data_dir.glob('*/*.jpg')))
 image_count
 
 
-# In[ ]:
+# In[10]:
 
 
 total_train = len(list(train_data_dir.glob('*/*.jpg')))
 total_val = len(list(test_data_dir.glob('*/*.jpg')))
 
 
-# In[ ]:
+# In[11]:
 
 
 #get the class names
@@ -100,7 +94,7 @@ CLASS_NAMES = np.array([item.name for item in train_data_dir.glob('*') if item.n
 CLASS_NAMES
 
 
-# In[ ]:
+# In[12]:
 
 
 #Define parameter for training
@@ -112,7 +106,7 @@ epochs = 8
 num_classes = len(CLASS_NAMES) #23
 
 
-# In[ ]:
+# In[13]:
 
 
 #We use image data generators to load the images and prepare them for the training
@@ -141,7 +135,7 @@ print(train_data_gen.class_indices.keys())
 print(val_data_gen.class_indices.keys())
 
 
-# In[ ]:
+# In[14]:
 
 
 IMG_SIZE = 224
@@ -155,7 +149,7 @@ base_model = tf.keras.applications.ResNet50(input_shape=IMG_SHAPE,
 base_model.trainable = False 
 
 
-# In[ ]:
+# In[15]:
 
 
 #add new classification layer
@@ -164,7 +158,6 @@ x = tf.keras.layers.GlobalAveragePooling2D()(x)
 x = tf.keras.layers.Dense(num_classes,activation='softmax')(x)
 
 model = tf.keras.models.Model(inputs=base_model.input, outputs=x)
-experiment.watch_keras_model(model)
 
 base_learning_rate = 0.001
 model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
@@ -172,11 +165,11 @@ model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
               metrics=['accuracy'])
 
 
-# In[ ]:
+# In[16]:
 
 
 #fit the model
-history = model.fit_generator(
+history = model.fit(
     train_data_gen,
     steps_per_epoch=total_train // batch_size,
     epochs=epochs,
@@ -185,7 +178,7 @@ history = model.fit_generator(
 )
 
 
-# In[ ]:
+# In[23]:
 
 
 #create training plots
@@ -198,7 +191,7 @@ val_loss = history.history['val_loss']
 
 epochs_range = range(epochs)
 
-plt.figure(figsize=(8, 8))
+plt.figure(figsize=(30, 8))
 plt.subplot(1, 2, 1)
 plt.plot(epochs_range, acc, label='Training Accuracy')
 plt.plot(epochs_range, val_acc, label='Validation Accuracy')
@@ -213,13 +206,13 @@ plt.title('Training and Validation Loss')
 plt.show()
 
 
-# In[ ]:
+# In[24]:
 
 
 base_model.trainable = True #now we want to train the base model
 
 
-# In[ ]:
+# In[25]:
 
 
 # How many layers are in the base model
@@ -233,7 +226,7 @@ for layer in base_model.layers[:fine_tune_at]:
   layer.trainable =  False
 
 
-# In[ ]:
+# In[26]:
 
 
 model.compile(loss='categorical_crossentropy',
@@ -241,13 +234,13 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 
-# In[ ]:
+# In[27]:
 
 
 model.summary()
 
 
-# In[ ]:
+# In[28]:
 
 
 #Fine tune step
@@ -258,7 +251,7 @@ train_batches = total_train // batch_size
 print(total_val // batch_size)
 validation_batches = total_val // batch_size
 
-history_fine = model.fit_generator(
+history_fine = model.fit(
     train_data_gen,
     steps_per_epoch=total_train // batch_size,
     epochs=total_epochs,
@@ -268,7 +261,7 @@ history_fine = model.fit_generator(
 )
 
 
-# In[ ]:
+# In[29]:
 
 
 acc += history_fine.history['accuracy']
@@ -278,7 +271,7 @@ loss += history_fine.history['loss']
 val_loss += history_fine.history['val_loss']
 
 
-# In[ ]:
+# In[30]:
 
 
 #Plot fine tuning 
@@ -304,14 +297,14 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[ ]:
+# In[31]:
 
 
 #model save and load
 import os
 
 
-# In[ ]:
+# In[32]:
 
 
 #some time stamp 
@@ -322,14 +315,14 @@ timestamp = datetime.timestamp(now)
 print("timestamp =", timestamp)
 
 
-# In[ ]:
+# In[35]:
 
 
-mode_filename = str(timestamp)+'mymodel.h5'
+model_filename = str(timestamp)+'mymodel.h5'
 model.save(model_filename)
 
 
-# In[ ]:
+# In[36]:
 
 
 #To apply the model on new data
@@ -339,17 +332,23 @@ new_model = tf.keras.models.load_model(model_filename)
 new_model.summary()
 
 
-# In[ ]:
+# In[38]:
 
 
 from tensorflow.keras.preprocessing import image
 
 #image directory containing images to test
-img_dir="\\polyps"
+img_dir="/home/nguyentansy/PhD-work/Datasets/all/0/polyps"
 
 for i,img in enumerate(os.listdir(img_dir)):
   tmpimage = image.load_img(os.path.join(img_dir,img), target_size=(IMG_SIZE,IMG_SIZE))   
   tmpimage = np.expand_dims(tmpimage, axis=0).astype('float32')    
   result_class=new_model.predict(tmpimage)
   print(img,";",CLASS_NAMES[result_class.argmax(axis=-1)])
+
+
+# In[ ]:
+
+
+
 
