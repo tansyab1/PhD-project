@@ -50,6 +50,14 @@ from dataset.Dataloader_with_path import ImageFolderWithPaths as dataset
 import string
 
 #======================================
+# Deepkit
+#======================================
+
+experiment = deepkit.experiment()
+start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or last checkpoint epoch
+
+batch_size = experiment.intconfig('batch_size', 32)
+#======================================
 # Get and set all input parameters
 #======================================
 parser = argparse.ArgumentParser()
@@ -208,7 +216,7 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 
     best_model_wts = copy.deepcopy(model.state_dict())
     
-
+    experiment.epoch(epoch,  opt.num_epochs)
     for epoch in tqdm(range(start_epoch , start_epoch + opt.num_epochs )):
 
         for phase in ["train", "val"]:
@@ -224,7 +232,7 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
             running_loss = 0.0
             running_corrects = 0
 
-
+            total_batches = len(dataloader)
             for i, data in tqdm(enumerate(dataloader, 0)):
 
                 inputs, labels, paths = data
@@ -254,6 +262,10 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
+
+            experiment.batch(i, total_batches, labels.size(0))
+            experiment.log_metric('loss/train', epoch + (i / total_batches), epoch_loss)
+            experiment.log_metric('accuracy/train', epoch + (i / total_batches), epoch_acc)
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
@@ -338,12 +350,13 @@ def prepare_model():
     return model
 
 
+
 #====================================
 # Run training process
 #====================================
 def run_train(retrain=False):
     model = prepare_model()
-    
+    experiment.watch_torch_model(model)
     dataloaders = prepare_data()
 
     # optimizer = optim.Adam(model.parameters(), lr=opt.lr , weight_decay=opt.weight_decay)
@@ -460,7 +473,7 @@ def test_model():
     y_predicted = all_predictions_d.cpu()  # to('cpu')
     testset_predicted_probabilites = all_predictions_probabilities_d.cpu()  # to('cpu')
 
-
+    experiment.log_metric('accuracy/val', epoch, testset_predicted_probabilites)
     #return y_predicted, testset_predicted_probabilites, all_timePerFrame_host
 
 
