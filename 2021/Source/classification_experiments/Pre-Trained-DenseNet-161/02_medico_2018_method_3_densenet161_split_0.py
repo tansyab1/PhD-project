@@ -48,6 +48,13 @@ from torch.autograd import Variable
 from Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
+import deepkit
+
+#======================================
+# Deepkit
+#======================================
+
+experiment = deepkit.experiment()
 
 #======================================
 # Get and set all input parameters
@@ -81,7 +88,7 @@ parser.add_argument("--tensorboard_dir",
                 help="Folder to save output of tensorboard")
 
 # Hyper parameters
-parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
+parser.add_argument("--bs", type=int, default=16, help="Mini batch size")
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate for training")
 parser.add_argument("--num_workers", type=int, default=32, help="Number of workers in dataloader")
 parser.add_argument("--weight_decay", type=float, default=1e-5, help="weight decay of the optimizer")
@@ -91,9 +98,9 @@ parser.add_argument("--lr_sch_patience", type=int, default=10, help="Num of epoc
 
 
 # Action handling 
-parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs to train")
+parser.add_argument("--num_epochs", type=int, default=100, help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
+parser.add_argument("--action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
 parser.add_argument("--val_fold", type=str, default="0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
 parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
@@ -203,6 +210,8 @@ def prepare_data():
 #==========================================================
 # Train model
 #===========================================================
+start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or last checkpoint epoch
+batch_size = experiment.intconfig('batch_size', 16)
 
 def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_acc=0.0, start_epoch = 0):
 
@@ -210,6 +219,7 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
     
 
     for epoch in tqdm(range(start_epoch , start_epoch + opt.num_epochs )):
+        experiment.epoch(epoch,  opt.num_epochs)
 
         for phase in ["train", "val"]:
 
@@ -254,6 +264,9 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
+
+            experiment.log_metric('loss/train', epoch, epoch_loss)
+            experiment.log_metric('accuracy/train', epoch, epoch_acc)
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
@@ -306,6 +319,7 @@ def prepare_model():
 def run_train(retrain=False):
     model = prepare_model()
     
+    experiment.watch_torch_model(model)
     dataloaders = prepare_data()
 
     # optimizer = optim.Adam(model.parameters(), lr=opt.lr , weight_decay=opt.weight_decay)

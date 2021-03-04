@@ -263,8 +263,8 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
 
             experiment.batch(i, total_batches, labels.size(0))
-            experiment.log_metric('loss/train', epoch + (i / total_batches), epoch_loss)
-            experiment.log_metric('accuracy/train', epoch + (i / total_batches), epoch_acc)
+            experiment.log_metric('loss/train', epoch, epoch_loss)
+            experiment.log_metric('accuracy/train', epoch, epoch_acc)
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
@@ -472,7 +472,7 @@ def test_model():
     y_predicted = all_predictions_d.cpu()  # to('cpu')
     testset_predicted_probabilites = all_predictions_probabilities_d.cpu()  # to('cpu')
 
-    experiment.log_metric('accuracy/val', epoch, testset_predicted_probabilites)
+    experiment.log_metric('accuracy/val', testset_predicted_probabilites)
     #return y_predicted, testset_predicted_probabilites, all_timePerFrame_host
 
 
