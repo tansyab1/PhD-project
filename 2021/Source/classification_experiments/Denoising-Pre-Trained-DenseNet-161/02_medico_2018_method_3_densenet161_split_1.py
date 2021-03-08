@@ -1,5 +1,5 @@
-#  # Developer: Tan Sy NGUYEN
-#  # Last modified date: 08/03/2021
+#  # Developer: Vajira Thambawita
+#  # Last modified date: 18/07/2018
 #  # ##################################
 
 #  # Description ##################
@@ -25,6 +25,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms, utils
 import pickle
+from pandas_ml import ConfusionMatrix
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import time
@@ -45,17 +46,9 @@ from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
 
-from Dataloader_with_path import ImageFolderWithPaths as dataset
+from dataset.Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
-import deepkit
-
-#======================================
-# Deepkit
-#======================================
-
-experiment = deepkit.experiment()
-experiment.add_label('Image', 'Non-denoise')
 
 #======================================
 # Get and set all input parameters
@@ -72,24 +65,23 @@ parser.add_argument("--py_file",default=os.path.abspath(__file__)) # store curre
 
 # Directories
 parser.add_argument("--data_root", 
-                default="/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1",
+                default="/work/vajira/DATA/hyper_kvasir/data_new/splits",
                 help="Video data root with three subfolders (fold 1,2 and 3)")
 
-
 parser.add_argument("--data_to_inference", 
-                default="/home/nguyentansy/PhD-work/Datasets/hyper-kvasir/unlabeled-images/images",
+                default="/work/vajira/DATA/hyper_kvasir/data_new/unlabelled/data",
                 help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir", 
-                default="./output",
+                default="/work/vajira/DATA/hyper_kvasir/output",
                 help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir", 
-                default="./Tensorboard-res",
+                default="/work/vajira/DATA/hyper_kvasir/tensorboard",
                 help="Folder to save output of tensorboard")
 
 # Hyper parameters
-parser.add_argument("--bs", type=int, default=16, help="Mini batch size")
+parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate for training")
 parser.add_argument("--num_workers", type=int, default=32, help="Number of workers in dataloader")
 parser.add_argument("--weight_decay", type=float, default=1e-5, help="weight decay of the optimizer")
@@ -99,12 +91,12 @@ parser.add_argument("--lr_sch_patience", type=int, default=10, help="Num of epoc
 
 
 # Action handling 
-parser.add_argument("--num_epochs", type=int, default=100, help="Numbe of epochs to train")
+parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("--action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
+parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
-parser.add_argument("--val_fold", type=str, default="0", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
-parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
+parser.add_argument("--val_fold", type=str, default="split_1", help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
+parser.add_argument("--all_folds", default=["split_0", "split_1"], help="list of all folds available in data folder")
 opt = parser.parse_args()
 
 #==========================================
@@ -112,7 +104,7 @@ opt = parser.parse_args()
 #==========================================
 torch.cuda.set_device(opt.device_id)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.cuda.empty_cache() 
+
 #===========================================
 # Folder handling
 #===========================================
@@ -211,17 +203,13 @@ def prepare_data():
 #==========================================================
 # Train model
 #===========================================================
-start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or last checkpoint epoch
-batch_size = experiment.intconfig('batch_size', 16)
 
 def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_acc=0.0, start_epoch = 0):
 
     best_model_wts = copy.deepcopy(model.state_dict())
-    experiment.define_metric('accuracy', traces=['training', 'validation'])
-    experiment.define_metric('loss', traces=['training', 'validation'])
+    
 
     for epoch in tqdm(range(start_epoch , start_epoch + opt.num_epochs )):
-        experiment.epoch(epoch,  opt.num_epochs)
 
         for phase in ["train", "val"]:
 
@@ -266,16 +254,6 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
-
-            epoch_loss_train= running_loss / dataloaders["dataset_size"]["train"]
-            epoch_acc_train = running_corrects.double() / dataloaders["dataset_size"]["train"]
-
-            epoch_loss_val = running_loss / dataloaders["dataset_size"]["val"]
-            epoch_acc_val = running_corrects.double() / dataloaders["dataset_size"]["val"]
-
-            experiment.log_metric('accuracy', epoch_acc_train,epoch_acc_val)
-            experiment.log_metric('loss', epoch_loss_train,epoch_loss_val)
-
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
@@ -328,7 +306,6 @@ def prepare_model():
 def run_train(retrain=False):
     model = prepare_model()
     
-    experiment.watch_torch_model(model)
     dataloaders = prepare_data()
 
     # optimizer = optim.Adam(model.parameters(), lr=opt.lr , weight_decay=opt.weight_decay)
@@ -427,11 +404,6 @@ def test_model():
         for i, data in tqdm(enumerate(test_dataloader, 0)):
 
             inputs, labels, paths = data
-
-            print("paths:", paths)
-            filenames = [f.split("/")[-1] for f in list(paths)]
-            print("filenames:", filenames)
-
             inputs = inputs.to(device)
             labels = labels.to(device)
 
@@ -504,7 +476,7 @@ def test_model():
     print("2. Precision score (PREC) =",
             mtc.precision_score(y_true, y_predicted, average="weighted"))
     print("3. Specificity (SPEC) =")
-    # print("4. Accuracy (ACC) =", mtc.accuracy_score(y_true, y_predicted, weights))
+    #/work/vajira/data/kvasir_new_23_class/output/medico_2018_method_3_resnet152_split_0.py/checkpoints/medico_2018_method_3_resnet152_split_0.py_epoch:12.ptprint("4. Accuracy (ACC) =", mtc.accuracy_score(y_true, y_predicted, weights))
     print("5. Matthews correlation coefficient(MCC) =", mtc.matthews_corrcoef(y_true, y_predicted))
 
     print("6. F1 score (F1) =", mtc.f1_score(y_true, y_predicted, average="weighted"))
@@ -621,7 +593,6 @@ def prepare_prediction_file():
         prob_file_name = "%s/%s_probabilities.csv" % (opt.out_dir, py_file_name)
         df.to_csv(prob_file_name, index=False)
 
-           
 
 ##########################################################
 # Prepare submission file:
@@ -826,7 +797,6 @@ if __name__ == '__main__':
        # pass
     elif opt.action == "test":
         print("Inference process is strted..!")
-        prepare_model()
         test_model()
     elif opt.action == "check":
         check_model_graph()
@@ -837,8 +807,6 @@ if __name__ == '__main__':
     elif opt.action == "inference":
         inference()
         print("Inference completed")
-
-    
 
     # Finish tensorboard writer
     writer.close()
