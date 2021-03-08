@@ -44,7 +44,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
-
+from collections import OrderedDict
 from Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
@@ -311,11 +311,35 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 #===============================================
 # Prepare models
 #===============================================
+class denoise_Densenet161(nn.Module):
+    """add denoising block in front of Densenet 161"""
+    def __init__(self, negative_slope):
+        super(denoise_Densenet161, self).__init__()
+        
+        self.negative_slope = negative_slope
+        self.base_model = models.densenet161(pretrained=True)
+        num_ftrs = self.base_model.classifier.in_features
+        self.base_model.classifier = nn.Linear(num_ftrs, 23)
+        self.denoising_block = nn.Sequential(OrderedDict([
+            ('layer1', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=2, padding=(1,1))),
+            ('relu1', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
+            ('layer2', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=2, padding=(1,1))),
+            ('relu2', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
+            ('layer3', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=1, padding=(1,1))),
+            ('relu3', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
+        ]))
+
+    def forward(self, inputs):
+        denoised = self.denoising_block(inputs)
+        out = self.base_model(denoised)
+
+        return out
 
 def prepare_model():
-    model = models.densenet161(pretrained=True)
-    num_ftrs = model.classifier.in_features
-    model.classifier = nn.Linear(num_ftrs, 23)
+    # model = models.densenet161(pretrained=True)
+    # num_ftrs = model.classifier.in_features
+    # model.classifier = nn.Linear(num_ftrs, 23)
+    model = denoise_Densenet161(negative_slope=0.1)
     model = model.to(device)
     
     return model
@@ -327,7 +351,13 @@ def prepare_model():
 #====================================
 def run_train(retrain=False):
     model = prepare_model()
-    
+
+    # Find total parameters and trainable parameters
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f'{total_params:,} total parameters.')
+    total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f'{total_trainable_params:,} training parameters.')
+
     experiment.watch_torch_model(model)
     dataloaders = prepare_data()
 
@@ -393,7 +423,7 @@ def check_model_graph():
     #inputs = sample["features"]
    # inputs = inputs.to(device, torch.float)
     #print(inputs.shape)
-    print(model)
+    # print(model)
     dummy_input = Variable(torch.rand(13, 3, 224, 224))
     
     writer.add_graph(model, dummy_input) # this need the model on CPU
