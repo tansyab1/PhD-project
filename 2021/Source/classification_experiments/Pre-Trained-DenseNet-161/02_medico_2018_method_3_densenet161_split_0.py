@@ -215,6 +215,7 @@ start_epoch = experiment.intconfig('start_epoch', 0)  # start from epoch 0 or la
 batch_size = experiment.intconfig('batch_size', 16)
 
 def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_acc=0.0, start_epoch = 0):
+    experiment.add_label('training / validation')
 
     best_model_wts = copy.deepcopy(model.state_dict())
     experiment.define_metric('accuracy', traces=['training', 'validation'])
@@ -267,23 +268,14 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
 
-            epoch_loss_train= running_loss / dataloaders["dataset_size"]["train"]
-            epoch_acc_train = running_corrects.double() / dataloaders["dataset_size"]["train"]
-
-            epoch_loss_val = running_loss / dataloaders["dataset_size"]["val"]
-            epoch_acc_val = running_corrects.double() / dataloaders["dataset_size"]["val"]
-
-            experiment.log_metric('accuracy', epoch_acc_train,epoch_acc_val)
-            experiment.log_metric('loss', epoch_loss_train,epoch_loss_val)
-
-
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
             writer.add_scalars("Accuracy" , {phase:epoch_acc}, epoch)
 
              # update the lr based on the epoch loss
             if phase == "val": 
-
+                epoch_acc_val = epoch_acc
+                epoch_loss_val = epoch_loss
                 # keep best model weights
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
@@ -297,14 +289,20 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
                 lr = optimizer.param_groups[0]['lr']
                 #print("lr=", lr)
                 writer.add_scalar("LR", lr, epoch)
-                scheduler.step(epoch_loss) 
+                scheduler.step(epoch_loss)
+            else :
+                epoch_acc_train = epoch_acc
+                epoch_loss_train = epoch_loss
             
 
 
             # Print output
             print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | Acc:\t %.4f '
                       % (epoch, phase, epoch_loss, epoch_acc))
-    
+
+        experiment.log_metric('accuracy', epoch_acc_train,epoch_acc_val)
+        experiment.log_metric('loss', epoch_loss_train,epoch_loss_val)
+
     save_model(best_model_wts, best_epoch, best_epoch_loss, best_epoch_acc)
 
             
@@ -346,6 +344,7 @@ def run_train(retrain=False):
 
     if retrain:
         # train from a checkpoint
+        experiment.add_label('retraining')
         checkpoint_path = input("Please enter the checkpoint path:")
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint["model_state_dict"])
@@ -384,7 +383,7 @@ def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_acc):
 #=====================================
 def check_model_graph():
     model = prepare_model()
-
+    experiment.add_label('check model')
     summary(model, (3, 224, 224)) # this run on GPU
     model = model.to('cpu')
     #dataloaders = prepare_data()
@@ -403,7 +402,7 @@ def check_model_graph():
 #===============================================
 
 def test_model():
-    
+    experiment.add_label('testing')
     test_model_checkpoint = input("Please enter the path of test model:")
     checkpoint = torch.load(test_model_checkpoint)
 
@@ -546,7 +545,7 @@ def test_model():
 # Prepare submission file with probabilities
 #===============================================
 def prepare_prediction_file():
-
+    experiment.add_label('preparing')
     if opt.bs != 1:
         print("Please run with bs = 1")
         exit()
@@ -702,7 +701,7 @@ def plot_confusion_matrix(cm, classes,
 # Doing Inference for new data
 #=========================================
 def inference():
-    
+    experiment.add_label('inferencing')
     
     #if opt.bs != 1:
     #    print("Please run with bs = 1")

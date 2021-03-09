@@ -267,23 +267,14 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_acc = running_corrects.double() / dataloaders["dataset_size"][phase]
 
-            epoch_loss_train= running_loss / dataloaders["dataset_size"]["train"]
-            epoch_acc_train = running_corrects.double() / dataloaders["dataset_size"]["train"]
-
-            epoch_loss_val = running_loss / dataloaders["dataset_size"]["val"]
-            epoch_acc_val = running_corrects.double() / dataloaders["dataset_size"]["val"]
-
-            experiment.log_metric('accuracy', epoch_acc_train,epoch_acc_val)
-            experiment.log_metric('loss', epoch_loss_train,epoch_loss_val)
-
-
             # update tensorboard writer
             writer.add_scalars("Loss", {phase:epoch_loss}, epoch)
             writer.add_scalars("Accuracy" , {phase:epoch_acc}, epoch)
 
              # update the lr based on the epoch loss
             if phase == "val": 
-
+                epoch_acc_val = epoch_acc
+                epoch_loss_val = epoch_loss
                 # keep best model weights
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
@@ -298,12 +289,16 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
                 #print("lr=", lr)
                 writer.add_scalar("LR", lr, epoch)
                 scheduler.step(epoch_loss) 
-            
+            else :
+                epoch_acc_train = epoch_acc
+                epoch_loss_train = epoch_loss
 
 
             # Print output
             print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | Acc:\t %.4f '
                       % (epoch, phase, epoch_loss, epoch_acc))
+        experiment.log_metric('accuracy', epoch_acc_train,epoch_acc_val)
+        experiment.log_metric('loss', epoch_loss_train,epoch_loss_val)
     
     save_model(best_model_wts, best_epoch, best_epoch_loss, best_epoch_acc)
 
@@ -336,9 +331,6 @@ class denoise_Densenet161(nn.Module):
         return out
 
 def prepare_model():
-    # model = models.densenet161(pretrained=True)
-    # num_ftrs = model.classifier.in_features
-    # model.classifier = nn.Linear(num_ftrs, 23)
     model = denoise_Densenet161(negative_slope=0.1)
     model = model.to(device)
     
