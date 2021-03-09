@@ -321,9 +321,9 @@ class denoise_Densenet161(nn.Module):
         num_ftrs = self.base_model.classifier.in_features
         self.base_model.classifier = nn.Linear(num_ftrs, 23)
         self.denoising_block = nn.Sequential(OrderedDict([
-            ('layer1', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=2, padding=(1,1))),
+            ('layer1', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=1, padding=(1,1))),
             ('relu1', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
-            ('layer2', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=2, padding=(1,1))),
+            ('layer2', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=1, padding=(1,1))),
             ('relu2', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
             ('layer3', nn.Conv2d(in_channels=3, out_channels=3, kernel_size=3, stride=1, padding=(1,1))),
             ('relu3', nn.LeakyReLU(negative_slope=self.negative_slope, inplace=True)),
@@ -840,6 +840,7 @@ def inference():
 
 
 if __name__ == '__main__':
+    torch.cuda.empty_cache() 
     print("Started data preparation")
     data_loaders = prepare_data()
     print(vars(opt))
