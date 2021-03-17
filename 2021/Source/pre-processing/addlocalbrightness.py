@@ -41,9 +41,9 @@ def create_mask(given_size,center,gradient_shape,max_intensity = 64):
     return result
 
 if __name__ == "__main__":
-    given_size = [1000,1000]
-    center=[300,300]
-    gradient_shape=500
+    given_size = [300,500]
+    center=[200,200]
+    gradient_shape=200
     result = create_mask(given_size,center,gradient_shape)
     cv2.imshow('res',result)
     cv2.waitKey(0)
