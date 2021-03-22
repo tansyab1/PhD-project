@@ -11,8 +11,14 @@ def apply_motion_blur(image, size, angle):
     k = k * ( 1.0 / np.sum(k) )        
     return cv2.filter2D(image, -1, k) 
 
-img = cv2.imread('test.jpg')
-cv2.imshow('Original',img)
-output = apply_motion_blur(img,12,30)
-cv2.imshow('Motion Blur', output)
-cv2.waitKey(0)
+def apply_defocus_blur(image, size):
+    return cv2.GaussianBlur(img,size,0)
+
+
+if __name__ == '__main__': 
+    
+    img = cv2.imread('test.jpg')
+    cv2.imshow('Original',img)
+    output = apply_motion_blur(img,12,30)
+    cv2.imshow('Motion Blur', output)
+    cv2.waitKey(0)

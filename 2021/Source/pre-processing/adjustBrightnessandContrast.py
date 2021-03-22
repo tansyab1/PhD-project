@@ -57,10 +57,10 @@ def controller(img, brightness=255,
         cal = cv2.addWeighted(cal, Alpha, 
                             cal, 0, Gamma) 
 
-    # putText renders the specified text string in the image. 
-    cv2.putText(cal, 'B:{},C:{}'.format(brightness, 
-                                        contrast), (10, 30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2) 
+    # # putText renders the specified text string in the image. 
+    # cv2.putText(cal, 'B:{},C:{}'.format(brightness, 
+    #                                     contrast), (10, 30), 
+    #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2) 
 
     return cal 
 
