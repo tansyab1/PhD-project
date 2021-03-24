@@ -13,4 +13,5 @@ if __name__ == "__main__":
 	noise_img = create_noise(img)
 	# Display the noise image
 	cv2.imshow('blur',noise_img)
+	cv2.imwrite('AWGN.png',noise_img)
 	cv2.waitKey(0)

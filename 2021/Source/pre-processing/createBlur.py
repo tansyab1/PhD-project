@@ -1,3 +1,4 @@
+#!/home/nguyentansy/.virtualenvs/PhD-AI/bin/python3
 
 import cv2
 import numpy as np
@@ -11,14 +12,16 @@ def apply_motion_blur(image, size, angle):
     k = k * ( 1.0 / np.sum(k) )        
     return cv2.filter2D(image, -1, k) 
 
-def apply_defocus_blur(image, size):
-    return cv2.GaussianBlur(img,size,0)
+def apply_defocus_blur(image, size, sigma):
+    dst = cv2.GaussianBlur(image,(size,size),sigma)
+    return dst
 
 
 if __name__ == '__main__': 
     
     img = cv2.imread('test.jpg')
     cv2.imshow('Original',img)
-    output = apply_motion_blur(img,12,30)
+    output = apply_motion_blur(img,15,30)
     cv2.imshow('Motion Blur', output)
+    cv2.imwrite('motion.png',output)
     cv2.waitKey(0)

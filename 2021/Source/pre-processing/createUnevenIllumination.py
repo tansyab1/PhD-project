@@ -85,9 +85,9 @@ if __name__ == "__main__":
 
     given_size = [300,500]
     center=[200,200]
-    circle_light_shape=[300,300]
-    max_intensity = 250
-    mode = 'circle'
+    circle_light_shape=[200,300]
+    max_intensity = 200
+    mode = 'oval'
     theta = 40
     transparency = np.random.uniform(0.2, 0.3)
     
@@ -96,5 +96,6 @@ if __name__ == "__main__":
     result = p.createUnevenIllumination(frame,center,theta)
     
     cv2.imshow('res',result)
+    cv2.imwrite('createUnevenIllumination2.png',result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

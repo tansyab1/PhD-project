@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 
-class vcam:
+class createGeometricDistortion:
 
 	def __init__(self,H=400,W=400):
 		"""
@@ -120,6 +120,18 @@ class meshGen:
 
 		return np.concatenate(([self.X],[self.Y],[self.Z],[self.X*0+1]))[:,:,0]
 
+def apply_motion_blur(image, size, angle):
+    k = np.zeros((size, size), dtype=np.float32)
+    k[ (size-1)// 2 , :] = np.ones(size, dtype=np.float32)
+    k = cv2.warpAffine(k, cv2.getRotationMatrix2D( (size / 2 -0.5 , size / 2 -0.5 ) , angle, 1.0), (size, size) )  
+    k = k * ( 1.0 / np.sum(k) )        
+    return cv2.filter2D(image, -1, k) 
+
+def apply_defocus_blur(image, size, sigma):
+    dst = cv2.GaussianBlur(image,(size,size),sigma)
+    return dst
+
+
 def nothing(x):
 	pass
 
@@ -149,7 +161,7 @@ if __name__ == '__main__':
 	img = cv2.imread("test.jpg")
 	H,W = img.shape[:2]
 
-	c1 = vcam(H=H,W=W)
+	c1 = createGeometricDistortion(H=H,W=W)
 	plane = meshGen(H,W)
 
 	plane.Z = plane.X*0 + 1
@@ -173,6 +185,7 @@ if __name__ == '__main__':
 		k2 = cv2.getTrackbarPos("K2",WINDOW_NAME)/100000
 		p1 = cv2.getTrackbarPos("P1",WINDOW_NAME)/100000
 		p2 = cv2.getTrackbarPos("P2",WINDOW_NAME)/100000
+
 		c1.KpCoeff[0] = k1
 		c1.KpCoeff[1] = k2
 		c1.KpCoeff[2] = p1
@@ -183,10 +196,9 @@ if __name__ == '__main__':
 		pts2d = c1.project(pts3d)
 		map_x,map_y = c1.getMaps(pts2d)
 		output = cv2.remap(img,map_x,map_y,interpolation=cv2.INTER_LINEAR)
-
-		M = c1.RT
-		print("\n\n############## Camera Matrix ##################")
-		print(M)
+		# M = c1.RT
+		# print("\n\n############## Camera Matrix ##################")
+		# print(M)
 		cv2.imshow("output",output)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
