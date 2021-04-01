@@ -1,6 +1,6 @@
 # PhD-project
 
-My name is Tan Sy NGUYEN and this is my PhD respository for my PhD project
+My name is Tan Sy NGUYEN and this is my PhD respository for my PhD project in 2021
 
 ### Prerequisites
 
