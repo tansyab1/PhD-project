@@ -29,16 +29,11 @@ Scikit-learn
 +-- Reports/
 |
 +-- Source/
-|   +-- fnc/
-|       +-- boundary.py
+|   +-- Classification/
+|   +-- DataGeneration/
+|       +-- split/
 |       +-- ...
-|   +-- template-database/
-|       +-- 1.mat
-|       +-- ...
-|   +-- path.py
-|   +-- enroll-all.py
-|   +-- enroll-single.py
-|   +-- verify.py
+|   +-- Preprocessing/
 ```
 <!-- AUTO-GENERATED-CONTENT:END -->
 * Folder `Examples` includes some code source as a library to use for any experiment.
