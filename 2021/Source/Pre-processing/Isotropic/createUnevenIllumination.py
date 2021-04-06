@@ -76,9 +76,9 @@ class createUnevenIllumination:
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
 
-        image[:, :, 0] = np.where(image[:, :, 0]>30,image[:, :, 0] * self.transparency + mask * (1 - self.transparency),image[:, :, 0])
-        image[:, :, 1] = np.where(image[:, :, 1]>30,image[:, :, 1] * self.transparency + mask * (1 - self.transparency),image[:, :, 1])
-        image[:, :, 2] = np.where(image[:, :, 2]>30,image[:, :, 2] * self.transparency + mask * (1 - self.transparency),image[:, :, 2])
+        image[:, :, 0] = image[:, :, 0] * self.transparency + mask * (1 - self.transparency)
+        image[:, :, 1] = image[:, :, 1] * self.transparency + mask * (1 - self.transparency)
+        image[:, :, 2] = image[:, :, 2] * self.transparency + mask * (1 - self.transparency)
 
         hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] * self.transparency + mask * (1 - self.transparency),hsv[:, :, 2])
         lab[:, :, 0] = np.where(lab[:, :, 0]>30,lab[:, :, 0] * self.transparency + mask * (1 - self.transparency),lab[:, :, 0])
