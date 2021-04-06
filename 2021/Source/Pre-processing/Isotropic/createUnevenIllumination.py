@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 import math
-
+import os
 
 class createUnevenIllumination:
     def __init__(self,gradient_shape,max_intensity,transparency,mode):
@@ -96,21 +96,47 @@ class createUnevenIllumination:
 
 
 if __name__ == "__main__":
-
-    given_size = [300,500]
-    center=[200,200]
-    circle_light_shape=[200,300]
-    max_intensity = 200
-    mode = 'oval'
-    theta = 40
+    
+    circle_light_shape=[500,300]
+    max_intensities = [50,100,150,250]
+    modes = ['circle','oval']
+    thetas = [0,45,90,135]
     transparency = np.random.uniform(0.2, 0.3)
     frame = cv2.imread('results/test.jpg')
-    p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode)
-    image,hsv_res,lab_res = p.createUnevenIllumination(frame,center,theta)
+    centers=[[50,50],[np.shape(frame)[0]//2,np.shape(frame)[1]//2],[np.shape(frame)[0]-50,np.shape(frame)[1]-50]]
     
-    cv2.imshow('HSV',hsv_res)
-    cv2.imshow('Lab',lab_res)
-    cv2.imshow('RGB',image)
-    # cv2.imwrite('createUnevenIllumination2.png',result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    save_path = '/home/nguyentansy/PhD-work/PhD-project/2021/Source/Pre-processing/Isotropic/results/UnevenIllumination/'
+    os.makedirs(save_path, exist_ok=True)
+    for mode in modes:
+        if mode == 'circle':
+            for max_intensity in max_intensities:
+                for center in centers:
+                    file_name ='UnevenIllumination'+'_mode:'+str(mode)+'_level:'+str(max_intensity)+'_center:'+str(center)
+                    p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode)
+                    image,hsv_res,lab_res = p.createUnevenIllumination(frame,center)
+                    filename_RGB = file_name+'_RGB.png'
+                    filename_HSV = file_name+'_HSV.png'
+                    filename_Lab = file_name+'_Lab.png'
+                    completeName_RGB = os.path.join(save_path, filename_RGB)
+                    completeName_HSV = os.path.join(save_path, filename_HSV)
+                    completeName_Lab = os.path.join(save_path, filename_Lab)
+                    cv2.imwrite(completeName_RGB,image)
+                    cv2.imwrite(completeName_HSV,hsv_res)
+                    cv2.imwrite(completeName_Lab,lab_res)
+        else:
+            for max_intensity in max_intensities:
+                for center in centers:
+                    for theta in thetas:
+                        file_name ='UnevenIllumination'+'_mode:'+str(mode)+'_level:'+str(max_intensity)+'_center:'+str(center)+'_theta:'+str(theta)
+                        p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode)
+                        image,hsv_res,lab_res = p.createUnevenIllumination(frame,center,theta)
+
+                        filename_RGB = file_name+'_RGB.png'
+                        filename_HSV = file_name+'_HSV.png'
+                        filename_Lab = file_name+'_Lab.png'
+                        completeName_RGB = os.path.join(save_path, filename_RGB)
+                        completeName_HSV = os.path.join(save_path, filename_HSV)
+                        completeName_Lab = os.path.join(save_path, filename_Lab)
+                        cv2.imwrite(completeName_RGB,image)
+                        cv2.imwrite(completeName_HSV,hsv_res)
+                        cv2.imwrite(completeName_Lab,lab_res)

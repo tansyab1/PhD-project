@@ -2,16 +2,21 @@
 import cv2
 import numpy as np
 from skimage.util import random_noise
-
+import os
 def create_noise(image,var=0.01,mean=0):
 	noise_img = random_noise(img, mode='gaussian',mean=mean, var=var,clip=True)
 	return np.array(255*noise_img, dtype = 'uint8')
 
 if __name__ == "__main__":
-	# Load the image
-	img = cv2.imread("results/test.jpg")
-	noise_img = create_noise(img)
-	# Display the noise image
-	cv2.imshow('blur',noise_img)
-	cv2.imwrite('AWGN.png',noise_img)
-	cv2.waitKey(0)
+    save_path = '/home/nguyentansy/PhD-work/PhD-project/2021/Source/Pre-processing/Isotropic/results/AWGN/'
+    os.makedirs(save_path, exist_ok=True)
+    sigmas=[0.001,0.005,0.01,0.05]
+    img = cv2.imread('results/test.jpg')
+    for sigma in sigmas:
+        # cv2.imshow('Original',img)
+        file_name ='AWGN'+'_var:'+str(sigma)+'.png'
+        completeName = os.path.join(save_path, file_name)
+        output = create_noise(img,var=sigma)
+        # cv2.imshow('Motion Blur', output)
+        cv2.imwrite(completeName,output)
+        # cv2.waitKey(0)
