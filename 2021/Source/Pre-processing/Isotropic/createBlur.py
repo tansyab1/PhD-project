@@ -12,8 +12,8 @@ def apply_motion_blur(image, size, angle):
     k = k * ( 1.0 / np.sum(k) )        
     return cv2.filter2D(image, -1, k) 
 
-def apply_defocus_blur(image, size, sigma):
-    dst = cv2.GaussianBlur(image,(size,size),sigma)
+def apply_defocus_blur(image, sigma):
+    dst = cv2.GaussianBlur(image,(6*sigma+1,6*sigma+1),sigma)
     return dst
 
 
