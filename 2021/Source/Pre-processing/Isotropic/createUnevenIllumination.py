@@ -104,7 +104,6 @@ if __name__ == "__main__":
     mode = 'oval'
     theta = 40
     transparency = np.random.uniform(0.2, 0.3)
-    
     frame = cv2.imread('results/test.jpg')
     p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode)
     image,hsv_res,lab_res = p.createUnevenIllumination(frame,center,theta)
