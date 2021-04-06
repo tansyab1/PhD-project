@@ -74,11 +74,25 @@ class createUnevenIllumination:
             mask = self.create_oval(image,center,theta)
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
+
+        image[:, :, 0] = np.where(image[:, :, 0]>30,image[:, :, 0] * self.transparency + mask * (1 - self.transparency),image[:, :, 0])
+        image[:, :, 1] = np.where(image[:, :, 1]>30,image[:, :, 1] * self.transparency + mask * (1 - self.transparency),image[:, :, 1])
+        image[:, :, 2] = np.where(image[:, :, 2]>30,image[:, :, 2] * self.transparency + mask * (1 - self.transparency),image[:, :, 2])
+
         hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] * self.transparency + mask * (1 - self.transparency),hsv[:, :, 2])
-        frame = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-        frame[frame > 255] = 255
-        frame = np.asarray(frame, dtype=np.uint8)
-        return frame
+        lab[:, :, 0] = np.where(lab[:, :, 0]>30,lab[:, :, 0] * self.transparency + mask * (1 - self.transparency),lab[:, :, 0])
+        
+        hsv_res = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+        lab_res = cv2.cvtColor(lab, cv2.COLOR_Lab2RGB)
+
+        hsv_res[hsv_res > 255] = 255
+        lab_res[lab_res > 255] = 255
+
+        hsv_res = np.asarray(hsv_res, dtype=np.uint8)
+        lab_res = np.asarray(lab_res, dtype=np.uint8)
+
+        return image,hsv_res,lab_res
 
 
 if __name__ == "__main__":
@@ -91,11 +105,13 @@ if __name__ == "__main__":
     theta = 40
     transparency = np.random.uniform(0.2, 0.3)
     
-    frame = cv2.imread('test.jpg')
+    frame = cv2.imread('results/test.jpg')
     p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode)
-    result = p.createUnevenIllumination(frame,center,theta)
+    image,hsv_res,lab_res = p.createUnevenIllumination(frame,center,theta)
     
-    cv2.imshow('res',result)
-    cv2.imwrite('createUnevenIllumination2.png',result)
+    cv2.imshow('HSV',hsv_res)
+    cv2.imshow('Lab',lab_res)
+    cv2.imshow('RGB',image)
+    # cv2.imwrite('createUnevenIllumination2.png',result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
