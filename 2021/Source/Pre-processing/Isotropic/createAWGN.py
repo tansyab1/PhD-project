@@ -10,7 +10,7 @@ def create_noise(image,var=0.01,mean=0):
 if __name__ == "__main__":
     save_path = '/home/nguyentansy/PhD-work/PhD-project/2021/Source/Pre-processing/Isotropic/results/AWGN/'
     os.makedirs(save_path, exist_ok=True)
-    sigmas=[0.001,0.005,0.01,0.05]
+    sigmas=[0.0005,0.001,0.005,0.01]
     img = cv2.imread('results/test.jpg')
     for sigma in sigmas:
         # cv2.imshow('Original',img)
