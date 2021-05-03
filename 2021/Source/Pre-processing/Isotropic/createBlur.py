@@ -47,3 +47,6 @@ if __name__ == '__main__':
         # cv2.imshow('Motion Blur', output)
         cv2.imwrite(completeName,output)
         # cv2.waitKey(0)
+
+
+
