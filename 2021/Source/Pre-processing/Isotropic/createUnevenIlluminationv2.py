@@ -4,6 +4,8 @@ import cv2
 from PIL import Image
 import math
 import os
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 class createUnevenIllumination:
     def __init__(self,gradient_shape,max_intensity,transparency,mode):
@@ -74,15 +76,10 @@ class createUnevenIllumination:
             mask = self.create_oval(image,center,theta)
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        # lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
-
-        # image[:, :, 0] = image[:, :, 0] * self.transparency + mask * (1 - self.transparency)
-        # image[:, :, 1] = image[:, :, 1] * self.transparency + mask * (1 - self.transparency)
-        # image[:, :, 2] = image[:, :, 2] * self.transparency + mask * (1 - self.transparency)
-
-        hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] * self.transparency + mask * (1 - self.transparency),hsv[:, :, 2])
+        print(hsv[:, :, 2])
+        print(mask)
+        hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] ,hsv[:, :, 2])
         # lab[:, :, 0] = np.where(lab[:, :, 0]>30,lab[:, :, 0] * self.transparency + mask * (1 - self.transparency),lab[:, :, 0])
-        
         hsv_res = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
         # lab_res = cv2.cvtColor(lab, cv2.COLOR_Lab2RGB)
 
@@ -93,6 +90,9 @@ class createUnevenIllumination:
         # lab_res = np.asarray(lab_res, dtype=np.uint8)
 
         # return image,hsv_res,lab_res
+        # cv2.imshow("mask",mask)
+        # cv2.waitKey(0))
+        
         return hsv_res
 
 
@@ -100,26 +100,21 @@ if __name__ == "__main__":
     frame = cv2.imread('results/test.jpg')
     res=frame
     circle_light_shape=[500,300]
-    max_intensities = [50,100,180,250]
+    max_intensities = [100]
     modes = ['circle','oval']
     thetas = [0,45,90,135]
     transparency = np.random.uniform(0.2, 0.3)
     frame = cv2.imread('results/test.jpg')
     centers=[[np.shape(frame)[0]//2,np.shape(frame)[1]//2]]
 
-    save_path = '/home/nguyentansy/PhD-work/PhD-project/2021/Source/Pre-processing/Isotropic/results/UnevenIllumination/circle/'
-    os.makedirs(save_path, exist_ok=True)
     for max_intensity in max_intensities:
         for center in centers:
-            
-            file_name ='UnevenIllumination'+'_mode:circle'+'_level:'+str(max_intensity)+'_center:'+str(center)
             p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode='circle')
 
             hsv_res = p.createUnevenIllumination(frame,center)
             res = np.concatenate((res, hsv_res), axis=1)
 
 
-    cv2.imshow('Numpy Horizontal Concat', res)
-
+    # cv2.imshow('res', res)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
