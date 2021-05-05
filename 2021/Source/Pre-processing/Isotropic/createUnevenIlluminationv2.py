@@ -76,45 +76,54 @@ class createUnevenIllumination:
             mask = self.create_oval(image,center,theta)
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        print(hsv[:, :, 2])
-        print(mask)
-        hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] ,hsv[:, :, 2])
-        # lab[:, :, 0] = np.where(lab[:, :, 0]>30,lab[:, :, 0] * self.transparency + mask * (1 - self.transparency),lab[:, :, 0])
-        hsv_res = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-        # lab_res = cv2.cvtColor(lab, cv2.COLOR_Lab2RGB)
+        before= hsv[:, :, 2]+255
+
+        # hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,hsv[:, :, 2] * self.transparency + mask * (1 - self.transparency),hsv[:, :, 2])
+        hsv[:, :, 2] = np.where(hsv[:, :, 2]>30,mask/255*hsv[:, :, 2],hsv[:, :, 2])
+
+        after= hsv[:, :, 2]
+
+        hsv_res = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
         hsv_res[hsv_res > 255] = 255
-        # lab_res[lab_res > 255] = 255
 
         hsv_res = np.asarray(hsv_res, dtype=np.uint8)
-        # lab_res = np.asarray(lab_res, dtype=np.uint8)
 
-        # return image,hsv_res,lab_res
-        # cv2.imshow("mask",mask)
-        # cv2.waitKey(0))
-        
-        return hsv_res
+        return hsv_res,mask,before,after
 
 
 if __name__ == "__main__":
-    frame = cv2.imread('results/test.jpg')
-    res=frame
+    columns = 4
+    rows = 4
+    i=1
+    fig=plt.figure(figsize=(20, 20))
     circle_light_shape=[500,300]
-    max_intensities = [100]
+    max_intensities = [50,100,180,250]
     modes = ['circle','oval']
     thetas = [0,45,90,135]
     transparency = np.random.uniform(0.2, 0.3)
-    frame = cv2.imread('results/test.jpg')
+    frame = cv2.imread('/content/drive/MyDrive/Colab Notebooks/PhD-project/Pre-processing/Isotropic/test.jpg')
     centers=[[np.shape(frame)[0]//2,np.shape(frame)[1]//2]]
 
     for max_intensity in max_intensities:
         for center in centers:
+            frame = cv2.imread('/content/drive/MyDrive/Colab Notebooks/PhD-project/Pre-processing/Isotropic/test.jpg')
+            file_name ='UnevenIllumination'+'_mode:circle'+'_level:'+str(max_intensity)+'_center:'+str(center)
             p = createUnevenIllumination(circle_light_shape,max_intensity,transparency,mode='circle')
+            hsv_res,mask,before,after = p.createUnevenIllumination(frame,center)
 
-            hsv_res = p.createUnevenIllumination(frame,center)
-            res = np.concatenate((res, hsv_res), axis=1)
+            fig.add_subplot(rows, columns, i)
+            plt.imshow(hsv_res)
 
-
-    # cv2.imshow('res', res)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+            fig.add_subplot(rows, columns, i+columns)
+            plt.imshow(mask,cmap='gray',vmin=0, vmax=255)
+            
+            fig.add_subplot(rows, columns, i+3*columns)
+            plt.imshow(after,cmap='gray',vmin=0, vmax=255)
+            
+            fig.add_subplot(rows, columns, i+2*columns)
+            plt.imshow(before-255,cmap='gray',vmin=0, vmax=255)
+            
+            i+=1
+    fig.tight_layout()
+    plt.show()
