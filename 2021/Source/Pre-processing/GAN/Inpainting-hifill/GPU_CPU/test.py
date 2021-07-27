@@ -1,14 +1,9 @@
 import cv2
 import numpy as np
 import tensorflow as tf
-import glob 
-import argparse
+import glob
 import os
-
-
-INPUT_SIZE = 512  # input image size for Generator
-ATTENTION_SIZE = 32 # size of contextual attention
-
+import argparse
 
 def sort(str_lst):
     return [s for s in sorted(str_lst)]
@@ -111,9 +106,9 @@ def inpaint(raw_img,
 
 
 
-def read_imgs_masks(args):
-    paths_img = glob.glob(args.images+'/*.*[gG]')
-    paths_mask = glob.glob(args.masks+'/*.*[gG]')
+def read_imgs_masks(paths_img,paths_mask):
+    paths_img = glob.glob(paths_img+'/*.*[gG]')
+    paths_mask = glob.glob(paths_mask+'/*.*[gG]')
     paths_img = sort(paths_img)
     paths_mask = sort(paths_mask)
     print('#imgs: ' + str(len(paths_img)))
@@ -122,24 +117,32 @@ def read_imgs_masks(args):
     print(paths_mask)
     return paths_img, paths_mask
 
-parser = argparse.ArgumentParser()
-args = parser.parse_args()
-args.images = '../samples/testset' # input image directory
-args.masks = '../samples/maskset' # input mask director
-args.output_dir = './results' # output directory
-args.multiple = 6 # multiples of image resizing 
 
-paths_img, paths_mask = read_imgs_masks(args)
-if not os.path.exists(args.output_dir):
-    os.makedirs(args.output_dir)
-with tf.Graph().as_default():
+
+INPUT_SIZE = 512  # input image size for Generator
+ATTENTION_SIZE = 32 # size of contextual attention
+
+physical_devices = tf.config.list_physical_devices('GPU') 
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+# parser = argparse.ArgumentParser()
+# args = parser.parse_args()
+dir_img = '../samples/testset' # input image directory
+dir_mask = '../samples/maskset' # input mask directory
+output_dir = './results' # output directory
+multiple = 6 # multiples of image resizing 
+
+paths_img, paths_mask = read_imgs_masks(dir_img,dir_mask)
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+with tf.compat.v1.Graph().as_default():
   with open('./pb/hifill.pb', "rb") as f:
-    output_graph_def = tf.GraphDef()
+    output_graph_def = tf.compat.v1.GraphDef()
     output_graph_def.ParseFromString(f.read())
     tf.import_graph_def(output_graph_def, name="")
 
-  with tf.Session() as sess:
-    init = tf.global_variables_initializer()
+  with tf.compat.v1.Session() as sess:
+    init = tf.compat.v1.global_variables_initializer()
     sess.run(init)
     image_ph = sess.graph.get_tensor_by_name('img:0')
     mask_ph = sess.graph.get_tensor_by_name('mask:0')
@@ -150,8 +153,8 @@ with tf.Graph().as_default():
     for path_img, path_mask in zip(paths_img, paths_mask):
         raw_img = cv2.imread(path_img)
         raw_mask = cv2.imread(path_mask)
-        inpainted = inpaint(raw_img, raw_mask, sess, inpainted_512_node, attention_node, mask_512_node, image_ph, mask_ph, args.multiple)
-        filename = args.output_dir + '/' + os.path.basename(path_img)
+        inpainted = inpaint(raw_img, raw_mask, sess, inpainted_512_node, attention_node, mask_512_node, image_ph, mask_ph, multiple)
+        filename = output_dir + '/' + os.path.basename(path_img)
         cv2.imwrite(filename + '_inpainted.jpg', inpainted)
 
 
