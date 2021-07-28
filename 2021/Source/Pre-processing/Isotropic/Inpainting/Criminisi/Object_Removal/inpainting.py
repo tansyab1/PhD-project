@@ -11,8 +11,8 @@ import update
 
 try:
     arg=sys.argv
-    cheminimage = str(arg[1])
-    cheminmasque = str(arg[2])
+    cheminimage = './tests/10.jpg'
+    cheminmasque = './tests/mask10.jpg'
     if len(arg) == 4:
         taillecadre = int(arg[3])
     else:
