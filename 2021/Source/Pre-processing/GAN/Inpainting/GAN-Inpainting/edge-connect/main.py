@@ -95,7 +95,7 @@ def load_config(mode=None):
     if not os.path.exists(config_path):
         copyfile('./config.yml.example', config_path)
 
-    # load config file
+    # load config from file
     config = Config(config_path)
 
     # train mode
