@@ -10,7 +10,7 @@ from src.edge_connect import EdgeConnect
 
 
 def main(mode=None):
-    r"""starts the model
+    """starts the model
 
     Args:
         mode (int): 1: train, 2: test, 3: eval, reads from config file if not specified
