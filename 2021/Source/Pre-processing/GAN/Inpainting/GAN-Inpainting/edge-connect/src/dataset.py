@@ -73,6 +73,7 @@ class Dataset(torch.utils.data.Dataset):
         # load edge
         edge = self.load_edge(img_gray, index, mask)
 
+
         # augment data
         if self.augment and np.random.binomial(1, 0.5) > 0:
             img = img[:, ::-1, ...]
@@ -80,6 +81,7 @@ class Dataset(torch.utils.data.Dataset):
             edge = edge[:, ::-1, ...]
             mask = mask[:, ::-1, ...]
 
+        
         return self.to_tensor(img), self.to_tensor(img_gray), self.to_tensor(edge), self.to_tensor(mask)
 
     def load_edge(self, img, index, mask):
@@ -114,7 +116,7 @@ class Dataset(torch.utils.data.Dataset):
             return edge
 
     def load_mask(self, img, index):
-        imgh, imgw = img.shape[0:2]
+        imgw, imgh = img.shape[0:2]
         mask_type = self.mask
 
         # external + random block

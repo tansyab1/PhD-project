@@ -8,6 +8,6 @@ echo "Testing pre-trained models..."
 
 # echo "Extracting pre-trained models..."
 
-python3 test.py --checkpoints ./checkpoints/places2 --input ./examples/places2/images --mask ./examples/places2/masks --output ./checkpoints/results
+python3 test.py --checkpoints ./checkpoints/places2 --input ../testcase/input --mask ../testcase/mask --output ../testcase/results/edgeconnect
 
 echo "Testing success."
