@@ -115,7 +115,7 @@ def load_config(mode=None):
             config.TEST_FLIST = args.input
 
         if args.mask is not None:
-            config.TEST_MASK_FLIST = 255-args.mask
+            config.TEST_MASK_FLIST = args.mask
 
         if args.edge is not None:
             config.TEST_EDGE_FLIST = args.edge
