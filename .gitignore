@@ -4,3 +4,7 @@ __pycache__
 .DS_Store
 *.h5
 .ipynb_checkpoints
+checkpoint
+*.data*
+*.index*
+*.meta*
