@@ -1,2 +1,3 @@
-from main import main
-main(mode=2)
+# from main import main
+print("hahahahah")
+# main(mode=2)
