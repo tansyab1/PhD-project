@@ -6,6 +6,7 @@ import argparse
 import numpy as np
 import tensorflow as tf
 
+
 from net.vqvae import vq_encoder_spec, vq_decoder_spec
 from net.structure_generator import structure_condition_spec, structure_pixelcnn_spec
 from net.texture_generator import texture_generator_spec, texture_discriminator_spec
