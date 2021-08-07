@@ -3,32 +3,29 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 import math
-import os
 
+
+import os  # noqa: E302
 class createUnevenIllumination:
-    def __init__(self,gradient_shape,max_intensity,transparency,mode):
+    def __init__(self, gradient_shape,max_intensity,transparency,mode):
         self.gradient_shape = gradient_shape
         self.max_intensity = max_intensity
         self.transparency = transparency
         self.mode = mode
 
-
-
-    def create_oval(self,image, position, theta):
-        st, ct =  math.sin(theta), math.cos(theta)
+    def create_oval(self, image, position, theta):
+        st, ct = math.sin(theta), math.cos(theta)
         aa, bb = self.gradient_shape[0]**2, self.gradient_shape[1]**2
 
         weights = np.zeros((np.shape(image)[0],np.shape(image)[1]), np.float64)    
         for x in range(np.shape(image)[0]):
             for y in range(np.shape(image)[1]):
-                weights[x,y] = ((((x-position[0]) * ct + (y-position[1]) * st) ** 2) / aa
-                    + (((x-position[0]) * st - (y-position[1]) * ct) ** 2) / bb)
+                weights[x, y] = ((((x-position[0]) * ct + (y-position[1]) * st) ** 2) / aa
+                    + (((x-position[0]) * st - (y-position[1]) * ct) ** 2) / bb)  # noqa: E128
                 
-        return np.clip(1.0 - weights, 0, 1)* self.max_intensity
+        return np.clip(1.0 - weights, 0, 1) * self.max_intensity
 
-
-
-    def create_mask(self,given_size,center,gradient_shape):
+    def create_mask(self, given_size, center, gradient_shape):
         mask = np.zeros((gradient_shape,gradient_shape), dtype=np.uint8)
         imgsize = mask.shape[:2]
 
@@ -38,13 +35,13 @@ class createUnevenIllumination:
 
         for y in range(imgsize[1]):
             for x in range(imgsize[0]):
-                #Find the distance to the center
+                # Find the distance to the center
                 distanceToCenter = np.sqrt((x - imgsize[0]//2) ** 2 + (y - imgsize[1]//2) ** 2)
 
-                #Make it on a scale from 0 to 1innerColor
+                # Make it on a scale from 0 to 1innerColor
                 distanceToCenter = distanceToCenter / (np.sqrt(1) * imgsize[0]/2)
 
-                #Calculate intensity values
+                # Calculate intensity values
                 intensity = innerColor * distanceToCenter + outerColor * (1 - distanceToCenter)
                 if distanceToCenter < 1:
                     mask[y, x] = int(intensity)
@@ -54,7 +51,7 @@ class createUnevenIllumination:
         ori_left= [x-int(gradient_shape//2) for x in center]
         ori_right= [x+int(gradient_shape//2) for x in center]
 
-        #result image
+        # result image
         left_corner = [center[i]-int(gradient_shape//2) if center[i]-int(gradient_shape//2) >= 0 else 0 for i in range(2)]
         right_corner = [center[i]+int(gradient_shape//2) if center[i]+int(gradient_shape//2) <= given_size[i] else given_size[i] for i in range(2)]
 
@@ -64,8 +61,6 @@ class createUnevenIllumination:
         result[left_corner[0]:right_corner[0],left_corner[1]:right_corner[1]]= mask[mask_left[0]:mask_right[0],mask_left[1]:mask_right[1]]
 
         return result
-
-
 
     def createUnevenIllumination(self,image,center,theta=40):
         if self.mode =='circle':

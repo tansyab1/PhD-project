@@ -8,12 +8,12 @@ from options.test_options import TestOptions
 from net.model import Blindinpaint_model
 from util.util import generate_mask_rect, generate_mask_stroke
 
-import numpy as np
 import time
 
-os.environ['CUDA_VISIBLE_DEVICES']=str(np.argmax([int(x.split()[2]) for x in subprocess.Popen(
+os.environ['CUDA_VISIBLE_DEVICES'] = str(np.argmax([int(x.split()[2]) for x in subprocess.Popen(
         "nvidia-smi -q -d Memory | grep -A4 GPU | grep Free", shell=True, stdout=subprocess.PIPE).stdout.readlines()]
         ))
+
 
 def crop_image(image, shapes):
     h, w = image.shape[:2]
@@ -27,8 +27,10 @@ def crop_image(image, shapes):
         image = cv2.resize(image, (shapes[1], shapes[0]))
     return image
 
+
 def vis(x):
     return tf.cast(tf.clip_by_value((x + 1)*127.5, 0, 255), tf.uint8)
+
 
 def model_capacity(net_vars):
     total_parameters = 0
@@ -39,6 +41,7 @@ def model_capacity(net_vars):
             variable_parameters *= dim.value
         total_parameters += variable_parameters
     return total_parameters
+
 
 config = TestOptions().parse()
 
@@ -97,7 +100,6 @@ with tf.Session(config=sess_config) as sess:
         tf.GraphKeys.TRAINABLE_VARIABLES, 'blind_inpaint_net')
     total_parameters = model_capacity(g_vars)
     print('model capacity: {}'.format(total_parameters))
-    
     print('Model loaded.')
     total_time = 0
 
@@ -119,13 +121,13 @@ with tf.Session(config=sess_config) as sess:
             cv2.imwrite(os.path.join(config.saving_path, 'mask_{:03d}.png'.format(i)),
                         np.tile(mask*255, [1, 1, 3]).astype(np.uint8))
 
-        image = cv2.imread(pathfile[i])[:, :, ::-1] # rgb
+        image = cv2.imread(pathfile[i])[:, :, ::-1]  # rgb
         image = crop_image(image, config.img_shapes)
 
         if config.save_intermediate is True:
             cv2.imwrite(os.path.join(config.saving_path, 'gt_{:03d}.png'.format(i)), image[:, :, ::-1].astype(np.uint8))
 
-        noise = cv2.imread(noise_pathfile[i])[:, :, ::-1] # rgb
+        noise = cv2.imread(noise_pathfile[i])[:, :, ::-1]  # rgb
         noise = crop_image(noise, config.img_shapes)
 
         if config.save_intermediate is True:
@@ -158,11 +160,10 @@ with tf.Session(config=sess_config) as sess:
             if config.model == 'ca' or config.model == 'gmcnn' or config.model == 'ed':
                 start_t = time.time()
                 ret_pred, ret_complete, ret_input = sess.run([output, complete, input],
-                                                            feed_dict={input_image_tf: image,
-                                                                        input_noise_tf: noise,
-                                                                        input_mask_tf: mask})
+                                                            feed_dict={input_image_tf: image,  # noqa: E128
+                                                                        input_noise_tf: noise,  # noqa: E127
+                                                                        input_mask_tf: mask})  # noqa: E127
                 end_t = time.time()
-        
         total_time += end_t - start_t
         cv2.imwrite(os.path.join(config.saving_path, 'pred_{:03d}.png'.format(i)), ret_pred[0][:, :, ::-1])
 
