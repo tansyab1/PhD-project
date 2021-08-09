@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import glob
 import os
-import argparse
+# import argparse
 
 
 def sort(str_lst):
@@ -49,7 +49,7 @@ def pre_process(raw_img, raw_mask, multiple):
     raw_img = raw_img.astype(np.float32)
 
     # resize raw image & mask to desinated size
-    large_img = cv2.resize(raw_img,  (multiple * INPUT_SIZE, multiple * INPUT_SIZE), interpolation=cv2. INTER_LINEAR)
+    large_img = cv2.resize(raw_img,  (multiple * INPUT_SIZE, multiple * INPUT_SIZE), interpolation=cv2.INTER_LINEAR)
     large_mask = cv2.resize(raw_mask, (multiple * INPUT_SIZE, multiple * INPUT_SIZE), interpolation=cv2.INTER_NEAREST)
 
     # down-sample large image & mask to 512x512
@@ -66,8 +66,8 @@ def post_process(raw_img, large_img, large_mask, res_512, img_512, mask_512, att
 
     # compute the raw residual map
     h, w, c = raw_img.shape
-    low_base = cv2.resize(res_512.astype(np.float32), (INPUT_SIZE * multiple, INPUT_SIZE * multiple), interpolation = cv2.INTER_LINEAR)
-    low_large = cv2.resize(img_512.astype(np.float32), (INPUT_SIZE * multiple, INPUT_SIZE * multiple), interpolation = cv2.INTER_LINEAR)
+    low_base = cv2.resize(res_512.astype(np.float32), (INPUT_SIZE * multiple, INPUT_SIZE * multiple), interpolation=cv2.INTER_LINEAR)
+    low_large = cv2.resize(img_512.astype(np.float32), (INPUT_SIZE * multiple, INPUT_SIZE * multiple), interpolation=cv2.INTER_LINEAR)
     residual = (large_img - low_large) * large_mask
 
     # reconstruct residual map using residual aggregation module
@@ -78,10 +78,10 @@ def post_process(raw_img, large_img, large_mask, res_512, img_512, mask_512, att
     res_large = np.clip(res_large, 0., 255.)
 
     # resize large inpainted result to raw size
-    res_raw = cv2.resize(res_large, (w, h), interpolation = cv2.INTER_LINEAR)
+    res_raw = cv2.resize(res_large, (w, h), interpolation=cv2.INTER_LINEAR)
 
     # paste the hole region to the original raw image
-    mask = cv2.resize(mask_512.astype(np.float32), (w, h), interpolation = cv2.INTER_LINEAR)
+    mask = cv2.resize(mask_512.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     mask = np.expand_dims(mask, axis=2)
     res_raw = res_raw * mask + raw_img * (1. - mask)
 
