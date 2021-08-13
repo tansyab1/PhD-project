@@ -19,7 +19,8 @@ def applyGaussianFiltertoImage(image, sigma):
     gaussian_image = np.zeros(image.shape)
     for i in range(image.shape[0]):
         for j in range(image.shape[1]):
-            gaussian_image[i, j] = np.sum(gaussian_filter*image[i-2:i+3, j-2:j+3])
+            gaussian_image[i, j] = np.sum(
+                gaussian_filter*image[i-2:i+3, j-2:j+3])
     return gaussian_image
 
 
