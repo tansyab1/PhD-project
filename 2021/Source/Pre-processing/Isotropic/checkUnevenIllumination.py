@@ -5,16 +5,29 @@ import matplotlib.pyplot as plt
 
 
 def createGaussianFilter(size, sigma):
-    """create a gaussian filter for the image"""
-    gaussian_filter = np.zeros((5, 5))
-    for i in range(5):
-        for j in range(5):
-            gaussian_filter[i, j] = math.exp(-((i-2)**2+(j-2)**2)/(2*(2**2)))
+    """create the gaussian filter
+    size: the size of the filter
+    sigma: the standard deviation of the filter
+    return: the gaussian filter
+    """
+    gaussian_filter = np.zeros((size, size))
+    for i in range(size):
+        for j in range(size):
+            gaussian_filter[i, j] = math.exp(
+                -(i-size//2)**2/(2*sigma**2) - (j-size//2)**2/(2*sigma**2))
     return gaussian_filter
 
 
 def applyGaussianFiltertoImage(image, sigma):
-    """apply the gaussian filter to the image"""
+    """apply the gaussian filter to the image
+
+    Args:
+        image (mat): input image
+        sigma (float): sigma of the gaussian filter
+
+    Returns:
+        mat: output image
+    """
     gaussian_filter = createGaussianFilter(5, sigma)
     gaussian_image = np.zeros(image.shape)
     for i in range(image.shape[0]):
@@ -36,7 +49,14 @@ def convertImagefromRGBtoHSV(image):
 
 
 def getVchannel(image_HSV):
-    """get the V channel of the image"""
+    """generate the V channel of the image
+
+    Args:
+        image_HSV (mat): RGB image
+
+    Returns:
+        mat: V channel of the image
+    """
     V = np.zeros(image_HSV.shape[0:2])
     for i in range(image_HSV.shape[0]):
         for j in range(image_HSV.shape[1]):
@@ -45,9 +65,10 @@ def getVchannel(image_HSV):
 
 
 def checkUnevenIllumination(image_path):
-    """check the image whether have the uneven illumination
-    Args:
-        image_path ([type]): [description]
+    """check the uneven illumination of the image
+
+    Returns:
+        string: image path
     """
     img = mpimg.imread(image_path)
     V = getVchannel(convertImagefromRGBtoHSV(img))
