@@ -22,8 +22,8 @@
 # along with PyTV-TOMO. If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from .FGPCython import FGPCython
-from .Utils import fullcost
+from FGPCython import FGPCython
+from Utils import fullcost
 import numpy as np
 import six
 import time
