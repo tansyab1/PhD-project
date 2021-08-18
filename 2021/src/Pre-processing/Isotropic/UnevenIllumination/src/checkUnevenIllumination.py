@@ -2,6 +2,7 @@ import math
 import numpy as np
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import os
 
 
 def createGaussianFilter(size, sigma):
@@ -64,19 +65,110 @@ def getVchannel(image_HSV):
     return V
 
 
-def checkUnevenIllumination(image_path):
-    """check the uneven illumination of the image
+class checkUI:
+    """check the uneven illumination of the image"""
+
+    def __init__(self, image_path):
+        """initialize the class
+
+        Args:
+            image_path (string): path of the image
+        """
+        self.image_path = image_path
+
+    def get_result(self):
+        """get the result of the check
+
+        Returns:
+            string: image path
+        """
+        return self.checkUnevenIllumination(self.image_path)
+
+    def checkUnevenIllumination(self, image_path):
+        """check the uneven illumination of the image
+
+        Returns:
+            string: image path
+        """
+        img = mpimg.imread(image_path)
+        V = getVchannel(convertImagefromRGBtoHSV(img))
+        img_gaussian = applyGaussianFiltertoImage(V, 1)
+        result = V - img_gaussian
+        plt.imshow(result)
+        return result
+
+
+def readImagefromFolder(folder_path):
+    """read all the images from the folder
+
+    Args:
+        folder_path (string): path of the folder
 
     Returns:
-        string: image path
+        list: list of all the images
     """
-    img = mpimg.imread(image_path)
-    V = getVchannel(convertImagefromRGBtoHSV(img))
-    img_gaussian = applyGaussianFiltertoImage(V, 1)
-    result = V - img_gaussian
-    plt.imshow(result)
-    return result
+    image_list = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".jpg"):
+            image_list.append(os.path.join(folder_path, filename))
+    return image_list
+
+
+def plotHistogram(array):
+    """plot the histogram of the array
+    array: the array to be plotted
+    """
+    plt.hist(array, bins=256)
+    plt.show()
+
+
+class classifyUI:
+    """classify the image"""
+
+    def __init__(self, image_path):
+        """initialize the class
+
+        Args:
+            image_path (string): path of the image
+        """
+        self.image_path = image_path
+
+    def get_result(self):
+        """get the result of the classification
+
+        Returns:
+            string: image path
+        """
+        return self.classify(self.image_path)
+
+    def calLuminanceMeantoRange(self, V):
+        """calculate the luminance mean to range
+        V: the V channel of the image
+        return: the luminance mean to range
+        """
+        V_mean = np.mean(V)
+        V_range = np.max(V) - np.min(V)
+        return V_mean/V_range
+
+    def classify(self, image_path):
+        """classify the image
+
+        Returns:
+            string: image path
+        """
+        lmr_list = []
+        for i in range(len(image_path)):
+            img = mpimg.imread(image_path[i])
+            V = getVchannel(convertImagefromRGBtoHSV(img))
+            lmr = self.calLuminanceMeantoRange(V)
+            lmr_list[i] = lmr
+        return lmr_list
 
 
 if __name__ == "__main__":
-    checkUnevenIllumination("./results/test.jpg")
+    checker = checkUI("./results/test.jpg")
+    ui_mask = checker.get_result()
+    img_list = readImagefromFolder("./results/test")
+    classifer = classifyUI(img_list)
+    ui_list = classifer.classify(img_list)
+    plotHistogram(ui_list)
