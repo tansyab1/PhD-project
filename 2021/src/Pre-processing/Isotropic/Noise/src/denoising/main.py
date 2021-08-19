@@ -32,7 +32,7 @@ def load_datasets(img_width=64, img_height=64):
     # for i in range(rawimages3.shape[0]):
     #     images3[i] = cv2.resize(rawimages3[i], dsize=(img_width, img_height),
     #                             interpolation=cv2.INTER_CUBIC)
-    return mias_images, dx_images  # , dental_images
+    return mias_images, dental_images
 
 
 def add_noise(pure, pure_test):
