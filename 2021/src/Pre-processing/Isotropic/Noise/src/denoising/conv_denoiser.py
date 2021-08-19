@@ -1,7 +1,7 @@
 from skimage.restoration import denoise_nl_means, estimate_sigma
 import numpy as np
-from bm3d import *
-import cv2
+from bm3d import BM3D_1st_step, BM3D_2nd_step
+# import cv2
 
 
 def nlm_denoise(noisy_image):
@@ -14,6 +14,7 @@ def nlm_denoise(noisy_image):
 
     return np.array(denoised)
 
+
 def bm3d_denoise(noisy_image):
     noisy_image = noisy_image * 255.0
     denoised = []
@@ -22,4 +23,4 @@ def bm3d_denoise(noisy_image):
     denoised.append(Final_img)
     print("Image denoised using BM3D")
 
-    return numpy.array(denoised)
+    return np.array(denoised)

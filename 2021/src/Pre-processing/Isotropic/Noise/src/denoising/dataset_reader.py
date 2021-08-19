@@ -15,14 +15,15 @@ def read_pgm(filename, byteorder='>'):
         buffer = f.read()
     try:
         header, width, height, maxval = re.search(
-            b"(^P5\s(?:\s*#.*[\r\n])*"
-            b"(\d+)\s(?:\s*#.*[\r\n])*"
-            b"(\d+)\s(?:\s*#.*[\r\n])*"
-            b"(\d+)\s(?:\s*#.*[\r\n]\s)*)", buffer).groups()
+            br"(^P5\s(?:\s*#.*[\r\n])*"
+            br"(\d+)\s(?:\s*#.*[\r\n])*"
+            br"(\d+)\s(?:\s*#.*[\r\n])*"
+            br"(\d+)\s(?:\s*#.*[\r\n]\s)*)", buffer).groups()
     except AttributeError:
         raise ValueError("Not a raw PGM file: '%s'" % filename)
     return numpy.frombuffer(buffer,
-                            dtype='u1' if int(maxval) < 256 else byteorder + 'u2',
+                            dtype='u1' if int(
+                                maxval) < 256 else byteorder + 'u2',
                             count=int(width) * int(height),
                             offset=len(header)
                             ).reshape((int(height), int(width)))
@@ -67,7 +68,8 @@ def read_mini_mias():
     for dirName, subdirList, fileList in os.walk("data/all-mias/"):
         for fname in fileList:
             if fname.endswith(".pgm"):
-                images_tensor[i] = read_pgm("data/all-mias/" + fname, byteorder='<')
+                images_tensor[i] = read_pgm(
+                    "data/all-mias/" + fname, byteorder='<')
                 i += 1
     return images_tensor
 
@@ -76,13 +78,14 @@ def read_dataset(path=None, img_width=64, img_height=64):
     try:
         images = []
         for filename in os.listdir(path):
-            img = cv2.imread(os.path.join(path, filename), cv2.IMREAD_GRAYSCALE)
+            img = cv2.imread(os.path.join(path, filename),
+                             cv2.IMREAD_GRAYSCALE)
 
             if img is not None:
                 img = cv2.resize(img, (img_width, img_height))
                 images.append(img)
         return numpy.array(images)
-    except:
+    except filename.DoesNotExist:
         print("Error has occured during data loading")
 
 

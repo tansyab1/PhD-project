@@ -1,7 +1,6 @@
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, UpSampling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow_core.python.keras import Input
 
 
 def get_autoencoder_model(img_width=64, img_height=64):
