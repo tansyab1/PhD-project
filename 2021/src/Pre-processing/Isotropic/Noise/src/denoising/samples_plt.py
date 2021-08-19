@@ -60,8 +60,8 @@ def plot_samples(noise_vals, noisy_input_test, denoised_images, pure_test, nu_sa
         "Denoised: {4} - BM3D: {5} - NL Means: {6}".format(noise_prop, noise_mean, noise_std, n1, n2, n3, n4),
         fontsize=14,
         fontweight='bold')
-    # plt.savefig("output.png")
-    plt.show()
+    plt.savefig("results/output.png")
+    # plt.show()
 
 
 def save_samples(noise_vals, noisy_input_test, denoised_images, pure_test, img_height=64, img_width=64):
