@@ -1,7 +1,7 @@
 # import cv2
 # import math
 # import numpy
-from skimage.metrics._structural_similarity import compare_ssim as ssim
+from skimage.metrics import structural_similarity as ssim
 
 
 def get_image_ssim(original_img, noisy_img):
