@@ -54,8 +54,8 @@ class Range(object):
 
 
 if __name__ == "__main__":
-    # gpus = tf.config.experimental.list_physical_devices('GPU')
-    # tf.config.experimental.set_memory_growth(gpus[0], True)
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
     img_width, img_height = 64, 64
     batch_size = 10
     nu_epochs = 50
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     train_split = 0.9
     verbosity = 1
     noise_prop = 0.1
-    noise_std = 0.01
+    noise_std = 0.5
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
