@@ -25,11 +25,11 @@ def plot_samples(noise_vals, noisy_input_test, denoised_images, pure_test, nu_sa
     nl_images = []
     for i in range(0, nu_samples):
         # Get the sample and the reconstruction
-        noisy_image = noisy_input_test[i][:, :, 0]
-        pure_image = pure_test[i][:, :, 0]
-        denoised_image = denoised_images[i][:, :, 0]
-        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width))[0]
-        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width))[0]
+        noisy_image = noisy_input_test[i]
+        pure_image = pure_test[i]
+        denoised_image = denoised_images[i]
+        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width, 3))
+        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width, 3))
         noisy_images.append(noisy_image)
         pure_images.append(pure_image)
         bm3d_images.append(bm3d_denoised)
@@ -80,11 +80,11 @@ def save_samples(noise_vals, noisy_input_test, denoised_images, pure_test, img_h
     nl_images = []
     for i in range(0, len(noisy_input_test)):
         # Get the sample and the reconstruction
-        noisy_image = noisy_input_test[i][:, :, 0]
-        pure_image = pure_test[i][:, :, 0]
-        denoised_image = denoised_images[i][:, :, 0]
-        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width))[0]
-        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width))[0]
+        noisy_image = noisy_input_test[i]
+        pure_image = pure_test[i]
+        denoised_image = denoised_images[i]
+        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width))
+        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width))
         noisy_images.append(noisy_image)
         pure_images.append(pure_image)
         bm3d_images.append(bm3d_denoised)

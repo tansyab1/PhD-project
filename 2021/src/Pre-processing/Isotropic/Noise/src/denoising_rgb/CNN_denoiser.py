@@ -52,9 +52,9 @@ class CNN_denoiser():
         if shuffle_test_set:
             np.random.shuffle(input_test)
         input_train = input_train.reshape(
-            input_train.shape[0], img_width, img_height, 1)
+            input_train.shape[0], img_width, img_height, 3)
         input_test = input_test.reshape(
-            input_test.shape[0], img_width, img_height, 1)
+            input_test.shape[0], img_width, img_height, 3)
         return input_train, input_test
 
     @staticmethod  # Split 1 dataset
@@ -66,9 +66,9 @@ class CNN_denoiser():
         if shuffle_test_set:
             np.random.shuffle(input_test)
         input_train = input_train.reshape(
-            input_train.shape[0], img_width, img_height, 1)
+            input_train.shape[0], img_width, img_height, 3)
         input_test = input_test.reshape(
-            input_test.shape[0], img_width, img_height, 1)
+            input_test.shape[0], img_width, img_height, 3)
         return input_train, input_test
 
     @staticmethod  # Split 3 datasets
@@ -93,9 +93,9 @@ class CNN_denoiser():
         if shuffle_test_set:
             np.random.shuffle(input_test)
         input_train = input_train.reshape(
-            input_train.shape[0], img_width, img_height, 1)
+            input_train.shape[0], img_width, img_height, 3)
         input_test = input_test.reshape(
-            input_test.shape[0], img_width, img_height, 1)
+            input_test.shape[0], img_width, img_height, 3)
         return input_train, input_test
 
     @staticmethod  # Split 4 datasets
@@ -124,9 +124,9 @@ class CNN_denoiser():
         if shuffle_test_set:
             np.random.shuffle(input_test)
         input_train = input_train.reshape(
-            input_train.shape[0], img_width, img_height, 1)
+            input_train.shape[0], img_width, img_height, 3)
         input_test = input_test.reshape(
-            input_test.shape[0], img_width, img_height, 1)
+            input_test.shape[0], img_width, img_height, 3)
         return input_train, input_test
 
     def train(self, noisy_input, pure, save=False, verbosity=0):

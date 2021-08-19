@@ -32,7 +32,7 @@ def read_pgm(filename, byteorder='>'):
 def read_dental(folder="data/dental/"):
     images = []
     for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_COLOR)
 
         if img is not None:
             # img = cv2.resize(img, (64, 64))
@@ -43,7 +43,7 @@ def read_dental(folder="data/dental/"):
 def read_covid(folder="data/covid/"):
     images = []
     for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_COLOR)
 
         if img is not None:
             # img = cv2.resize(img, (64, 64))
@@ -54,7 +54,7 @@ def read_covid(folder="data/covid/"):
 def read_dx(folder="data/DX/"):
     images = []
     for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_COLOR)
 
         if img is not None:
             # img = cv2.resize(img, (64, 64))
@@ -79,10 +79,10 @@ def read_dataset(path=None, img_width=64, img_height=64):
         images = []
         for filename in os.listdir(path):
             img = cv2.imread(os.path.join(path, filename),
-                             cv2.IMREAD_GRAYSCALE)
+                             cv2.IMREAD_COLOR)
 
             if img is not None:
-                img = cv2.resize(img, (img_width, img_height))
+                img = cv2.resize(img, (img_width, img_height, 3))
                 images.append(img)
         return numpy.array(images)
     except filename.DoesNotExist:
