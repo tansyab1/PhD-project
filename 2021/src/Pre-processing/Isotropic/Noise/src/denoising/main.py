@@ -2,6 +2,7 @@ import argparse
 
 import cv2
 import numpy as np
+import tensorflow as tf
 
 import dataset_reader
 import samples_plt
@@ -53,6 +54,8 @@ class Range(object):
 
 
 if __name__ == "__main__":
+    # gpus = tf.config.experimental.list_physical_devices('GPU')
+    # tf.config.experimental.set_memory_growth(gpus[0], True)
     img_width, img_height = 64, 64
     batch_size = 10
     nu_epochs = 50
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     train_split = 0.9
     verbosity = 1
     noise_prop = 0.1
-    noise_std = 1
+    noise_std = 0.01
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
@@ -71,7 +74,7 @@ if __name__ == "__main__":
                         type=int,
                         choices=[128, 64])
     parser.add_argument("-p", "--proportion", help="Gaussian noise proportion [default = 0.1]", type=float)
-    parser.add_argument("-std", "--sdeviation", help="Gaussian noise standard deviation [default = 1]", type=float)
+    parser.add_argument("-std", "--sdeviation", help="Gaussian noise standard deviation [default = 0.01]", type=float)
     parser.add_argument("-m", "--mean", help="Gaussian noise mean [default = 0]", type=float)
     parser.add_argument("-s", "--samples", help="Number of samples [default = 4]", type=int)
     parser.add_argument("-shuffle", "--shuffle", help="Shuffle test set", action="store_true")
