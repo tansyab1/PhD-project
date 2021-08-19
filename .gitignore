@@ -3,6 +3,7 @@
 __pycache__
 .DS_Store
 *.h5
+*.pgm
 .ipynb_checkpoints
 checkpoint
 *.data*
