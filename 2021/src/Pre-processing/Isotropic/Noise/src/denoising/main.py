@@ -15,17 +15,17 @@ def load_datasets(img_width=64, img_height=64):
         mias_images[i] = cv2.resize(raw_mias[i], dsize=(img_width, img_height),
                                     interpolation=cv2.INTER_CUBIC)
 
-    raw_dx = dataset_reader.read_dx()  # Read DX dataset
-    dx_images = np.zeros((raw_dx.shape[0], img_width, img_width))
-    for i in range(raw_dx.shape[0]):
-        dx_images[i] = cv2.resize(raw_dx[i], dsize=(img_width, img_height),
-                                  interpolation=cv2.INTER_CUBIC)
+    # raw_dx = dataset_reader.read_dx()  # Read DX dataset
+    # dx_images = np.zeros((raw_dx.shape[0], img_width, img_width))
+    # for i in range(raw_dx.shape[0]):
+    #     dx_images[i] = cv2.resize(raw_dx[i], dsize=(img_width, img_height),
+    #                               interpolation=cv2.INTER_CUBIC)
 
-    # raw_dental = dataset_reader.read_dental()  # Read dental dataset
-    # dental_images = np.zeros((raw_dental.shape[0], img_width, img_width))
-    # for i in range(raw_dental.shape[0]):
-    #     dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height),
-    #                                   interpolation=cv2.INTER_CUBIC)
+    raw_dental = dataset_reader.read_dental()  # Read dental dataset
+    dental_images = np.zeros((raw_dental.shape[0], img_width, img_width))
+    for i in range(raw_dental.shape[0]):
+        dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height),
+                                      interpolation=cv2.INTER_CUBIC)
     #
     # rawimages3 = dataset_reader.read_covid()  # Read covid dataset
     # images3 = np.zeros((329, img_width, img_width))
