@@ -26,8 +26,8 @@ def bm3d_denoise(noisy_image):
     #                             size=img_gold.shape).astype(numpy.int32)
 
     # img = img_gold + noise
-    # img = numpy.clip(img, 0, 255)
-    # img = img.astype(numpy.uint8)
+    noisy_image = np.clip(noisy_image, 0, 255)
+    noisy_image = noisy_image.astype(np.uint8)
 
     imgYCB = cv2.cvtColor(noisy_image, cv2.COLOR_BGR2YCrCb)
     # imgYCB_gold = cv2.cvtColor(img_gold, cv2.COLOR_BGR2YCrCb)
