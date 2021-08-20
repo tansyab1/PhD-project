@@ -10,11 +10,11 @@ from CNN_denoiser import CNN_denoiser
 
 
 def load_datasets(img_width=64, img_height=64):
-    raw_mias = dataset_reader.read_mini_mias()  # Read mias dataset
-    mias_images = np.zeros((raw_mias.shape[0], img_width, img_height, 3))
-    for i in range(raw_mias.shape[0]):
-        mias_images[i] = cv2.resize(raw_mias[i], dsize=(img_width, img_height, 3),
-                                    interpolation=cv2.INTER_CUBIC)
+    # raw_mias = dataset_reader.read_mini_mias()  # Read mias dataset
+    # mias_images = np.zeros((raw_mias.shape[0], img_width, img_height, 3))
+    # for i in range(raw_mias.shape[0]):
+    #     mias_images[i] = cv2.resize(raw_mias[i], dsize=(img_width, img_height),
+    #                                 interpolation=cv2.INTER_CUBIC)
 
     # raw_dx = dataset_reader.read_dx()  # Read DX dataset
     # dx_images = np.zeros((raw_dx.shape[0], img_width, img_width))
@@ -25,7 +25,7 @@ def load_datasets(img_width=64, img_height=64):
     raw_dental = dataset_reader.read_dental()  # Read dental dataset
     dental_images = np.zeros((raw_dental.shape[0], img_width, img_width, 3))
     for i in range(raw_dental.shape[0]):
-        dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height, 3),
+        dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height),
                                       interpolation=cv2.INTER_CUBIC)
     #
     # rawimages3 = dataset_reader.read_covid()  # Read covid dataset
@@ -33,7 +33,7 @@ def load_datasets(img_width=64, img_height=64):
     # for i in range(rawimages3.shape[0]):
     #     images3[i] = cv2.resize(rawimages3[i], dsize=(img_width, img_height),
     #                             interpolation=cv2.INTER_CUBIC)
-    return mias_images, dental_images
+    return dental_images
 
 
 def add_noise(pure, pure_test):
@@ -109,10 +109,12 @@ if __name__ == "__main__":
         img_width = args.size
         img_height = args.size
 
+    args.load = "data/dental/"
+
     print("[LOG] Loading datasets...")
     if args.load:
         print("[LOG] Loading data set from [{0}]".format(args.load))
-        data_images = dataset_reader.read_dataset(args.load, img_width, img_height)
+        data_images = load_datasets(img_width, img_height)
         input_train, input_test = CNN_denoiser.train_test_split1(data_images, train_split=train_split,
                                                                  shuffle_test_set=shuffle_test_set, img_width=img_width,
                                                                  img_height=img_height)  # Split 1 set to train and test sets

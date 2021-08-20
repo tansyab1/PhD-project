@@ -79,13 +79,13 @@ def read_dataset(path=None, img_width=64, img_height=64):
         images = []
         for filename in os.listdir(path):
             img = cv2.imread(os.path.join(path, filename),
-                             cv2.IMREAD_COLOR)
+                             cv2.IMREAD_UNCHANGED)
 
             if img is not None:
-                img = cv2.resize(img, (img_width, img_height, 3))
+                img = cv2.resize(img, (img_width, img_height))
                 images.append(img)
         return numpy.array(images)
-    except filename.DoesNotExist:
+    except:
         print("Error has occured during data loading")
 
 

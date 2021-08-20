@@ -443,7 +443,7 @@ def PSNR2(img1, img2):
 
 
 def bm3d_denoise(noisy_image):
-    noisy_image = noisy_image * 255.0
+    noisy_image = numpy.float32(noisy_image*255)
     denoised = []
     # cv2.setUseOptimized(True)
 
@@ -455,7 +455,6 @@ def bm3d_denoise(noisy_image):
     # img = img_gold + noise
     # img = numpy.clip(img, 0, 255)
     # img = img.astype(numpy.uint8)
-
     imgYCB = cv2.cvtColor(noisy_image, cv2.COLOR_BGR2YCrCb)
     # imgYCB_gold = cv2.cvtColor(img_gold, cv2.COLOR_BGR2YCrCb)
 
@@ -478,6 +477,7 @@ def bm3d_denoise(noisy_image):
     # print("The PSNR compared with gold image for the First step is %f" % psnr)
 
     Final_img = BM3D_2nd_step_color(Basic_img, imgYCB)
+    Final_img = cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR)
     # cv2.imwrite("Final_sigma"+str(sigma)+"_color.png",
     #             cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR))
 

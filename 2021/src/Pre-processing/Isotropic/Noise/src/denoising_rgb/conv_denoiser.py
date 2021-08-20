@@ -16,7 +16,7 @@ def nlm_denoise(noisy_image):
 
 
 def bm3d_denoise(noisy_image):
-    noisy_image = noisy_image * 255.0
+    noisy_image = np.float32(noisy_image * 255.0)
     denoised = []
     # cv2.setUseOptimized(True)
 
@@ -51,6 +51,7 @@ def bm3d_denoise(noisy_image):
     # print("The PSNR compared with gold image for the First step is %f" % psnr)
 
     Final_img = BM3D_2nd_step_color(Basic_img, imgYCB)
+    Final_img = cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR)
     # cv2.imwrite("Final_sigma"+str(sigma)+"_color.png",
     #             cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR))
 

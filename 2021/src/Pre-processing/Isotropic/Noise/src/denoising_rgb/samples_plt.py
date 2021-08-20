@@ -28,36 +28,52 @@ def plot_samples(noise_vals, noisy_input_test, denoised_images, pure_test, nu_sa
         noisy_image = noisy_input_test[i]
         pure_image = pure_test[i]
         denoised_image = denoised_images[i]
-        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width, 3))
-        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width, 3))
+        bm3d_denoised = conv_denoiser.bm3d_denoise(
+            noisy_input_test[i].reshape(img_height, img_width, 3))
+        nl_denoised = conv_denoiser.nlm_denoise(
+            noisy_input_test[i].reshape(img_height, img_width, 3))
         noisy_images.append(noisy_image)
         pure_images.append(pure_image)
         bm3d_images.append(bm3d_denoised)
         nl_images.append(nl_denoised)
+        nl_denoised = np.squeeze(noisy_image)
+        nl_denoised = np.squeeze(denoised_image)
+        nl_denoised = np.squeeze(nl_denoised)
+        bm3d_denoised = np.squeeze(bm3d_denoised)
         # Plot sample and reconstruciton
-        axes[i][0].imshow(pure_image, pyplot.cm.gray)
-        axes[i][0].set_ylabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, pure_image)))
-        axes[i][1].imshow(noisy_image, pyplot.cm.gray)
-        axes[i][1].set_ylabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, noisy_image)))
-        axes[i][2].imshow(denoised_image, pyplot.cm.gray)
-        axes[i][2].set_ylabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, denoised_image)))
-        axes[i][3].imshow(bm3d_denoised, pyplot.cm.gray)
-        axes[i][3].set_ylabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image * 255.0, bm3d_denoised)))
-        axes[i][4].imshow(nl_denoised, pyplot.cm.gray)
-        axes[i][4].set_ylabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image * 255.0, nl_denoised)))
+        axes[i][0].imshow(np.squeeze(pure_image))
+        axes[i][0].set_ylabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, pure_image)))
+        axes[i][1].imshow(noisy_image)
+        axes[i][1].set_ylabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, noisy_image)))
+        axes[i][2].imshow(denoised_image)
+        axes[i][2].set_ylabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, denoised_image)))
+        axes[i][3].imshow(bm3d_denoised)
+        axes[i][3].set_ylabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, bm3d_denoised)))
+        axes[i][4].imshow(nl_denoised)
+        axes[i][4].set_ylabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, nl_denoised)))
 
     # Measure SSIM values for sampled images
-    n1 = measure.get_set_ssim(np.array(pure_images), np.array(noisy_images), img_height, img_width)
-    n2 = measure.get_set_ssim(np.array(pure_images), denoised_images, img_height, img_width)
-    n3 = measure.get_set_ssim(np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
-    n4 = measure.get_set_ssim(np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
+    n1 = measure.get_set_ssim(np.array(pure_images), np.array(
+        noisy_images), img_height, img_width)
+    n2 = measure.get_set_ssim(np.array(pure_images),
+                              denoised_images, img_height, img_width)
+    n3 = measure.get_set_ssim(
+        np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
+    n4 = measure.get_set_ssim(
+        np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
     print("Noisy SSIM: {0}".format(n1))
     print("Denoised SSIM: {0}".format(n2))
     print("BM3D SSIM: {0}".format(n3))
     print("NL Means SSIM: {0}".format(n4))
     fig.suptitle(
         "Medical Image Denoiser\nNoise Proportion: {0} - Mean: {1} - Standard Deviation: {2}\nSSIM Results-> Noisy: {3} - "
-        "Denoised: {4} - BM3D: {5} - NL Means: {6}".format(noise_prop, noise_mean, noise_std, n1, n2, n3, n4),
+        "Denoised: {4} - BM3D: {5} - NL Means: {6}".format(
+            noise_prop, noise_mean, noise_std, n1, n2, n3, n4),
         fontsize=14,
         fontweight='bold')
     plt.savefig("results/output.png")
@@ -83,23 +99,30 @@ def save_samples(noise_vals, noisy_input_test, denoised_images, pure_test, img_h
         noisy_image = noisy_input_test[i]
         pure_image = pure_test[i]
         denoised_image = denoised_images[i]
-        bm3d_denoised = conv_denoiser.bm3d_denoise(noisy_input_test[i].reshape(img_height, img_width))
-        nl_denoised = conv_denoiser.nlm_denoise(noisy_input_test[i].reshape(img_height, img_width))
+        bm3d_denoised = conv_denoiser.bm3d_denoise(
+            noisy_input_test[i].reshape(img_height, img_width))
+        nl_denoised = conv_denoiser.nlm_denoise(
+            noisy_input_test[i].reshape(img_height, img_width))
         noisy_images.append(noisy_image)
         pure_images.append(pure_image)
         bm3d_images.append(bm3d_denoised)
         nl_images.append(nl_denoised)
         # Plot sample and reconstruciton
         axes[0].imshow(pure_image, pyplot.cm.gray)
-        axes[0].set_xlabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, pure_image)))
+        axes[0].set_xlabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, pure_image)))
         axes[1].imshow(noisy_image, pyplot.cm.gray)
-        axes[1].set_xlabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, noisy_image)))
+        axes[1].set_xlabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, noisy_image)))
         axes[2].imshow(denoised_image, pyplot.cm.gray)
-        axes[2].set_xlabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image, denoised_image)))
+        axes[2].set_xlabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image, denoised_image)))
         axes[3].imshow(bm3d_denoised, pyplot.cm.gray)
-        axes[3].set_xlabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image * 255.0, bm3d_denoised)))
+        axes[3].set_xlabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image * 255.0, bm3d_denoised)))
         axes[4].imshow(nl_denoised, pyplot.cm.gray)
-        axes[4].set_xlabel("SSIM: {:.5f}".format(measure.get_image_ssim(pure_image * 255.0, nl_denoised)))
+        axes[4].set_xlabel("SSIM: {:.5f}".format(
+            measure.get_image_ssim(pure_image * 255.0, nl_denoised)))
 
         fig.suptitle(
             "Medical Image Denoiser\nNoise Proportion: {0} - Mean: {1} - Standard deviation: {2}".format(noise_prop,
@@ -107,15 +130,22 @@ def save_samples(noise_vals, noisy_input_test, denoised_images, pure_test, img_h
                                                                                                          noise_std),
             fontsize=14, fontweight='bold')
 
-        plt.savefig("results/img({1},{2},{3}) {0}.png".format(i, noise_prop, noise_mean, noise_std))
+        plt.savefig(
+            "results/img({1},{2},{3}) {0}.png".format(i, noise_prop, noise_mean, noise_std))
 
-    n1 = measure.get_set_ssim(np.array(pure_images), np.array(noisy_images), img_height, img_width)
-    n2 = measure.get_set_ssim(np.array(pure_images), denoised_images, img_height, img_width)
-    n3 = measure.get_set_ssim(np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
-    n4 = measure.get_set_ssim(np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
+    n1 = measure.get_set_ssim(np.array(pure_images), np.array(
+        noisy_images), img_height, img_width)
+    n2 = measure.get_set_ssim(np.array(pure_images),
+                              denoised_images, img_height, img_width)
+    n3 = measure.get_set_ssim(
+        np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
+    n4 = measure.get_set_ssim(
+        np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
 
-    f = open("results/SSIM({0},{1},{2}) Results.txt".format(noise_prop, noise_mean, noise_std), "w")
-    f.write("Noise Proportion: {0} - Mean: {1} - Standard Deviation: {2}\n".format(noise_prop, noise_mean, noise_std))
+    f = open(
+        "results/SSIM({0},{1},{2}) Results.txt".format(noise_prop, noise_mean, noise_std), "w")
+    f.write("Noise Proportion: {0} - Mean: {1} - Standard Deviation: {2}\n".format(
+        noise_prop, noise_mean, noise_std))
     f.write("Noisy SSIM:" + str(n1) + "\n")
     f.write("Denoised SSIM:" + str(n2) + "\n")
     f.write("BM3D SSIM:" + str(n3) + "\n")
