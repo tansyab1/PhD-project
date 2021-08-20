@@ -1,6 +1,7 @@
 *.pt
 *.pth
 __pycache__
+data
 .DS_Store
 *.h5
 *.pgm
