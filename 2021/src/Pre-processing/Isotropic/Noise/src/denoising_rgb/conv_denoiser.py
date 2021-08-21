@@ -29,7 +29,7 @@ def bm3d_denoise(noisy_image):
     noisy_image = np.clip(noisy_image, 0, 255)
     noisy_image = noisy_image.astype(np.uint8)
 
-    imgYCB = cv2.cvtColor(noisy_image, cv2.COLOR_BGR2YCrCb)
+    imgYCB = cv2.cvtColor(noisy_image, cv2.COLOR_RGB2YCrCb)
     # imgYCB_gold = cv2.cvtColor(img_gold, cv2.COLOR_BGR2YCrCb)
 
     # cv2.imwrite("Nosiy_sigma"+str(sigma)+"_color.png", img)
@@ -51,7 +51,7 @@ def bm3d_denoise(noisy_image):
     # print("The PSNR compared with gold image for the First step is %f" % psnr)
 
     Final_img = BM3D_2nd_step_color(Basic_img, imgYCB)
-    Final_img = cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR)
+    Final_img = cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2RGB)
     # cv2.imwrite("Final_sigma"+str(sigma)+"_color.png",
     #             cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR))
 

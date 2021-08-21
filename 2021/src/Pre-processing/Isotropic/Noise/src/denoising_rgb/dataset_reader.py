@@ -43,7 +43,7 @@ def read_dental(folder="data/dental/"):
 def read_endo(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
     images = []
     for filename in glob.glob("%s/*/pathological-findings/*/*" % folder):
-        img = cv2.imread(filename, cv2.IMREAD_COLOR)
+        img = cv2.imread(filename)[:, :, ::-1]
 
         if img is not None:
             # img = cv2.resize(img, (64, 64))

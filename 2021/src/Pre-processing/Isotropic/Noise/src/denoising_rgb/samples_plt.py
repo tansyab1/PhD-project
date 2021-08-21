@@ -76,7 +76,7 @@ def plot_samples(noise_vals, noisy_input_test, denoised_images, pure_test, nu_sa
             noise_prop, noise_mean, noise_std, n1, n2, n3, n4),
         fontsize=14,
         fontweight='bold')
-    plt.savefig("results/output.png")
+    plt.savefig("results/output2.png")
     # plt.show()
 
 
