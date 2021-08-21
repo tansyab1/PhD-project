@@ -22,11 +22,18 @@ def load_datasets(img_width=64, img_height=64):
     #     dx_images[i] = cv2.resize(raw_dx[i], dsize=(img_width, img_height),
     #                               interpolation=cv2.INTER_CUBIC)
 
-    raw_dental = dataset_reader.read_dental()  # Read dental dataset
-    dental_images = np.zeros((raw_dental.shape[0], img_width, img_width, 3))
-    for i in range(raw_dental.shape[0]):
-        dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height),
+    # raw_dental = dataset_reader.read_dental()  # Read dental dataset
+    # dental_images = np.zeros((raw_dental.shape[0], img_width, img_width, 3))
+    # for i in range(raw_dental.shape[0]):
+    #     dental_images[i] = cv2.resize(raw_dental[i], dsize=(img_width, img_height),
+    #                                   interpolation=cv2.INTER_CUBIC)
+
+    raw_endo = dataset_reader.read_endo()  # Read dental dataset
+    dental_images = np.zeros((raw_endo.shape[0], img_width, img_width, 3))
+    for i in range(raw_endo.shape[0]):
+        dental_images[i] = cv2.resize(raw_endo[i], dsize=(img_width, img_height),
                                       interpolation=cv2.INTER_CUBIC)
+
     #
     # rawimages3 = dataset_reader.read_covid()  # Read covid dataset
     # images3 = np.zeros((329, img_width, img_width))
@@ -56,7 +63,7 @@ class Range(object):
 if __name__ == "__main__":
     gpus = tf.config.experimental.list_physical_devices('GPU')
     tf.config.experimental.set_memory_growth(gpus[0], True)
-    img_width, img_height = 64, 64
+    img_width, img_height = 128, 128
     batch_size = 10
     nu_epochs = 50
     validation_split = 0
@@ -109,7 +116,7 @@ if __name__ == "__main__":
         img_width = args.size
         img_height = args.size
 
-    args.load = "data/dental/"
+    args.load = "data/endo/"
 
     print("[LOG] Loading datasets...")
     if args.load:
@@ -144,7 +151,7 @@ if __name__ == "__main__":
     pure = input_train
     pure_test = input_test
     noisy_input, noisy_input_test = add_noise(pure, pure_test)  # Add Gaussian noise to train and test sets
-
+    print("[LOG] Gaussian noise added to train and test sets", noisy_input.shape, noisy_input_test.shape)
     print("[LOG] Initializing model...\nEPOCHS: {0}\nBatch size: {1}\nValidation split: {2}".format(nu_epochs,
                                                                                                     batch_size,
                                                                                                     validation_split))

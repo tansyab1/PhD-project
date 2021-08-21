@@ -1,6 +1,6 @@
 import os
 import re
-
+import glob
 import cv2
 import numpy
 
@@ -33,6 +33,17 @@ def read_dental(folder="data/dental/"):
     images = []
     for filename in os.listdir(folder):
         img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_COLOR)
+
+        if img is not None:
+            # img = cv2.resize(img, (64, 64))
+            images.append(img)
+    return numpy.array(images)
+
+
+def read_endo(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
+    images = []
+    for filename in glob.glob("%s/*/pathological-findings/*/*" % folder):
+        img = cv2.imread(filename, cv2.IMREAD_COLOR)
 
         if img is not None:
             # img = cv2.resize(img, (64, 64))
