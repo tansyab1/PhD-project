@@ -54,7 +54,7 @@ def plotHistogram(heights, widths):
     """
 
     # Create Fig and gridspec
-    fig = plt.figure(figsize=(16, 10), dpi=80)
+    fig = plt.figure(figsize=(16, 10), dpi=300)
     grid = plt.GridSpec(4, 4, hspace=0.5, wspace=0.2)
 
     # Define the axes
@@ -63,27 +63,33 @@ def plotHistogram(heights, widths):
     ax_bottom = fig.add_subplot(grid[-1, 0:-1], xticklabels=[], yticklabels=[])
 
     # Scatterplot on main ax
-    ax_main.scatter('width', 'height', data=(widths, heights), s=0.5,
+    ax_main.scatter(widths, heights, s=40, c='r', marker=".", label="Width x Height",
                     alpha=0.5, edgecolors='gray', linewidths=.5)
 
     # histogram on the right
     ax_bottom.hist(widths, 40, histtype='stepfilled',
-                   orientation='vertical', color='deeppink')
+                   orientation='vertical', color='blue')
     ax_bottom.invert_yaxis()
 
     # histogram in the bottom
     ax_right.hist(heights, 40, histtype='stepfilled',
-                  orientation='horizontal', color='deeppink')
+                  orientation='horizontal', color='green')
 
     # Decorations
     ax_main.set(title='Scatterplot with Histograms \n width vs height',
                 xlabel='width', ylabel='height')
-    ax_main.title.set_fontsize(20)
+    ax_main.title.set_fontsize(10)
     for item in ([ax_main.xaxis.label, ax_main.yaxis.label] + ax_main.get_xticklabels() + ax_main.get_yticklabels()):
-        item.set_fontsize(14)
+        item.set_fontsize(10)
 
-    xlabels = ax_main.get_xticks()
-    ax_main.set_xticklabels(xlabels)
+    # xstick = np.arange(0, 2000, 100)
+    # ystick = np.arange(0, 1200, 100)
+    # ax_main.set_xticks(xstick)
+    # ax_main.set_yticks(ystick)
+    # xlabels = ax_main.get_xticks().tolist()
+    # ylabels = ax_main.get_yticks().tolist()
+    # ax_main.set_xticklabels(xlabels, rotation=45)
+    # ax_main.set_yticklabels(ylabels)
     # plt.show()
 
     # # Draw Plot
@@ -93,8 +99,8 @@ def plotHistogram(heights, widths):
     # plt.ylim(0, 0.35)
     # plt.xticks(np.arange(0, 1.5, 0.05), rotation=45)
     # Decoration
-    plt.title('size analysis', fontsize=22)
-    plt.legend()
+    plt.title('size analysis', fontsize=12)
+    # plt.legend()
     filesave = "/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/Noise/src/denoising_rgb/results/sizehist.png"
     plt.savefig(filesave)
 

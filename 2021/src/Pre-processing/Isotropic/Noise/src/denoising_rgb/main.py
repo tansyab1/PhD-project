@@ -70,7 +70,7 @@ if __name__ == "__main__":
     train_split = 0.9
     verbosity = 1
     noise_prop = 0.1
-    noise_std = 5
+    noise_std = 0.35
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
