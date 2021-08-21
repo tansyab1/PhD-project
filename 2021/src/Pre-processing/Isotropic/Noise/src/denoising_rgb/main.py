@@ -29,7 +29,7 @@ def load_datasets(img_width=64, img_height=64):
     #                                   interpolation=cv2.INTER_CUBIC)
 
     raw_endo = dataset_reader.read_endo()  # Read dental dataset
-    dental_images = np.zeros((raw_endo.shape[0], img_width, img_width, 3))
+    dental_images = np.zeros((raw_endo.shape[0], img_height, img_width, 3))
     for i in range(raw_endo.shape[0]):
         dental_images[i] = cv2.resize(raw_endo[i], dsize=(img_width, img_height),
                                       interpolation=cv2.INTER_CUBIC)
@@ -67,10 +67,10 @@ if __name__ == "__main__":
     batch_size = 10
     nu_epochs = 50
     validation_split = 0
-    train_split = 0.9
+    train_split = 0.8
     verbosity = 1
     noise_prop = 0.1
-    noise_std = 0.35
+    noise_std = 0.4
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
