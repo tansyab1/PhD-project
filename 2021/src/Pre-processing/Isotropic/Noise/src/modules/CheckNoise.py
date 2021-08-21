@@ -2,7 +2,32 @@ import numpy as np
 import cv2
 import math
 import matplotlib.pyplot as plt
-import os
+# import os
+# import pandas as pd
+import glob
+import seaborn as sns
+from tqdm import tqdm
+import matplotlib as mpl
+# import warnings; warnings.filterwarnings(action='once')
+
+large = 22
+med = 16
+small = 12
+params = {'legend.fontsize': med,
+          'figure.figsize': (16, 10),
+          'axes.labelsize': med,
+          'axes.titlesize': med,
+          'xtick.labelsize': med,
+          'ytick.labelsize': med,
+          'figure.titlesize': large}
+plt.rcParams.update(params)
+plt.style.use('seaborn-whitegrid')
+sns.set_style("white")
+# %matplotlib inline
+
+# Version
+print(mpl.__version__)  # > 3.0.0
+print(sns.__version__)  # > 0.9.0
 
 
 def estimateStandardDeviation(image):
@@ -67,18 +92,13 @@ def check_noise(file_path, thresh=0.1):
         return True
 
 
-def readImagefromFolder(folder_path, file_type):
-    """read image from folder"""
-    file_list = []
+def readImagefromFolder(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
     sigma_list = []
-    for file in os.listdir(folder_path):
-        if file.endswith(file_type):
-            file_list.append(file)
-    for i in range(len(file_list)):
-        file_list[i] = folder_path + file_list[i]
-        img = cv2.imread(file_list[i], 0)
+    for filename in tqdm(glob.glob("%s/*/pathological-findings/*/*" % folder)):
+        img = cv2.imread(filename, 0)
         sigma_n = estimateStandardDeviation(img)
-        sigma_list[i] = sigma_n
+        sigma_list.append(sigma_n)
+    return sigma_list
 
 
 def plotHistogram(arr):
@@ -91,10 +111,22 @@ def plotHistogram(arr):
         Array to plot the histogram.
 
     """
-    plt.hist(arr.ravel(), 256, [0, 256])
-    plt.show()
+    # plt.hist(arr.ravel(), 256, [0, 256])
+    # plt.show()
+
+    # Draw Plot
+    plt.figure(figsize=(13, 10), dpi=80)
+    sns.histplot(arr, color="g",
+                 label="noise standard deviation")
+    # plt.ylim(0, 0.35)
+    plt.xticks(np.arange(0, 1.5, 0.05), rotation=45)
+    # Decoration
+    plt.title('Noise standard deviation analysis', fontsize=22)
+    plt.legend()
+    filesave = "/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/Noise/src/denoising_rgb/results/sigmahist.png"
+    plt.savefig(filesave)
 
 
 if __name__ == "__main__":
-    img_list = readImagefromFolder('./data/', '.jpg')
+    img_list = readImagefromFolder()
     plotHistogram(img_list)
