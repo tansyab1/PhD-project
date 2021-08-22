@@ -66,17 +66,32 @@ def plot_samples(noise_vals, noisy_input_test, denoised_images, pure_test, nu_sa
         np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
     n4 = measure.get_set_ssim(
         np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
+
+    n5 = measure.get_set_psnr(np.array(pure_images), np.array(
+        noisy_images), img_height, img_width)
+    n6 = measure.get_set_psnr(np.array(pure_images),
+                              denoised_images, img_height, img_width)
+    n7 = measure.get_set_psnr(
+        np.array(pure_images) * 255.0, np.array(bm3d_images), img_height, img_width)
+    n8 = measure.get_set_psnr(
+        np.array(pure_images) * 255.0, np.array(nl_images), img_height, img_width)
     print("Noisy SSIM: {0}".format(n1))
     print("Denoised SSIM: {0}".format(n2))
     print("BM3D SSIM: {0}".format(n3))
     print("NL Means SSIM: {0}".format(n4))
+
+    print("Noisy PSNR: {0}".format(n5))
+    print("Denoised PSNR: {0}".format(n6))
+    print("BM3D PSNR: {0}".format(n7))
+    print("NL Means PSNR: {0}".format(n8))
     fig.suptitle(
         "Medical Image Denoiser\nNoise Proportion: {0} - Mean: {1} - Standard Deviation: {2}\nSSIM Results-> Noisy: {3} - "
-        "Denoised: {4} - BM3D: {5} - NL Means: {6}".format(
-            noise_prop, noise_mean, noise_std, n1, n2, n3, n4),
+        "Denoised: {4} - BM3D: {5} - NL Means: {6} \nPSNR Results-> Noisy: {7} - Denoised: {8} - BM3D: {9} - NL Means: {10}".format(
+            noise_prop, noise_mean, noise_std, n1, n2, n3, n4, n5, n6, n7, n8),
         fontsize=14,
         fontweight='bold')
-    filesave = "results/output" + str(noise_prop) + "_" + str(noise_mean) + "_" + str(noise_std) + str(img_width) + "_" + str(img_height) + ".png"
+    filesave = "results/output" + str(noise_prop) + "_" + str(noise_mean) + "_" + str(
+        noise_std) + str(img_width) + "_" + str(img_height) + ".png"
     plt.savefig(filesave)
     # plt.show()
 

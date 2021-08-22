@@ -69,8 +69,8 @@ if __name__ == "__main__":
     validation_split = 0
     train_split = 0.8
     verbosity = 1
-    noise_prop = 0.1
-    noise_std = 0.4
+    noise_prop = 1
+    noise_std = 0.7
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
@@ -167,7 +167,11 @@ if __name__ == "__main__":
     # Generate denoised images
     samples = noisy_input_test[:]
     print("[LOG] Training and model evaluation completed\n[LOG] Denoising images test set...")
+    e1 = cv2.getTickCount()
     denoised_images = cnn_denoiser.predict(samples)
+    e2 = cv2.getTickCount()
+    time = (e2 - e1) / cv2.getTickFrequency()   # 计算函数执行时间
+    print("The Processing time of the AE is %f s" % (time/noisy_input_test.shape[0]))
 
     print("[LOG] Image denoising completed\n[LOG] Plotting denoised samples")
     samples_plt.plot_samples((noise_prop, noise_std, noise_mean), noisy_input_test, denoised_images, pure_test,

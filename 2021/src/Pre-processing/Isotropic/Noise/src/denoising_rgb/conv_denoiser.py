@@ -7,8 +7,12 @@ import cv2
 def nlm_denoise(noisy_image):
     noisy_image = noisy_image * 255.0
     denoised = []
+    e1 = cv2.getTickCount()
     sigma_est = np.mean(estimate_sigma(noisy_image, multichannel=True, average_sigmas=True))
     denoised_image = denoise_nl_means(noisy_image, h=1*sigma_est, multichannel=True)
+    e2 = cv2.getTickCount()
+    time = (e2 - e1) / cv2.getTickFrequency()   # 计算函数执行时间
+    print("The Processing time of the NL is %f s" % time)
     denoised.append(denoised_image)
     print("Image denoised using NL Means")
 
@@ -38,12 +42,12 @@ def bm3d_denoise(noisy_image):
     # print("The PSNR between noisy image and ref image is %f" % psnr)
 
     # # 记录程序运行时间
-    # e1 = cv2.getTickCount()  # cv2.getTickCount 函数返回从参考点到这个函数被执行的时钟数
+    e1 = cv2.getTickCount()  # cv2.getTickCount 函数返回从参考点到这个函数被执行的时钟数
     Basic_img = BM3D_1st_step_color(imgYCB)
 
-    # e2 = cv2.getTickCount()
-    # time = (e2 - e1) / cv2.getTickFrequency()   # 计算函数执行时间
-    # print("The Processing time of the First step is %f s" % time)
+    e2 = cv2.getTickCount()
+    time = (e2 - e1) / cv2.getTickFrequency()   # 计算函数执行时间
+    print("The Processing time of the First step is %f s" % time)
 
     # cv2.imwrite("Basic_sigma"+str(sigma)+"_color.png",
     #             cv2.cvtColor(Basic_img, cv2.COLOR_YCrCb2BGR))
@@ -55,9 +59,9 @@ def bm3d_denoise(noisy_image):
     # cv2.imwrite("Final_sigma"+str(sigma)+"_color.png",
     #             cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR))
 
-    # e3 = cv2.getTickCount()
-    # time = (e3 - e2) / cv2.getTickFrequency()
-    # print("The Processing time of the Second step is %f s" % time)
+    e3 = cv2.getTickCount()
+    time = (e3 - e2) / cv2.getTickFrequency()
+    print("The Processing time of the Second step is %f s" % time)
     # psnr = PSNR2(img_gold, cv2.cvtColor(Final_img, cv2.COLOR_YCrCb2BGR))
     # print("The PSNR compared with gold image for the Second step is %f" % psnr)
 
