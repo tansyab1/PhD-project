@@ -93,15 +93,21 @@ def check_noise(file_path, thresh=0.1):
 
 
 def readImagefromFolder(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
-    sigma_list = []
+    sigma_list1 = []
+    sigma_list2 = []
+    for filename in tqdm(glob.glob("%s/*/*/*/*" % folder)):
+        img = cv2.imread(filename, 0)
+        sigma_n = estimateStandardDeviation(img)
+        sigma_list1.append(sigma_n)
+
     for filename in tqdm(glob.glob("%s/*/pathological-findings/*/*" % folder)):
         img = cv2.imread(filename, 0)
         sigma_n = estimateStandardDeviation(img)
-        sigma_list.append(sigma_n)
-    return sigma_list
+        sigma_list2.append(sigma_n)
+    return sigma_list1, sigma_list2
 
 
-def plotHistogram(arr):
+def plotHistogram(arr, arr2):
     """
     Plot the histogram of the array.
 
@@ -116,8 +122,8 @@ def plotHistogram(arr):
 
     # Draw Plot
     plt.figure(figsize=(13, 10), dpi=80)
-    sns.histplot(arr, color="g",
-                 label="noise standard deviation")
+    sns.histplot(arr, color="g", label="labeled images")
+    sns.histplot(arr2, label="pathological findings", color="orange")
     # plt.ylim(0, 0.35)
     plt.xticks(np.arange(0, 1.5, 0.05), rotation=45)
     # Decoration
@@ -128,5 +134,5 @@ def plotHistogram(arr):
 
 
 if __name__ == "__main__":
-    img_list = readImagefromFolder()
-    plotHistogram(img_list)
+    sigma_list1, sigma_list2 = readImagefromFolder()
+    plotHistogram(sigma_list1, sigma_list2)

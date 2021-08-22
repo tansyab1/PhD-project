@@ -33,16 +33,26 @@ print(sns.__version__)  # > 0.9.0
 def readImagefromFolder(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
     heights = []
     widths = []
+
+    widths_label = []
+    heights_label = []
     for filename in tqdm(glob.glob("%s/*/pathological-findings/*/*" % folder)):
         img = cv2.imread(filename, 0)
         height = img.shape[0]
         width = img.shape[1]
         heights.append(height)
         widths.append(width)
-    return heights, widths
+
+    for filename in tqdm(glob.glob("%s/*/*/*/*" % folder)):
+        img = cv2.imread(filename, 0)
+        height = img.shape[0]
+        width = img.shape[1]
+        heights_label.append(height)
+        widths_label.append(width)
+    return heights, widths, heights_label, widths_label
 
 
-def plotHistogram(heights, widths):
+def plotHistogram(heights, widths, heights_label, widths_label):
     """
     Plot the histogram of the array.
 
@@ -62,17 +72,19 @@ def plotHistogram(heights, widths):
     ax_right = fig.add_subplot(grid[:-1, -1], xticklabels=[], yticklabels=[])
     ax_bottom = fig.add_subplot(grid[-1, 0:-1], xticklabels=[], yticklabels=[])
 
+    ax_main.scatter(widths_label, heights_label, s=40, c='red', marker=".", label="labeled images",
+                    alpha=0.5, edgecolors='gray', linewidths=.5)
     # Scatterplot on main ax
-    ax_main.scatter(widths, heights, s=40, c='r', marker=".", label="Width x Height",
+    ax_main.scatter(widths, heights, s=40, c='blue', marker=".", label="pathological findings",
                     alpha=0.5, edgecolors='gray', linewidths=.5)
 
     # histogram on the right
-    ax_bottom.hist(widths, 40, histtype='stepfilled',
+    ax_bottom.hist(widths_label, 40, histtype='stepfilled',
                    orientation='vertical', color='blue')
     ax_bottom.invert_yaxis()
 
     # histogram in the bottom
-    ax_right.hist(heights, 40, histtype='stepfilled',
+    ax_right.hist(heights_label, 40, histtype='stepfilled',
                   orientation='horizontal', color='green')
 
     # Decorations
@@ -100,11 +112,12 @@ def plotHistogram(heights, widths):
     # plt.xticks(np.arange(0, 1.5, 0.05), rotation=45)
     # Decoration
     plt.title('size analysis', fontsize=12)
-    # plt.legend()
+    ax_main.legend()
     filesave = "/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/Noise/src/denoising_rgb/results/sizehist.png"
     plt.savefig(filesave)
 
 
 if __name__ == "__main__":
-    height, width = readImagefromFolder()
-    plotHistogram(heights=height, widths=width)
+    height, width, height_label, width_label = readImagefromFolder()
+    plotHistogram(heights=height, widths=width,
+                  heights_label=height_label, widths_label=width_label)
