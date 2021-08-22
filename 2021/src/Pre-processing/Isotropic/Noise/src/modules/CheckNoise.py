@@ -125,7 +125,7 @@ def plotHistogram(arr, arr2):
     sns.histplot(arr, color="g", label="labeled images")
     sns.histplot(arr2, label="pathological findings", color="orange")
     # plt.ylim(0, 0.35)
-    plt.xticks(np.arange(0, 1.5, 0.05), rotation=45)
+    plt.xticks(np.arange(0, 2, 0.05), rotation=45)
     # Decoration
     plt.title('Noise standard deviation analysis', fontsize=22)
     plt.legend()
