@@ -65,12 +65,12 @@ if __name__ == "__main__":
     tf.config.experimental.set_memory_growth(gpus[0], True)
     img_width, img_height = 256, 256
     batch_size = 10
-    nu_epochs = 50
+    nu_epochs = 1
     validation_split = 0
     train_split = 0.8
     verbosity = 1
     noise_prop = 1
-    noise_std = 0.7
+    noise_std = 0.9
     noise_mean = 0
     number_of_samples = 4
     shuffle_test_set = False
