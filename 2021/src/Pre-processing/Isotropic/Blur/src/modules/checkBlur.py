@@ -2,7 +2,7 @@ import cv2
 # import os
 import seaborn as sns
 from tqdm import tqdm
-import numpy as np
+# import numpy as np
 import glob
 import matplotlib.pyplot as plt
 
