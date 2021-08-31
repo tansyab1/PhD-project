@@ -1,5 +1,9 @@
 import cv2
-import os
+# import os
+import seaborn as sns
+import tqdm as tqdm
+import numpy as np
+import glob
 import matplotlib.pyplot as plt
 
 
@@ -22,29 +26,45 @@ def detectBlur(img_path, threhold):
         return False
 
 
-def readImagefromFolderpath(folder_path):
-    """read all images from folder
-    Args:
-        folder_path (string): folder
-    Returns:
-        list: list of image path
-    """
-    img_list = []
-    for file in os.listdir(folder_path):
-        if file.endswith(".jpg"):
-            img_list.append(file)
-    return img_list
+def readImagefromFolder(folder="/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/data/labeled-images/"):
+    sigma_list1 = []
+    sigma_list2 = []
+    for filename in tqdm(glob.glob("%s/*/*/*/*" % folder)):
+        img = cv2.imread(filename, 0)
+        sigma_n = getVarianofLaplace(img)
+        sigma_list1.append(sigma_n)
+
+    for filename in tqdm(glob.glob("%s/*/pathological-findings/*/*" % folder)):
+        img = cv2.imread(filename, 0)
+        sigma_n = getVarianofLaplace(img)
+        sigma_list2.append(sigma_n)
+    return sigma_list1, sigma_list2
 
 
-def plotHistoram(arr):
-    """plot histogram of the array
-    Args:
-        arr (list): array
-    Returns:
-        None
+def plotHistogram(arr, arr2):
     """
-    plt.hist(arr, bins=256)
-    plt.show()
+    Plot the histogram of the array.
+
+    Parameters
+    ----------
+    arr : ndarray
+        Array to plot the histogram.
+
+    """
+    # plt.hist(arr.ravel(), 256, [0, 256])
+    # plt.show()
+
+    # Draw Plot
+    plt.figure(figsize=(13, 10), dpi=80)
+    sns.histplot(arr, color="g", label="labeled images")
+    sns.histplot(arr2, label="pathological findings", color="orange")
+    # plt.ylim(0, 0.35)
+    plt.xticks(np.arange(0, 2, 0.05), rotation=45)
+    # Decoration
+    plt.title('Variance of Laplace analysis', fontsize=22)
+    plt.legend()
+    filesave = "/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/Blur/src/results/varLaphist.png"
+    plt.savefig(filesave)
 
 
 def getVarianofLaplace(img):
@@ -58,10 +78,5 @@ def getVarianofLaplace(img):
 
 
 if __name__ == '__main__':
-    print(detectBlur("../../../../Downloads/blur.jpg", 0.01))
-    var_list = []
-    img_list = readImagefromFolderpath("../../../../Downloads/blur")
-    for img in img_list:
-        var_list.append(getVarianofLaplace(
-            cv2.imread("../../../../Downloads/blur/" + img)))
-    plotHistoram(var_list)
+    sigma_list1, sigma_list2 = readImagefromFolder()
+    plotHistogram(sigma_list1, sigma_list2)
