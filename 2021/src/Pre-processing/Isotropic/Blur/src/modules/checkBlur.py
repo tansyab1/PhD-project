@@ -1,7 +1,7 @@
 import cv2
 # import os
 import seaborn as sns
-import tqdm as tqdm
+from tqdm import tqdm
 import numpy as np
 import glob
 import matplotlib.pyplot as plt
@@ -59,7 +59,7 @@ def plotHistogram(arr, arr2):
     sns.histplot(arr, color="g", label="labeled images")
     sns.histplot(arr2, label="pathological findings", color="orange")
     # plt.ylim(0, 0.35)
-    plt.xticks(np.arange(0, 2, 0.05), rotation=45)
+    # plt.xticks(np.arange(0, 2, 0.05), rotation=45)
     # Decoration
     plt.title('Variance of Laplace analysis', fontsize=22)
     plt.legend()
