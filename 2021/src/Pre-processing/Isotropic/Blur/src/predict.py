@@ -68,17 +68,21 @@ class Predictor:
             pred = self.model(*inputs)
         return self._postprocess(pred)[:h, :w, :]
 
+
 def process_video(pairs, predictor, output_dir):
     for video_filepath, mask in tqdm(pairs):
         video_filename = os.path.basename(video_filepath)
-        output_filepath = os.path.join(output_dir, os.path.splitext(video_filename)[0]+'_deblur.mp4')
+        output_filepath = os.path.join(
+            output_dir, os.path.splitext(video_filename)[0]+'_deblur.mp4')
         video_in = cv2.VideoCapture(video_filepath)
         fps = video_in.get(cv2.CAP_PROP_FPS)
         width = int(video_in.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(video_in.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frame_num = int(video_in.get(cv2.CAP_PROP_FRAME_COUNT))
-        video_out = cv2.VideoWriter(output_filepath, cv2.VideoWriter_fourcc(*'MP4V'), fps, (width, height))
-        tqdm.write(f'process {video_filepath} to {output_filepath}, {fps}fps, resolution: {width}x{height}')
+        video_out = cv2.VideoWriter(
+            output_filepath, cv2.VideoWriter_fourcc(*'MP4V'), fps, (width, height))
+        tqdm.write(
+            f'process {video_filepath} to {output_filepath}, {fps}fps, resolution: {width}x{height}')
         for frame_num in tqdm(range(total_frame_num), desc=video_filename):
             res, img = video_in.read()
             if not res:
@@ -87,6 +91,7 @@ def process_video(pairs, predictor, output_dir):
             pred = predictor(img, mask)
             pred = cv2.cvtColor(pred, cv2.COLOR_RGB2BGR)
             video_out.write(pred)
+
 
 def main(img_pattern: str,
          mask_pattern: Optional[str] = None,
@@ -98,7 +103,8 @@ def main(img_pattern: str,
         return sorted(glob(pattern))
 
     imgs = sorted_glob(img_pattern)
-    masks = sorted_glob(mask_pattern) if mask_pattern is not None else [None for _ in imgs]
+    masks = sorted_glob(mask_pattern) if mask_pattern is not None else [
+        None for _ in imgs]
     pairs = zip(imgs, masks)
     names = sorted([os.path.basename(x) for x in glob(img_pattern)])
     predictor = Predictor(weights_path=weights_path)
