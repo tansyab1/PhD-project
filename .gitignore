@@ -6,7 +6,7 @@ __pycache__
 data
 *.pgm
 .ipynb_checkpoints
-checkpoint
+checkpoints
 *.data*
 *.index*
 *.meta*
