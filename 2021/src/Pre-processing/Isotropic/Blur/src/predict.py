@@ -95,7 +95,7 @@ def process_video(pairs, predictor, output_dir):
 
 def main(img_pattern: str,
          mask_pattern: Optional[str] = None,
-         weights_path='best_fpn.h5',
+         weights_path='/home/nguyentansy/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/Blur/src/checkpoints/fpn_inception.h5',
          out_dir='submit/',
          side_by_side: bool = False,
          video: bool = False):
