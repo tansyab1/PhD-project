@@ -11,4 +11,5 @@ checkpoint
 *.data*
 *.index*
 *ckpt*
+*tfevents*
 *.meta*
