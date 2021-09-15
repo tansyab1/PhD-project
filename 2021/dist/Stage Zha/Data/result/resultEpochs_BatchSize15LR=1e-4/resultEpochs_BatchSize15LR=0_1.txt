@@ -1,0 +1,59 @@
+input pipeline ready
+ Epochs 0:print step 36, training accuracy average 0.803704,loss average: 1.634143,total time:13.751632
+Validation accuracy: 0.985185,loss: 0.198829
+ Epochs 1:print step 72, training accuracy average 0.964815,loss average: 0.093127,total time:15.149792
+Validation accuracy: 0.992593,loss: 0.130852
+ Epochs 2:print step 108, training accuracy average 0.968519,loss average: 0.094073,total time:14.899131
+Validation accuracy: 0.992593,loss: 0.0900824
+ 
+ Epochs 3:print step 144, training accuracy average 0.940741,loss average: 0.261179,total time:14.956226
+Validation accuracy: 0.666667,loss: 1.48139
+ 
+ Epochs 4:print step 180, training accuracy average 0.962963,loss average: 0.118900,total time:14.898265
+Validation accuracy: 0.992593,loss: 0.252627
+ 
+ Epochs 5:print step 216, training accuracy average 0.994444,loss average: 0.027713,total time:14.816253
+Validation accuracy: 0.992593,loss: 0.145387
+ 
+ Epochs 6:print step 252, training accuracy average 0.996296,loss average: 0.009539,total time:14.995514
+Validation accuracy: 0.992593,loss: 0.146393
+ 
+ Epochs 7:print step 288, training accuracy average 0.998148,loss average: 0.009049,total time:14.961537
+Validation accuracy: 1.000000,loss: 0.00462428
+ Epochs 8:print step 324, training accuracy average 1,loss average: 0.001722,total time:14.983294
+Validation accuracy: 0.992593,loss: 0.106613
+ 
+ Epochs 9:print step 360, training accuracy average 1,loss average: 0.000620,total time:15.014618
+Validation accuracy: 0.992593,loss: 0.110984
+ 
+ Epochs 10:print step 396, training accuracy average 1,loss average: 0.000584,total time:14.908878
+Validation accuracy: 0.992593,loss: 0.115286
+ 
+ Epochs 11:print step 432, training accuracy average 1,loss average: 0.000509,total time:14.937573
+Validation accuracy: 1.000000,loss: 0.00065479
+ 
+ Epochs 12:print step 468, training accuracy average 1,loss average: 0.000399,total time:14.882594
+Validation accuracy: 0.985185,loss: 0.224737
+ 
+ Epochs 13:print step 504, training accuracy average 1,loss average: 0.000486,total time:14.927092
+Validation accuracy: 0.992593,loss: 0.116708
+ 
+ Epochs 14:print step 540, training accuracy average 1,loss average: 0.000399,total time:14.996489
+Validation accuracy: 0.992593,loss: 0.116029
+ 
+ Epochs 15:print step 576, training accuracy average 1,loss average: 0.000254,total time:15.464953
+Validation accuracy: 1.000000,loss: 0.000397085
+ 
+ Epochs 16:print step 612, training accuracy average 1,loss average: 0.000470,total time:15.031858
+Validation accuracy: 0.992593,loss: 0.112814
+ 
+ Epochs 17:print step 648, training accuracy average 1,loss average: 0.000381,total time:15.204127
+Validation accuracy: 0.992593,loss: 0.112903
+ 
+ Epochs 18:print step 684, training accuracy average 1,loss average: 0.000306,total time:15.508452
+Validation accuracy: 0.985185,loss: 0.229072
+ 
+Some time no improvement for validation data
+Done training for 19 epochs
+test accuracy 0.993333
+Saving
