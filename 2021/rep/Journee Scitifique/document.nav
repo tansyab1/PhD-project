@@ -1,0 +1,97 @@
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {0}{0}{1}{1/1}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {1}{1}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {0}{0}{2}{2/2}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {2}{2}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {1}{2}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {1}{2}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {1}{Objectives}{3}{Objectives}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {1}{0}{1}{3/3}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {3}{3}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {3}{3}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionentry {0}{1}{1}{4}{Context}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {1}{1}{1}{4/6}{Context}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {4}{6}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {4}{6}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionentry {0}{1}{2}{7}{Wireless Capsule Endoscopy}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {1}{2}{1}{7/8}{Wireless Capsule Endoscopy}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {7}{8}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsubsectionentry {0}{1}{2}{1}{9}{Challenges}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {1}{2}{2}{9/9}{Wireless Capsule Endoscopy}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {9}{9}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsubsectionentry {0}{1}{2}{2}{10}{Solutions}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {1}{2}{3}{10/13}{Wireless Capsule Endoscopy}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {10}{13}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {3}{13}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {7}{13}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {2}{Existing datasets}{14}{Existing datasets}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {14}{13}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionentry {0}{2}{1}{14}{Existing GI datasets}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {2}{1}{1}{14/16}{Existing GI datasets}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {14}{16}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {14}{16}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionentry {0}{2}{2}{17}{HyperKvasir dataset}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {2}{2}{1}{17/18}{HyperKvasir dataset}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {17}{18}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {14}{18}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {17}{18}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {3}{Our work}{19}{Our work}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {3}{0}{1}{19/23}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {19}{23}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {19}{23}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {19}{23}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {4}{References}{24}{References}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {4}{0}{0}{24/24}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {24}{24}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {4}{0}{1}{25/25}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {25}{25}}
+\headcommand {\beamer@partpages {1}{25}}
+\headcommand {\beamer@subsectionpages {19}{25}}
+\headcommand {\beamer@sectionpages {19}{25}}
+\headcommand {\beamer@documentpages {25}}
+\headcommand {\gdef \inserttotalframenumber {12}}
