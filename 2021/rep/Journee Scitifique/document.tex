@@ -433,44 +433,7 @@
                   \end{table}
               }}
                 
-                \only<6-9>{\item Blur
-                \begin{tikzpicture}[remember picture]
-
-                    \node (in)  at (-3,0){
-                        \includegraphics[width=0.15\columnwidth]{libs/input.png} };
-                    \node at (-3.0, -3.0) {\small\textit{a) Original}};
-                    \pause
-                    \node (noisy1)  at (-1,0){
-                        \includegraphics[width=0.15\columnwidth]{libs/noisy.png} };
-                    \node at (-1.0, -3.0) {\small\textit{b) Noisy}};
-                    \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-                    \pause
-                    \node (denoised1)  at (1,0){
-                        \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
-                    \node at (1.0, -3.0) {\small\textit{c) Denoised}};
-                    \path[draw=magenta,thick,->]<1-> (noisy1) to  (denoised1);
-                    \pause
-                    \node (tabnoise)  at (4.5,0){
-                        \begin{adjustbox}{width=0.45\textwidth}
-                            \begin{tabular}{|c|l|c|l|c|l|c|l|c|l|c|l|}
-                                \hline
-                                \multicolumn{4}{|c|}{}                            & \multicolumn{2}{c|}{\textbf{Noisy-image}} & \multicolumn{2}{c|}{\textbf{C-BM3D}} & \multicolumn{2}{c|}{\textbf{NM-Mean}} & \multicolumn{2}{c|}{\textbf{CAE}}                                        \\ \hline
-                                \multicolumn{2}{|c|}{\multirow{7}{*}{$\sigma_n$}} & \multicolumn{2}{c|}{0.25}                 & \multicolumn{2}{c|}{0.8095}          & \multicolumn{2}{c|}{0.7364}           & \multicolumn{2}{c|}{0.9068}       & \multicolumn{2}{c|}{\textbf{0.9158}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.3}                  & \multicolumn{2}{c|}{0.7561}          & \multicolumn{2}{c|}{0.7275}           & \multicolumn{2}{c|}{0.8884}       & \multicolumn{2}{c|}{\textbf{0.9097}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.35}                 & \multicolumn{2}{c|}{0.7084}          & \multicolumn{2}{c|}{0.7106}           & \multicolumn{2}{c|}{0.8752}       & \multicolumn{2}{c|}{\textbf{0.9033}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.4}                  & \multicolumn{2}{c|}{0.6615}          & \multicolumn{2}{c|}{0.7039}           & \multicolumn{2}{c|}{0.8614}       & \multicolumn{2}{c|}{\textbf{0.8991}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.6}                  & \multicolumn{2}{c|}{0.5102}          & \multicolumn{2}{c|}{0.6517}           & \multicolumn{2}{c|}{0.8222}       & \multicolumn{2}{c|}{\textbf{0.8766}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.65}                 & \multicolumn{2}{c|}{0.4810}          & \multicolumn{2}{c|}{0.6428}           & \multicolumn{2}{c|}{0.8132}       & \multicolumn{2}{c|}{\textbf{0.8681}} \\ \cline{3-12}
-                                \multicolumn{2}{|c|}{}                            & \multicolumn{2}{c|}{0.7}                  & \multicolumn{2}{c|}{0.4508}          & \multicolumn{2}{c|}{0.6389}           & \multicolumn{2}{c|}{0.8051}       & \multicolumn{2}{c|}{\textbf{0.8661}} \\ \hline
-                            \end{tabular}
-                        \end{adjustbox}};
-                    \node[text width=5cm] at (4.5, -2.0) {\small\textit{d) Comparison using mean SSIM for different level where $n \sim N(0, \sigma^2_n)$}};
-                \end{tikzpicture}}
-                
-                }
-                
-                
-              
+                          
     \end{itemize}
 \end{frame}
 %% ---------------------------------------------------------------------------
