@@ -403,16 +403,16 @@
                       \caption{Comparison using mean SSIM for different level where $n \sim N(0, \sigma^2_n)$}
                       \label{ssimcom}
                       \begin{adjustbox}{width=0.8\textwidth}
-                      \begin{tabular}{|c|c|c|c|c|c|c|c|}
-                          \hline
-                                               & \multicolumn{7}{c|}{\textbf{$\sigma_n$}}                                                                                                             \\ \hline
-                                               & 0.25                                     & 0.3             & 0.35            & 0.4             & 0.6             & 0.65            & 0.7             \\ \hline
-                          \textbf{Noisy-image} & 0.8095                                   & 0.7561          & 0.7084          & 0.6615          & 0.5102          & 0.4810          & 0.4508          \\ \hline
-                          \textbf{C-BM3D}      & 0.7364                                   & 0.7275          & 0.7106          & 0.7039          & 0.6517          & 0.6428          & 0.6389          \\ \hline
-                          \textbf{NM-Mean}     & 0.9068                                   & 0.8884          & 0.8752          & 0.8614          & 0.8222          & 0.8132          & 0.8051          \\ \hline
-                          \textbf{CAE}         & \textbf{0.9158}                          & \textbf{0.9097} & \textbf{0.9033} & \textbf{0.8991} & \textbf{0.8766} & \textbf{0.8681} & \textbf{0.8661} \\ \hline
-                      \end{tabular}
-                    \end{adjustbox}
+                          \begin{tabular}{|c|c|c|c|c|c|c|c|}
+                              \hline
+                                                   & \multicolumn{7}{c|}{\textbf{$\sigma_n$}}                                                                                                             \\ \hline
+                                                   & 0.25                                     & 0.3             & 0.35            & 0.4             & 0.6             & 0.65            & 0.7             \\ \hline
+                              \textbf{Noisy-image} & 0.8095                                   & 0.7561          & 0.7084          & 0.6615          & 0.5102          & 0.4810          & 0.4508          \\ \hline
+                              \textbf{C-BM3D}      & 0.7364                                   & 0.7275          & 0.7106          & 0.7039          & 0.6517          & 0.6428          & 0.6389          \\ \hline
+                              \textbf{NM-Mean}     & 0.9068                                   & 0.8884          & 0.8752          & 0.8614          & 0.8222          & 0.8132          & 0.8051          \\ \hline
+                              \textbf{CAE}         & \textbf{0.9158}                          & \textbf{0.9097} & \textbf{0.9033} & \textbf{0.8991} & \textbf{0.8766} & \textbf{0.8681} & \textbf{0.8661} \\ \hline
+                          \end{tabular}
+                      \end{adjustbox}
                   \end{table}
 
                   \begin{table}[h]
@@ -420,20 +420,123 @@
                       \caption{Comparison using mean PSNR for different level where $n \sim N(0, \sigma^2_n)$}
                       \label{psnrcom}
                       \begin{adjustbox}{width=0.8\textwidth}
-                      \begin{tabular}{|c|c|c|c|c|c|c|c|}
-                          \hline
-                                               & \multicolumn{7}{c|}{\textbf{$\sigma_n$}}                                                                                                       \\ \hline
-                                               & 0.25                                     & 0.3            & 0.35           & 0.4            & 0.6            & 0.65           & 0.7            \\ \hline
-                          \textbf{Noisy-image} & 32.89                                    & 31.44          & 30.34          & 29.32          & 26.37          & 25.85          & 25.22          \\ \hline
-                          \textbf{C-BM3D}      & 27.51                                    & 27.52          & 27.47          & 27.47          & 27.28          & 27.21          & 27.16          \\ \hline
-                          \textbf{NM-Mean}     & \textbf{35.81}                           & \textbf{34.74} & \textbf{34.12} & \textbf{33.48} & \textbf{31.85} & \textbf{31.51} & 31.14          \\ \hline
-                          \textbf{CAE}         & 32.28                                    & 32.56          & 32.70          & 32.38          & 31.42          & 31.18          & \textbf{31.43} \\ \hline
-                      \end{tabular}
-                    \end{adjustbox}
+                          \begin{tabular}{|c|c|c|c|c|c|c|c|}
+                              \hline
+                                                   & \multicolumn{7}{c|}{\textbf{$\sigma_n$}}                                                                                                       \\ \hline
+                                                   & 0.25                                     & 0.3            & 0.35           & 0.4            & 0.6            & 0.65           & 0.7            \\ \hline
+                              \textbf{Noisy-image} & 32.89                                    & 31.44          & 30.34          & 29.32          & 26.37          & 25.85          & 25.22          \\ \hline
+                              \textbf{C-BM3D}      & 27.51                                    & 27.52          & 27.47          & 27.47          & 27.28          & 27.21          & 27.16          \\ \hline
+                              \textbf{NM-Mean}     & \textbf{35.81}                           & \textbf{34.74} & \textbf{34.12} & \textbf{33.48} & \textbf{31.85} & \textbf{31.51} & 31.14          \\ \hline
+                              \textbf{CAE}         & 32.28                                    & 32.56          & 32.70          & 32.38          & 31.42          & 31.18          & \textbf{31.43} \\ \hline
+                          \end{tabular}
+                      \end{adjustbox}
                   \end{table}
               }}
-                
-                          
+
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-4>{\item Blur\\
+              \only<1-4>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
+                      \node at (-3.0, -3.0) {\small\textit{a) Denoised}};
+                      \pause
+                      \node (noisy1)  at (-1,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
+                      \node at (-1.0, -3.0) {\small\textit{b) Deblurred}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+                      \pause
+                      \only<3>{\node (equablur)  at (3.5,0){
+                              $\begin{aligned}
+                                      index = var(\mathcal{L}(f(x,y)))
+                                  \end{aligned}$};
+                          \node[text width=5.5cm] at (3.5, -2.0) {\small\textit{Apply the \example{variance of the Laplacian}\cite{Pertuz2013AnalysisOF} method to your own photos to detect the amount of blurring.}};
+                      }
+                      \pause
+                      \only<4>{
+                          \node (tabnoise)  at (3.5,0){
+                              \begin{adjustbox}{width=0.5\textwidth}
+                                  \begin{tabular}{|l|c|l|c|l|}
+                                      \hline
+                                                                   & \multicolumn{2}{c|}{\textbf{Denoised-image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
+                                      \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{378}                     & \multicolumn{2}{c|}{501}                     \\ \hline
+                                      \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{321}                     & \multicolumn{2}{c|}{428}                     \\ \hline
+                                      \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{224}                     & \multicolumn{2}{c|}{367}                     \\ \hline
+                                  \end{tabular}
+                              \end{adjustbox}};
+                          \node[text width=5cm] at (3.5, -2.0) {\small\textit{The variance Laplacian Index before and after deblurring.}};
+
+                      }
+                  \end{tikzpicture}}
+              }
+
+
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-4>{\item Uneven Illumination\\
+              \only<1-4>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
+                      \node at (-3.0, -3.0) {\small\textit{a) Deblurred}};
+                      \pause
+                      \node (noisy1)  at (0,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/afterillres.png} };
+                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Uneven Illumination Correction}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+                      \pause
+                      \node (ref1)  at (3,2){
+                          \includegraphics[width=0.25\columnwidth]{libs/beforeill.png} };
+                      \path[draw=magenta,thick,->]<1-> (in) to [bend left] (ref1);
+                      \pause
+                      \node (ref2)  at (3,-2){
+                          \includegraphics[width=0.25\columnwidth]{libs/afterill.png} };
+                      \path[draw=magenta,thick,->]<1-> (noisy1) to [bend left] (ref2);
+                  \end{tikzpicture}}
+              }
+
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-3>{\item Specular Reflection\\
+              \only<1-3>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/afterillres.png} };
+                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Uneven Illumination Correction}};
+                      \pause
+                      \node (ref1)  at (3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/mask.png} };
+                      \path[draw=magenta,thick,->]<1-> (ref1) to [bend left] (in);
+                      \pause
+                      \node (noisy1)  at (0,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/aftersr.png} };
+                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Specular Reflection Inpainting}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+                      
+                      
+                  \end{tikzpicture}}
+              }
+
+
     \end{itemize}
 \end{frame}
 %% ---------------------------------------------------------------------------
