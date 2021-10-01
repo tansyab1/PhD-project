@@ -336,7 +336,7 @@
 
 \subsection{Results}
 \begin{frame}{Results}
-    In this stage, we have to clean the existing distortion in the HyperKvasir dataset.\\ \pause
+    \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ \pause
     \begin{tikzpicture}[remember picture]
         \node[draw] (input) at (-1,-4) {Original Image};
         \node[draw,fill=yellow] (noise) at (1.5,-4) {Denoising}; %% use here too
@@ -471,7 +471,7 @@
                                       \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{224}                     & \multicolumn{2}{c|}{367}                     \\ \hline
                                   \end{tabular}
                               \end{adjustbox}};
-                          \node[text width=5cm] at (3.5, -2.0) {\small\textit{The variance Laplacian Index before and after deblurring.}};
+                          \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The variance Laplacian Index before and after deblurring.}};
 
                       }
                   \end{tikzpicture}}
@@ -531,14 +531,141 @@
                           \includegraphics[width=0.15\columnwidth]{libs/aftersr.png} };
                       \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Specular Reflection Inpainting}};
                       \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-                      
-                      
+
+
                   \end{tikzpicture}}
               }
 
 
     \end{itemize}
 \end{frame}
+
+\begin{frame}{Results}
+
+    \begin{tikzpicture}[remember picture]
+
+        \node(text) at (0,2) {\example{Stage 2:} We add the artificial distortion to the image};
+
+        \node[draw,fill=black, text = white] (anti) at (-2,0) {Antidistorted Image};
+        \pause
+        \node[draw,fill=gray] (add) at (3,0) {Artificial Distortion Model};
+        \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
+        \pause
+        \node[draw,fill=yellow] (res) at (3,-2) {Results};
+        \path[draw=magenta,thick,->]<1-> (add) to  (res);
+
+
+
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-3>{\item Noise\\
+              \only<1-3>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
+                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
+                      \pause
+                      \node (ref1)  at (0,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.0005.png} };
+                      \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
+                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.0005)^2)$ }};
+                      \pause
+                      \node (noisy1)  at (3,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.005.png} };
+                      \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.005)^2)$ }};
+                      \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
+
+
+                  \end{tikzpicture}}
+              }
+
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-3>{\item Blur\\
+              \only<1-3>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
+                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
+                      \pause
+                      \node (ref1)  at (0,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_0.75.png} };
+                      \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
+                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(0.75)^2)$ }};
+                      \pause
+                      \node (noisy1)  at (3,0){
+                          \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_2.png} };
+                      \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(2)^2)$ }};
+                      \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
+
+
+                  \end{tikzpicture}}
+              }
+
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        {\item Uneven Illumination\\
+              
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (0,0){
+                          \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
+                      \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
+                      
+
+
+                  \end{tikzpicture}}
+              
+
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results}
+
+    \begin{itemize}
+        \only<1-3>{\item Specular Reflection\\
+              \only<1-3>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.2\columnwidth]{libs/out2.png_inpainted.jpg} };
+                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Images}};
+                      \pause
+                      \node (ref1)  at (3,0){
+                          \includegraphics[width=0.2\columnwidth]{libs/srmask.png} };
+                      \path[draw=magenta,thick,->]<1-> (ref1) to [bend left] (in);
+                      \pause
+                      \node (noisy1)  at (0,0){
+                          \includegraphics[width=0.2\columnwidth]{libs/srres.png} };
+                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Artificial Specular Reflection Image}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+
+
+                  \end{tikzpicture}}
+              }
+
+
+    \end{itemize}
+\end{frame}
+
 %% ---------------------------------------------------------------------------
 % Reference frames
 \begin{frame}[shrink=50]
