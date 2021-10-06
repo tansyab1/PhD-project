@@ -60,25 +60,7 @@
 
 %% ---------------------------------------------------------------------------
 % This presentation is separated by sections and subsections
-\section{Objectives}
-\begin{frame}{Objectives}
-    % enumeration
-    The main objective of the project is to develop a smart system for:
-    \begin{itemize}
-        \item Identify the pathological finding on wireless capsule endoscopy (WCE) images
-              \begin{itemize}
-                  \item Including a pre-processing module that aims at improving the quality of the acquired images
-                  \item Develop a set of image quality enhancement solutions based on kinds of distortion
-              \end{itemize}
-
-
-    \end{itemize}
-
-    \vspace{0.2cm}
-
-    There are \example{many kinds of distortion} $\&$ in \emph{different levels}
-\end{frame}
-
+\section{Motivation \& Context}
 %% ---------------------------------------------------------------------------
 \subsection{Context}
 
@@ -110,6 +92,23 @@
 
 \end{frame}
 
+\begin{frame}{Objectives}
+    % enumeration
+    The main objective of the project is to develop a smart system for:
+    \begin{itemize}
+        \item Identify the pathological finding on wireless capsule endoscopy (WCE) images
+              \begin{itemize}
+                  \item Including a pre-processing module that aims at improving the quality of the acquired images
+                  \item Develop a set of image quality enhancement solutions based on kinds of distortion
+              \end{itemize}
+
+
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    There are \example{many kinds of distortion} $\&$ in \emph{different levels}
+\end{frame}
 
 \subsubsection{Challenges}
 \begin{frame}{Challenges}
@@ -122,53 +121,102 @@
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.15]{libs/wcedistortions.png}
-        \vspace{0.4cm}
-        \caption{Illustration of some common WCE images distortions}
+        \includegraphics[scale=0.13]{libs/examdis.png}
+        % \vspace{0.4cm}
+        \caption{Illustration of some common WCE images distortions. Left column: \textit{polyb} image with uneven illumination. Middle column: \textit{ulcerative colitis} image with noise. Right column: \textit{polyb} image with blur}
         \label{fig:endoscopy}
     \end{figure}
 
 \end{frame}
+
+\begin{frame}{Example}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{libs/blureffect.png}
+        \vspace{0.4cm}
+        \caption{Degradation of the vehicle detection due to image blurring. Left column: Blurred image with kernel width $\sigma=2.0$ detects 31 vehicles. Middle column: Blurred image with kernel width $\sigma=1.0$ detects 41 vehicles. Right column: Blurred image with kernel width $\sigma=3.0$ detects 10 vehicles.}
+        \label{fig:challenge}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}{Example}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{libs/noiseeffect.png}
+        \caption{Vehicle detections for additive noise with $SNR = {1.81, 4.39, 10.24}$.}
+        \label{fig:challengenoise}
+    \end{figure}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{libs/noiseeffect2.png}
+        \caption{Number of cars detected as a function of the Gaussian noise added with a signal to noise $SNR = {1.62,..., 30.76}$. Right: SNR as a function of $\sigma = {4, 8,..., 80}$.}
+        \label{fig:challengenoise2}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}{Example}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{libs/acceffect.png}
+        \vspace{0.4cm}
+        \caption{Top-1 and Top-5 Accuracy rates under different quality distortions. The networks are very sensitive to changes in blur and noise}
+        \label{fig:challenge3}
+    \end{figure}
+
+\end{frame}
+
+
 \subsubsection{Solutions}
 %% ---------------------------------------------------------------------------
 % \subsection{Subseção III}
-\begin{frame}{Algorithm}
-    % \caption{Apply the approximation quality enhancement methods}
-    \begin{algorithm}[H]
+% \begin{frame}{Algorithm}
+%     % \caption{Apply the approximation quality enhancement methods}
+%     \begin{algorithm}[H]
 
-        \SetAlgoLined
-        \LinesNumbered
-        \SetKwInOut{Input}{input}
-        \SetKwInOut{Output}{output}
-        \Input{$distorted\_image$}
-        \Output{$enhanced\_image$}
-        $types\_distortion$ = \tikzmark{classifier}{classifier} ($distorted\_image$)\;
-        \For{$type$ in $types\_distortion$}{
-            $enhanced\_image$ $\gets$ \tikzmark{enhancer}{enhancer$_{type}$} ($distorted\_image$)
-        }
-        \Return $enhanced\_image$
-        % \vspace{cao0.5cm}
+%         \SetAlgoLined
+%         \LinesNumbered
+%         \SetKwInOut{Input}{input}
+%         \SetKwInOut{Output}{output}
+%         \Input{$distorted\_image$}
+%         \Output{$enhanced\_image$}
+%         $types\_distortion$ = \tikzmark{classifier}{classifier} ($distorted\_image$)\;
+%         \For{$type$ in $types\_distortion$}{
+%             $enhanced\_image$ $\gets$ \tikzmark{enhancer}{enhancer$_{type}$} ($distorted\_image$)
+%         }
+%         \Return $enhanced\_image$
+%         % \vspace{cao0.5cm}
 
-    \end{algorithm}
+%     \end{algorithm}
 
-    \pause
-    \tikz[overlay,remember picture]{\draw[draw=blue,thick,fill opacity=0.2] ($(classifier)+(-0.1,0.3)$) rectangle ($(classifier)+(1.3,-0.1)$);}
+%     \pause
+%     \tikz[overlay,remember picture]{\draw[draw=blue,thick,fill opacity=0.2] ($(classifier)+(-0.1,0.3)$) rectangle ($(classifier)+(1.3,-0.1)$);}
 
-    \tikz[overlay,remember picture]{\draw[draw=green,thick,fill opacity=0.2] ($(enhancer)+(-0.1,0.3)$) rectangle ($(enhancer)+(1.9,-0.2)$);}
+%     \tikz[overlay,remember picture]{\draw[draw=green,thick,fill opacity=0.2] ($(enhancer)+(-0.1,0.3)$) rectangle ($(enhancer)+(1.9,-0.2)$);}
 
-    \texttt{Requirement:}
+%     \texttt{Requirement:}
 
-    Create the \tikz[remember picture]{ \node[anchor=base] (n1) {\tikzmark{classifier}{classifier}};} and \tikz[remember picture]{ \node[anchor=base] (n2) {\tikzmark{enhancer}{enhancer$_{type}$}};}\tikz[overlay,remember picture]{\draw[draw=blue,thick,fill opacity=0.2] ($(classifier)+(-0.1,0.3)$) rectangle ($(classifier)+(1.3,-0.1)$);}\tikz[overlay,remember picture]{\draw[draw=green,thick,fill opacity=0.2] ($(enhancer)+(-0.1,0.3)$) rectangle ($(enhancer)+(1.9,-0.2)$);}
-    \pause by using \example{learning - based} method
+%     Create the \tikz[remember picture]{ \node[anchor=base] (n1) {\tikzmark{classifier}{classifier}};} and \tikz[remember picture]{ \node[anchor=base] (n2) {\tikzmark{enhancer}{enhancer$_{type}$}};}\tikz[overlay,remember picture]{\draw[draw=blue,thick,fill opacity=0.2] ($(classifier)+(-0.1,0.3)$) rectangle ($(classifier)+(1.3,-0.1)$);}\tikz[overlay,remember picture]{\draw[draw=green,thick,fill opacity=0.2] ($(enhancer)+(-0.1,0.3)$) rectangle ($(enhancer)+(1.9,-0.2)$);}
+%     \pause by using \example{learning - based} method
 
-    \pause
-    \vspace{0.5cm}
-    \tikz[remember picture]{ \node[fill=green!20,anchor=base] (t1) {Creating a dataset is the \emph{most important} thing to do};}
-    \begin{tikzpicture}[remember picture,overlay]   %% use here too
-        \path[draw=magenta,thick,->]<1-> (n1) to [bend right] (t1);
-        \path[draw=magenta,thick,->]<2-> (n2) to [bend left] (t1);
-    \end{tikzpicture}
+%     \pause
+%     \vspace{0.5cm}
+%     \tikz[remember picture]{ \node[fill=green!20,anchor=base] (t1) {Creating a dataset is the \emph{most important} thing to do};}
+%     \begin{tikzpicture}[remember picture,overlay]   %% use here too
+%         \path[draw=magenta,thick,->]<1-> (n1) to [bend right] (t1);
+%         \path[draw=magenta,thick,->]<2-> (n2) to [bend left] (t1);
+%     \end{tikzpicture}
 
+% \end{frame}
+\begin{frame}{Method}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.38]{libs/algorithm.png}
+        \caption{ Flow chart of the pathological classification process}
+        \label{fig:al}
+    \end{figure}
 \end{frame}
 
 % %% ---------------------------------------------------------------------------
@@ -622,17 +670,17 @@
 
     \begin{itemize}
         {\item Uneven Illumination\\
-              
-                  \begin{tikzpicture}[remember picture]
 
-                      \node (in)  at (0,0){
-                          \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
-                      \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
-                      
+              \begin{tikzpicture}[remember picture]
+
+                  \node (in)  at (0,0){
+                      \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
+                  \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
 
 
-                  \end{tikzpicture}}
-              
+
+              \end{tikzpicture}}
+
 
 
     \end{itemize}
