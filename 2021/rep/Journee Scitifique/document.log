@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.9.28)  4 OCT 2021 10:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.9.28)  4 OCT 2021 14:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -3262,16 +3262,17 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 639.
  [56
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/unevencreate.png>]
-File: libs/out2.png_inpainted.jpg Graphic file (type jpg)
-<use libs/out2.png_inpainted.jpg>
-Package pdftex.def Info: libs/out2.png_inpainted.jpg  used on input line 667.
+<libs/out3.png_inpainted.jpg, id=1889, 513.92pt x 513.92pt>
+File: libs/out3.png_inpainted.jpg Graphic file (type jpg)
+<use libs/out3.png_inpainted.jpg>
+Package pdftex.def Info: libs/out3.png_inpainted.jpg  used on input line 667.
 (pdftex.def)             Requested size: 61.45703pt x 61.45601pt.
-<libs/srmask.png, id=1889, 251.94125pt x 248.93pt>
+<libs/srmask.png, id=1890, 251.94125pt x 248.93pt>
 File: libs/srmask.png Graphic file (type png)
 <use libs/srmask.png>
 Package pdftex.def Info: libs/srmask.png  used on input line 667.
 (pdftex.def)             Requested size: 61.45703pt x 60.7206pt.
-<libs/srres.png, id=1890, 513.92pt x 513.92pt>
+<libs/srres.png, id=1891, 513.92pt x 513.92pt>
 File: libs/srres.png Graphic file (type png)
 <use libs/srres.png>
 Package pdftex.def Info: libs/srres.png  used on input line 667.
@@ -3298,10 +3299,10 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 667.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [57
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srmask.png> </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srres.png (PNG copy)>]
-File: libs/out2.png_inpainted.jpg Graphic file (type jpg)
-<use libs/out2.png_inpainted.jpg>
-Package pdftex.def Info: libs/out2.png_inpainted.jpg  used on input line 667.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/out3.png_inpainted.jpg> </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srmask.png> </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srres.png (PNG copy)>]
+File: libs/out3.png_inpainted.jpg Graphic file (type jpg)
+<use libs/out3.png_inpainted.jpg>
+Package pdftex.def Info: libs/out3.png_inpainted.jpg  used on input line 667.
 (pdftex.def)             Requested size: 61.45703pt x 61.45601pt.
 File: libs/srmask.png Graphic file (type png)
 <use libs/srmask.png>
@@ -3334,9 +3335,9 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 667.
  [58
 
 ]
-File: libs/out2.png_inpainted.jpg Graphic file (type jpg)
-<use libs/out2.png_inpainted.jpg>
-Package pdftex.def Info: libs/out2.png_inpainted.jpg  used on input line 667.
+File: libs/out3.png_inpainted.jpg Graphic file (type jpg)
+<use libs/out3.png_inpainted.jpg>
+Package pdftex.def Info: libs/out3.png_inpainted.jpg  used on input line 667.
 (pdftex.def)             Requested size: 61.45703pt x 61.45601pt.
 File: libs/srmask.png Graphic file (type png)
 <use libs/srmask.png>
@@ -3459,18 +3460,18 @@ Package logreq Info: Writing requests to 'document.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 42594 strings out of 481239
- 851460 string characters out of 5920377
+ 42600 strings out of 481239
+ 851636 string characters out of 5920377
  1566210 words of memory out of 5000000
- 56767 multiletter control sequences out of 15000+600000
+ 56772 multiletter control sequences out of 15000+600000
  628769 words of font info for 112 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  65i,19n,84p,887b,1959s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}</usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi9.pfb></usr/share/texmf/fonts/type1/public/lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmss9.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbo10.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso9.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy9.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb>
-Output written on "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.pdf" (61 pages, 9872123 bytes).
+Output written on "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.pdf" (61 pages, 9944143 bytes).
 PDF statistics:
- 2147 PDF objects out of 2487 (max. 8388607)
+ 2148 PDF objects out of 2487 (max. 8388607)
  1971 compressed objects within 20 object streams
  154 named destinations out of 1000 (max. 500000)
- 33559 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 33564 words of extra memory for PDF output out of 35830 (max. 10000000)
 
