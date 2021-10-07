@@ -905,41 +905,6 @@
       \field{volume}{7}
       \field{year}{2020}
     \endentry
-    \entry{Pertuz2013AnalysisOF}{article}{}
-      \name{author}{3}{}{%
-        {{hash=2b5e81fa1c0c06f14a818a816bf3e449}{%
-           family={Pertuz},
-           familyi={P\bibinitperiod},
-           given={Said},
-           giveni={S\bibinitperiod}}}%
-        {{hash=bd0a13d23738d27809950232bea3790a}{%
-           family={Puig},
-           familyi={P\bibinitperiod},
-           given={Domenec},
-           giveni={D\bibinitperiod}}}%
-        {{hash=878940d343e92a1f1dec9850e6927eb5}{%
-           family={Garc{í}a},
-           familyi={G\bibinitperiod},
-           given={Miguel\bibnamedelima {Á}ngel},
-           giveni={M\bibinitperiod\bibinitdelim Á\bibinitperiod}}}%
-      }
-      \strng{namehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{fullhash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{bibnamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authorbibnamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authornamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authorfullhash}{271a566c3eca48734c812a5543ab91a9}
-      \field{sortinit}{5}
-      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Pattern Recognit.}
-      \field{title}{Analysis of focus measure operators for shape-from-focus}
-      \field{volume}{46}
-      \field{year}{2013}
-      \field{pages}{1415\bibrangedash 1432}
-      \range{pages}{18}
-    \endentry
   \enddatalist
 \endrefsection
 \endinput
