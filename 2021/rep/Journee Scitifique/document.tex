@@ -17,13 +17,13 @@
 
 
 % Title
-\title[A new dataset of distortions on WCE images]{\textbf{A new dataset of distortions on Wireless Capsule Endoscopy Images for pathological ifentification}}
+\title[Universit\'e Sorbonne Paris Nord]{\textbf{Towards a comprehensive database to study the impact of image quality on abnormality detection and classification in Wireless Capsule Endoscopy}}
 % Subtitle
 % \subtitle{Subtítulo da Apresentação}
 % Author of the presentation
 \author{Tan Sy NGUYEN}
 % Institute's Name
-\institute[- USPN]{
+\institute[]{
     % email for contact
     \normalsize{\email{tansy.nguyen@math.univ-paris13.fr}}
     \newline
@@ -70,7 +70,7 @@
     \end{alertblock}
     \pause
     \begin{block}{Example}
-        In 2018, the Colorectal cancer (CRC) is the third (second respectively) leading cause of cancer death in the world (France, respectively).\footnote[frame]{\tiny Bray F, Ferlay J, Soerjomataram I, Siegel RL, Torre LA, Jemal A, "Global cancer statistics 2018: GLOBOCAN estimates of \\ \hspace{0.3cm}incidence and mortality worldwide for 36 cancers in 185 countries", CA Cancer J Clin. 2018 Nov; 68(6):394-424.}$^{,}$\footnote[frame]{\tiny Santé Publique France, https://www.santepubliquefrance.fr/maladies-et-traumatismes/cancers/cancer-du-colon-rectum}
+        In 2018, the Colorectal cancer (CRC) is the third (second respectively) leading cause of cancer death in the world (France, respectively).\footnote[frame]{\tiny Bray F, Ferlay J, Soerjomataram I, Siegel RL, Torre LA, Jemal A, "Global cancer statistics 2018: GLOBOCAN estimates of \\ \hspace{0.3cm}incidence and mortality worldwide for 36 cancers in 185 countries", CA Cancer J Clin. 2018 Nov; 68(6):394-424.}$^{,}$\footnote[frame]{\tiny Faivre J, Dancourt V, et. al, Santé Publique France, "Cancer du colon rectum", https://www.santepubliquefrance.fr/\\maladies-et-traumatismes/cancers/cancer-du-colon-rectum}
     \end{block}
     \pause
     \begin{exampleblock}{Solution}
@@ -94,9 +94,14 @@
 
 \begin{frame}{Objectives}
     % enumeration
+    \begin{figure}
+        \includegraphics[scale=0.2]{libs/overallalgo.png}
+        \caption{Model flowchart for overall algorithm to create a system to identify the name of pathologies}
+        \label{fig:overallalgo}
+    \end{figure}
     The main objective of the project is to develop a smart system for:
     \begin{itemize}
-        \item Identify the pathological finding on wireless capsule endoscopy (WCE) images
+        \item Identify the pathologies on wireless capsule endoscopy (WCE) images
               \begin{itemize}
                   \item Including a pre-processing module that aims at improving the quality of the acquired images
                   \item Develop a set of image quality enhancement solutions based on kinds of distortion
@@ -115,32 +120,36 @@
     % \textcolor{blue(pigment)}{\textbf{Challenges and Motivation}}\\[5pt]
     \begin{itemize}
         % \item Current challenges in the hospital: "\textcolor{red}{2 patients/day} and just \textcolor{violet}{4 working days}" 
-        \item Some common acquisition distortions (\textbf{noise}, \textcolor{red}{\textbf{blur}}, \textcolor{violet}{\textbf{uneven illumination}}, \textcolor{blue}{\textbf{specular reflection}}) may affect the WCE based diagnosis.         \footnote[frame]{\tiny Borgli, H., Thambawita, V., Smedsrud, P.H. et al. \textit{HyperKvasir}, a comprehensive multi-class image and video dataset for gastrointestinal endoscopy. Sci Data 7, 283 (2020). https://doi.org/10.1038/s41597-020-00622-y}
+        \item Some common acquisition distortions (\textbf{noise}, \textcolor{red}{\textbf{blur}}, \textcolor{violet}{\textbf{uneven illumination}}, \textcolor{blue}{\textbf{specular reflection}}) may affect the WCE based diagnosis.         \footnote[frame]{\tiny Borgli, H., Thambawita, V., Smedsrud, P.H. et al. \textit{HyperKvasir}, a comprehensive multi-class image and video dataset \\for gastrointestinal endoscopy. Sci Data 7, 283 (2020). https://doi.org/10.1038/s41597-020-00622-y}
     \end{itemize}
 
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.13]{libs/examdis2.png}
+        \includegraphics[scale=0.4]{libs/examdis3.png}
         % \vspace{0.4cm}
-        \caption{Illustration of some common WCE images distortions. Left column: \textit{polyb} image with uneven illumination. Middle column: \textit{ulcerative colitis} image with noise. Right column: \textit{polyb} image with blur.}
+        \caption{Illustration of some common WCE images distortions. Left column: \textit{polyp} image with uneven illumination. Middle column: \textit{ulcerative colitis} image with noise. Right column: \textit{polyp} image with blur.}
         \label{fig:endoscopy}
     \end{figure}
 
 \end{frame}
 
-\begin{frame}{Example \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep neural networks.” Defense + Commercial Sensing (2019).}}
+\begin{frame}
+    \large How image \example{quality affects} the classification performance ?
+\end{frame}
+
+\begin{frame}{\small Effect of distortion (Blur) on the classification performace \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.18]{libs/blureffect.png}
+        \includegraphics[scale=0.2]{libs/blureffect.png}
         % \vspace{0.4cm}
-        \caption{Degradation of the vehicle detection due to image blurring. Left column: Blurred image with kernel width $\sigma=2.0$ detects 31 vehicles. Middle column: Blurred image with kernel width $\sigma=1.0$ detects 41 vehicles. Right column: Blurred image with kernel width $\sigma=3.0$ detects 10 vehicles.}       
+        \caption{Degradation of the vehicle detection due to image blurring. Left column: Blurred image with kernel width $\sigma=1.0$ detects 41 vehicles. Middle column: Blurred image with kernel width $\sigma=2.0$ detects 31 vehicles. Right column: Blurred image with kernel width $\sigma=3.0$ detects 10 vehicles.}       
         \label{fig:challenge}
     \end{figure}
 
 \end{frame}
 
-\begin{frame}{Example \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep neural networks.” Defense + Commercial Sensing (2019).}}
+\begin{frame}{\small Effect of distortion (Noise) on the classification performace \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
     \begin{figure}
         \centering
         \includegraphics[scale=0.15]{libs/noiseeffect.png}
@@ -157,7 +166,7 @@
 
 \end{frame}
 
-\begin{frame}{Example \footnote[frame]{\tiny Dodge, Samuel F. and Lina Karam. “Understanding how image quality affects deep neural networks.” 2016 Eighth International Conference on Quality of Multimedia Experience (QoMEX) (2016): 1-6.}}
+\begin{frame}{\small Effect of distortion (Noise, Blur) on the classification performace \footnote[frame]{\tiny Dodge, Samuel F. and Lina Karam. “Understanding how image quality affects deep neural networks.” 2016 Eighth \\ International Conference on Quality of Multimedia Experience (QoMEX) (2016): 1-6.}}
     \begin{figure}
         \centering
         \includegraphics[scale=0.2]{libs/acceffect.png}
@@ -213,7 +222,7 @@
 \begin{frame}{Method}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.4]{libs/algorithm.png}
+        \includegraphics[scale=0.08]{libs/algorithm.png}
         \caption{ Flow chart of the pathological classification process}
         \label{fig:al}
     \end{figure}
@@ -384,30 +393,30 @@
 
 
 \subsection{Results}
-% \begin{frame}{Results}
-%     \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ \pause
-%     \begin{tikzpicture}[remember picture]
-%         \node[draw] (input) at (-1,-4) {Original Image};
-%         \node[draw,fill=yellow] (noise) at (1.5,-4) {Denoising}; %% use here too
-%         \path[draw=magenta,thick,->]<1-> (input) to [bend right] (noise);
-%         \pause
-%         \node[draw] (blur) at (3.5,-4) {Debluring};
-%         \path[draw=magenta,thick,->]<1-> (noise) to [bend left] (blur);
-%         \pause
-%         \node[draw,fill=yellow] (uneven) at (6.3,-6) {Uneven Illumination Correction};
-%         \path[draw=magenta,thick,->]<1-> (blur) to [bend left] (uneven);
-%         \pause
-%         \node[draw,fill=white] (sr) at (0,-6) {Specular Reflection Removal};
-%         \path[draw=magenta,thick,->]<1-> (uneven) to  (sr);
-%         \pause
-%         \node[draw,fill=black, text = white] (anti) at (0,-8) {Antidistorted Image};
-%         \path[draw=magenta,thick,->]<1-> (sr) to  (anti);
-%         \pause
-%         \node[draw,fill=gray] (add) at (6,-8) {Artificial Distortion Model};
-%         \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
+\begin{frame}{Results}
+    \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ 
+    \begin{tikzpicture}[remember picture]
+        \node[draw] (input) at (-1,-4) {Original Image};
+        \node[draw,fill=yellow] (noise) at (1.5,-4) {Denoising}; %% use here too
+        \path[draw=magenta,thick,->]<1-> (input) to [bend right] (noise);
 
-%     \end{tikzpicture}
-% \end{frame}
+        \node[draw] (blur) at (3.5,-4) {Debluring};
+        \path[draw=magenta,thick,->]<1-> (noise) to [bend left] (blur);
+
+        \node[draw,fill=yellow] (uneven) at (6.3,-6) {Uneven Illumination Correction};
+        \path[draw=magenta,thick,->]<1-> (blur) to [bend left] (uneven);
+
+        \node[draw,fill=white] (sr) at (0,-6) {Specular Reflection Removal};
+        \path[draw=magenta,thick,->]<1-> (uneven) to  (sr);
+
+        \node[draw,fill=black, text = white] (anti) at (0,-8) {Antidistorted Image};
+        \path[draw=magenta,thick,->]<1-> (sr) to  (anti);
+
+        \node[draw,fill=gray] (add) at (6,-8) {Artificial Distortion Model};
+        \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
+
+    \end{tikzpicture}
+\end{frame}
 % \begin{frame}{Results}
 
 %     \begin{itemize}
@@ -486,114 +495,164 @@
 %     \end{itemize}
 % \end{frame}
 
-% \begin{frame}{Results}
+\begin{frame}{Results on Image denoising}
+    For an image $I$ with width $W$ and height $H$, the estimated standard deviation $\sigma_n$ of noise is estimated as\footnote[frame]{Immerkær, John. “Fast Noise Variance Estimation.” Comput. Vis. Image \\ Underst. 64 (1996): 300-302.}:
+\begin{equation}
+    \sigma_n = \sqrt{\frac{\pi}{2}}\frac{1}{6(W-2)(H-2)}\sum_{x,y}|{I(x,y)*M_N}|
+\end{equation}
+    where $M_N = 2(L_2-L_1)$ with the given $L_1, L_2$:
+\begin{equation}
+    L_1 = \begin{bmatrix}
+0 & 1 & 0\\
+1 & -4 & 1\\
+0 & 1 & 0
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+    L_2 = \begin{bmatrix}
+1 & 0 & 1\\
+0 & -4 & 0\\
+1 & 0 & 1
+\end{bmatrix}
+\end{equation}
 
-%     \begin{itemize}
-%         \only<1-4>{\item Blur\\
-%               \only<1-4>{
-%                   \begin{tikzpicture}[remember picture]
-
-%                       \node (in)  at (-3,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
-%                       \node at (-3.0, -3.0) {\small\textit{a) Denoised}};
-%                       \pause
-%                       \node (noisy1)  at (-1,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
-%                       \node at (-1.0, -3.0) {\small\textit{b) Deblurred}};
-%                       \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-%                       \pause
-%                       \only<3>{\node (equablur)  at (3.5,0){
-%                               $\begin{aligned}
-%                                       index = var(\mathcal{L}(f(x,y)))
-%                                   \end{aligned}$};
-%                           \node[text width=5.5cm] at (3.5, -2.0) {\small\textit{Apply the \example{variance of the Laplacian}\cite{Pertuz2013AnalysisOF} method to your own photos to detect the amount of blurring.}};
-%                       }
-%                       \pause
-%                       \only<4>{
-%                           \node (tabnoise)  at (3.5,0){
-%                               \begin{adjustbox}{width=0.5\textwidth}
-%                                   \begin{tabular}{|l|c|l|c|l|}
-%                                       \hline
-%                                                                    & \multicolumn{2}{c|}{\textbf{Denoised-image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
-%                                       \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{378}                     & \multicolumn{2}{c|}{501}                     \\ \hline
-%                                       \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{321}                     & \multicolumn{2}{c|}{428}                     \\ \hline
-%                                       \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{224}                     & \multicolumn{2}{c|}{367}                     \\ \hline
-%                                   \end{tabular}
-%                               \end{adjustbox}};
-%                           \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The variance Laplacian Index before and after deblurring.}};
-
-%                       }
-%                   \end{tikzpicture}}
-%               }
+\end{frame}
 
 
-%     \end{itemize}
-% \end{frame}
+\begin{frame}{Results on Image denoising}
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{libs/model.png}
+\caption{The Autoencoder model used for denoising}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Results on Image denoising}
+
+    % \begin{itemize}
+        % \only<1-4>{\item Blur\\
+              \only<1-3>{
+                  \begin{tikzpicture}[remember picture]
+
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
+                      \node at (-3.0, -3.0) {\small\textit{a) Original image}};
+                      \pause
+                      \node (noisy1)  at (0,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
+                      \node at (0.0, -3.0) {\small\textit{b) Denoised image}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+                      \pause
+                      \only<3>{
+                          \node (tabnoise)  at (4,0){
+                              \begin{adjustbox}{width=0.5\textwidth}
+                                  \begin{tabular}{|l|c|l|c|l|}
+                                      \hline
+                                                                   & \multicolumn{2}{c|}{\textbf{Original image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
+                                      \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{0.75}                     & \multicolumn{2}{c|}{0.7}                     \\ \hline
+                                      \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{1.45}                     & \multicolumn{2}{c|}{0.96}                     \\ \hline
+                                      \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{1.1}                     & \multicolumn{2}{c|}{0.90}                     \\ \hline
+                                  \end{tabular}
+                              \end{adjustbox}};
+                          \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The estimated noise standard deviation before and after denoising.}};
+
+                      }
+                  \end{tikzpicture}}
+            %   }
 
 
-% \begin{frame}{Results}
+    % \end{itemize}
+\end{frame}
 
-%     \begin{itemize}
-%         \only<1-4>{\item Uneven Illumination\\
-%               \only<1-4>{
-%                   \begin{tikzpicture}[remember picture]
+\begin{frame}{Results on Image deblurring}
+    \begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{libs/pipeline.jpg}
+    \caption{The DeblurGAN v2 model used for deblurring \cite{Kupyn2019DeblurGANv2D}}
+    \end{figure}
+    
+    \end{frame}
 
-%                       \node (in)  at (-3,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
-%                       \node at (-3.0, -3.0) {\small\textit{a) Deblurred}};
-%                       \pause
-%                       \node (noisy1)  at (0,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/afterillres.png} };
-%                       \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Uneven Illumination Correction}};
-%                       \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-%                       \pause
-%                       \node (ref1)  at (3,2){
-%                           \includegraphics[width=0.25\columnwidth]{libs/beforeill.png} };
-%                       \path[draw=magenta,thick,->]<1-> (in) to [bend left] (ref1);
-%                       \pause
-%                       \node (ref2)  at (3,-2){
-%                           \includegraphics[width=0.25\columnwidth]{libs/afterill.png} };
-%                       \path[draw=magenta,thick,->]<1-> (noisy1) to [bend left] (ref2);
-%                   \end{tikzpicture}}
-%               }
+\begin{frame}{Results on Image deblurring}
 
+    \begin{itemize}
+        \only<1-4>{\item Blur\\
+              \only<1-4>{
+                  \begin{tikzpicture}[remember picture]
 
-%     \end{itemize}
-% \end{frame}
+                      \node (in)  at (-3,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
+                      \node at (-3.0, -3.0) {\small\textit{a) Denoised}};
+                      \pause
+                      \node (noisy1)  at (-1,0){
+                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
+                      \node at (-1.0, -3.0) {\small\textit{b) Deblurred}};
+                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+                      \pause
+                      \only<3>{\node (equablur)  at (3.5,0){
+                              $\begin{aligned}
+                                      index = var(\mathcal{L}(f(x,y)))
+                                  \end{aligned}$};
+                          \node[text width=5.5cm] at (3.5, -2.0) {\small\textit{Apply the \example{variance of the Laplacian}\cite{Pertuz2013AnalysisOF} method to your own photos to detect the amount of blurring.}};
+                      }
+                      \pause
+                      \only<4>{
+                          \node (tabnoise)  at (3.5,0){
+                              \begin{adjustbox}{width=0.5\textwidth}
+                                  \begin{tabular}{|l|c|l|c|l|}
+                                      \hline
+                                                                   & \multicolumn{2}{c|}{\textbf{Denoised-image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
+                                      \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{378}                     & \multicolumn{2}{c|}{501}                     \\ \hline
+                                      \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{321}                     & \multicolumn{2}{c|}{428}                     \\ \hline
+                                      \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{224}                     & \multicolumn{2}{c|}{367}                     \\ \hline
+                                  \end{tabular}
+                              \end{adjustbox}};
+                          \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The variance Laplacian Index before and after deblurring.}};
 
-% \begin{frame}{Results}
-
-%     \begin{itemize}
-%         \only<1-3>{\item Specular Reflection\\
-%               \only<1-3>{
-%                   \begin{tikzpicture}[remember picture]
-
-%                       \node (in)  at (-3,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/afterillres.png} };
-%                       \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Uneven Illumination Correction}};
-%                       \pause
-%                       \node (ref1)  at (3,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/mask.png} };
-%                       \path[draw=magenta,thick,->]<1-> (ref1) to [bend left] (in);
-%                       \pause
-%                       \node (noisy1)  at (0,0){
-%                           \includegraphics[width=0.15\columnwidth]{libs/aftersr.png} };
-%                       \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Specular Reflection Inpainting}};
-%                       \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-
-
-%                   \end{tikzpicture}}
-%               }
+                      }
+                  \end{tikzpicture}}
+              }
 
 
-%     \end{itemize}
-% \end{frame}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Results on Uneven Illumination Correction}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/illres.png}
+        \caption{Uneven Illumination Correction process using \cite{Xia2018EndoscopicIE}}
+        \label{uneven_illumination_correction}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+
+        \begin{figure}
+            \centering
+            \includegraphics[width=1\textwidth]{libs/illres2.png}
+            \caption{Uneven Illumination Correction result. The first row is the original image with the some uneven illmination region (red circle). In the second column, these regions have been corrected (green circle)}
+            \label{uneven_illumination_correction2}
+        \end{figure}
+\end{frame}
+
+\begin{frame}{Results on Specular Reflection Removal}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{libs/srres.png}
+    \caption{Specular Reflection Removal result. First columns: the input image with specular references. The third column is the result of the Specular Reflection inpainted image using the SR mask (second column) insprired from \cite{yi2020contextual}.} 
+\end{figure}
+\end{frame}
 
 \begin{frame}{Results}
 
     \begin{tikzpicture}[remember picture]
 
-        \node(text) at (0,2) {In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.};
+        \node[text width=10cm](text) at (0,2) {In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.};
 
         \node[draw,fill=black, text = white] (anti) at (-2,0) {Antidistorted Image};
         \pause
@@ -609,110 +668,135 @@
 \end{frame}
 
 
-\begin{frame}{Results}
+\begin{frame}{Result images after adding Noise}
 
-    \begin{itemize}
-        \only<1-3>{\item Noise\\
-              \only<1-3>{
-                  \begin{tikzpicture}[remember picture]
+    % % \begin{itemize}
+    %     % \only<1-3>{\item Noise\\
+    %           \only<1-3>{
+    %               \begin{tikzpicture}[remember picture]
 
-                      \node (in)  at (-3,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
-                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
-                      \pause
-                      \node (ref1)  at (0,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.0005.png} };
-                      \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
-                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.0005)^2)$ }};
-                      \pause
-                      \node (noisy1)  at (3,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.005.png} };
-                      \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.005)^2)$ }};
-                      \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
-
-
-                  \end{tikzpicture}}
-              }
+    %                   \node (in)  at (-3,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
+    %                   \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
+    %                   \pause
+    %                   \node (ref1)  at (0,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.0005.png} };
+    %                   \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
+    %                   \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.0005)^2)$ }};
+    %                   \pause
+    %                   \node (noisy1)  at (3,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/AWGN_var_0.005.png} };
+    %                   \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Noised image with Gaussian Noise $n \sim N(0, \sigma^2_n=(0.005)^2)$ }};
+    %                   \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
 
 
-    \end{itemize}
+    %               \end{tikzpicture}}
+    %         %   }
+
+
+    % % \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/noiseres.png}
+        \caption{Noising image with Gaussian Noise $n \sim N(0, \sigma^2_n)$}
+        \label{noise_inpainted}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{Results}
+\begin{frame}{Result images after adding Blur}
 
-    \begin{itemize}
-        \only<1-3>{\item Blur\\
-              \only<1-3>{
-                  \begin{tikzpicture}[remember picture]
+    % % \begin{itemize}
+    %     % \only<1-3>{\item Blur\\
+    %           \only<1-3>{
+    %               \begin{tikzpicture}[remember picture]
 
-                      \node (in)  at (-3,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
-                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
-                      \pause
-                      \node (ref1)  at (0,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_0.75.png} };
-                      \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
-                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(0.75)^2)$ }};
-                      \pause
-                      \node (noisy1)  at (3,0){
-                          \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_2.png} };
-                      \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(2)^2)$ }};
-                      \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
-
-
-                  \end{tikzpicture}}
-              }
+    %                   \node (in)  at (-3,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/out2.png_inpainted.jpg} };
+    %                   \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Image}};
+    %                   \pause
+    %                   \node (ref1)  at (0,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_0.75.png} };
+    %                   \path[draw=magenta,thick,->]<1-> (in) to  (ref1);
+    %                   \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(0.75)^2)$ }};
+    %                   \pause
+    %                   \node (noisy1)  at (3,0){
+    %                       \includegraphics[width=0.25\columnwidth]{libs/defocus_sigma_2.png} };
+    %                   \node[text width=2.5cm] at (3.0, -3.0) {\small\textit{c) Blured image with Defocus Blur $b \sim N(0, \sigma^2_b=(2)^2)$ }};
+    %                   \path[draw=magenta,thick,->]<1-> (in) to [bend right] (noisy1);
 
 
-    \end{itemize}
+    %               \end{tikzpicture}}
+    %         %   }
+
+
+    % \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/bluraddres2.png}
+        \caption{Bluring image with Defocus Blur $b \sim N(0, \sigma^2_{db})$ and motion blur PSF kernel width $l_{mb}$}
+        \label{blur_inpainted}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{Results}
+\begin{frame}{Result images after adding Uneven Illumination}
 
-    \begin{itemize}
-        {\item Uneven Illumination\\
+    % % \begin{itemize}
+    %     % {\item Uneven Illumination\\
 
-              \begin{tikzpicture}[remember picture]
+    %           \begin{tikzpicture}[remember picture]
 
-                  \node (in)  at (0,0){
-                      \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
-                  \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
-
-
-
-              \end{tikzpicture}}
+    %               \node (in)  at (0,0){
+    %                   \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
+    %               \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
 
 
 
-    \end{itemize}
+    %           \end{tikzpicture}
+    %         %   }
+
+
+
+    % \end{itemize}
+    \begin{figure}[h]
+        \begin{center}
+            \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png}
+            \caption{Artificial Uneven Illumination process. The first row is the result after adding the mask (second row) into the V-channel of image (third row).}
+        \end{center}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{Results}
+\begin{frame}{Result images after adding Specular Reflection}
 
-    \begin{itemize}
-        \only<1-3>{\item Specular Reflection\\
-              \only<1-3>{
-                  \begin{tikzpicture}[remember picture]
+    % % \begin{itemize}
+    %     % \only<1-3>{\item Specular Reflection\\
+    %           \only<1-3>{
+    %               \begin{tikzpicture}[remember picture]
 
-                      \node (in)  at (-3,0){
-                          \includegraphics[width=0.2\columnwidth]{libs/out3.png_inpainted.jpg} };
-                      \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Images}};
-                      \pause
-                      \node (ref1)  at (3,0){
-                          \includegraphics[width=0.2\columnwidth]{libs/srmask.png} };
-                      \path[draw=magenta,thick,->]<1-> (ref1) to [bend left] (in);
-                      \pause
-                      \node (noisy1)  at (0,0){
-                          \includegraphics[width=0.2\columnwidth]{libs/srres.png} };
-                      \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Artificial Specular Reflection Image}};
-                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-
-
-                  \end{tikzpicture}}
-              }
+    %                   \node (in)  at (-3,0){
+    %                       \includegraphics[width=0.2\columnwidth]{libs/out3.png_inpainted.jpg} };
+    %                   \node[text width=2.5cm] at (-3.0, -3.0) {\small\textit{a) Antidistorted Images}};
+    %                   \pause
+    %                   \node (ref1)  at (3,0){
+    %                       \includegraphics[width=0.2\columnwidth]{libs/srmask.png} };
+    %                   \path[draw=magenta,thick,->]<1-> (ref1) to [bend left] (in);
+    %                   \pause
+    %                   \node (noisy1)  at (0,0){
+    %                       \includegraphics[width=0.2\columnwidth]{libs/srres.png} };
+    %                   \node[text width=2.5cm] at (0.0, -3.0) {\small\textit{b) Artificial Specular Reflection Image}};
+    %                   \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
 
 
-    \end{itemize}
+    %               \end{tikzpicture}}
+    %         %   }
+
+
+    % % \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/srres4.png}
+        \caption{Artificial Specular Reflection by using the artificial PSF with the random position}
+        \label{sr_inpainted}
+    \end{figure}
 \end{frame}
 
 %% ---------------------------------------------------------------------------

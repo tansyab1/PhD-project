@@ -2239,6 +2239,13 @@
     <bcf:citekey order="55">Jha2020KvasirSEGAS</bcf:citekey>
     <bcf:citekey order="56">Pogorelov2017NerthusAB</bcf:citekey>
     <bcf:citekey order="57">Borgli2020HyperKvasirAC</bcf:citekey>
+    <bcf:citekey order="58">Kupyn2019DeblurGANv2D</bcf:citekey>
+    <bcf:citekey order="59">Kupyn2019DeblurGANv2D</bcf:citekey>
+    <bcf:citekey order="60">Pertuz2013AnalysisOF</bcf:citekey>
+    <bcf:citekey order="61">Xia2018EndoscopicIE</bcf:citekey>
+    <bcf:citekey order="62">Xia2018EndoscopicIE</bcf:citekey>
+    <bcf:citekey order="63">yi2020contextual</bcf:citekey>
+    <bcf:citekey order="64">yi2020contextual</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

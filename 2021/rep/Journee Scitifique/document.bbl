@@ -905,6 +905,159 @@
       \field{volume}{7}
       \field{year}{2020}
     \endentry
+    \entry{Kupyn2019DeblurGANv2D}{article}{}
+      \name{author}{4}{}{%
+        {{hash=38e920469eba0bd39c75f75e9228d92e}{%
+           family={Kupyn},
+           familyi={K\bibinitperiod},
+           given={Orest},
+           giveni={O\bibinitperiod}}}%
+        {{hash=ced1b360218f2dc3a98edeff9f08bca6}{%
+           family={Martyniuk},
+           familyi={M\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=91edb8042db22854d115815a4216c541}{%
+           family={Wu},
+           familyi={W\bibinitperiod},
+           given={Junru},
+           giveni={J\bibinitperiod}}}%
+        {{hash=4f87ba962b43f4d664922e1f3c38c9c0}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Zhangyang},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{fullhash}{6b64137bfc67d75acdba84eb2a46a243}
+      \strng{bibnamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authorbibnamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authornamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authorfullhash}{6b64137bfc67d75acdba84eb2a46a243}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{2019 IEEE/CVF International Conference on Computer Vision (ICCV)}
+      \field{title}{DeblurGAN-v2: Deblurring (Orders-of-Magnitude) Faster and Better}
+      \field{year}{2019}
+      \field{pages}{8877\bibrangedash 8886}
+      \range{pages}{10}
+    \endentry
+    \entry{Pertuz2013AnalysisOF}{article}{}
+      \name{author}{3}{}{%
+        {{hash=2b5e81fa1c0c06f14a818a816bf3e449}{%
+           family={Pertuz},
+           familyi={P\bibinitperiod},
+           given={Said},
+           giveni={S\bibinitperiod}}}%
+        {{hash=bd0a13d23738d27809950232bea3790a}{%
+           family={Puig},
+           familyi={P\bibinitperiod},
+           given={Domenec},
+           giveni={D\bibinitperiod}}}%
+        {{hash=878940d343e92a1f1dec9850e6927eb5}{%
+           family={Garc{í}a},
+           familyi={G\bibinitperiod},
+           given={Miguel\bibnamedelima {Á}ngel},
+           giveni={M\bibinitperiod\bibinitdelim Á\bibinitperiod}}}%
+      }
+      \strng{namehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{fullhash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{bibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorbibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authornamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorfullhash}{271a566c3eca48734c812a5543ab91a9}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Pattern Recognit.}
+      \field{title}{Analysis of focus measure operators for shape-from-focus}
+      \field{volume}{46}
+      \field{year}{2013}
+      \field{pages}{1415\bibrangedash 1432}
+      \range{pages}{18}
+    \endentry
+    \entry{Xia2018EndoscopicIE}{article}{}
+      \name{author}{3}{}{%
+        {{hash=fd5718b75f093cd4cfe3c3c4b92f6ae6}{%
+           family={Xia},
+           familyi={X\bibinitperiod},
+           given={Wenyao},
+           giveni={W\bibinitperiod}}}%
+        {{hash=008323cf8c8792921b7dfeb037c2e356}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Elvis\bibnamedelimb C.\bibnamedelimi S.},
+           giveni={E\bibinitperiod\bibinitdelim C\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=2e9e8ad6e5b81ddb8a49e01d8924307d}{%
+           family={Peters},
+           familyi={P\bibinitperiod},
+           given={Terry\bibnamedelima M.},
+           giveni={T\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{fullhash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{bibnamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authorbibnamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authornamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authorfullhash}{d3363f4e0ea6c2664a756af73a23195d}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Healthcare Technology Letters}
+      \field{title}{Endoscopic image enhancement with noise suppression}
+      \field{volume}{5}
+      \field{year}{2018}
+      \field{pages}{154\bibrangedash 157}
+      \range{pages}{4}
+    \endentry
+    \entry{yi2020contextual}{inproceedings}{}
+      \name{author}{5}{}{%
+        {{hash=0af1cd03c125a45cbc6e888d8be51496}{%
+           family={Yi},
+           familyi={Y\bibinitperiod},
+           given={Zili},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=9ed7f7c44faf74ae3e897895ebfa9136}{%
+           family={Tang},
+           familyi={T\bibinitperiod},
+           given={Qiang},
+           giveni={Q\bibinitperiod}}}%
+        {{hash=179a0bbafb3374578bbd62ae14b96cf1}{%
+           family={Azizi},
+           familyi={A\bibinitperiod},
+           given={Shekoofeh},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e77288da2f9d3cc5c3db1b5f545130d2}{%
+           family={Jang},
+           familyi={J\bibinitperiod},
+           given={Daesik},
+           giveni={D\bibinitperiod}}}%
+        {{hash=7c101a8dfa1589129269994b42774943}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Zhan},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{fullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \strng{bibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorbibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authornamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorfullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition}
+      \field{title}{Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting}
+      \field{year}{2020}
+      \field{pages}{7508\bibrangedash 7517}
+      \range{pages}{10}
+    \endentry
   \enddatalist
 \endrefsection
 \endinput
