@@ -905,6 +905,41 @@
       \field{volume}{7}
       \field{year}{2020}
     \endentry
+    \entry{Pertuz2013AnalysisOF}{article}{}
+      \name{author}{3}{}{%
+        {{hash=2b5e81fa1c0c06f14a818a816bf3e449}{%
+           family={Pertuz},
+           familyi={P\bibinitperiod},
+           given={Said},
+           giveni={S\bibinitperiod}}}%
+        {{hash=bd0a13d23738d27809950232bea3790a}{%
+           family={Puig},
+           familyi={P\bibinitperiod},
+           given={Domenec},
+           giveni={D\bibinitperiod}}}%
+        {{hash=878940d343e92a1f1dec9850e6927eb5}{%
+           family={Garc{í}a},
+           familyi={G\bibinitperiod},
+           given={Miguel\bibnamedelima {Á}ngel},
+           giveni={M\bibinitperiod\bibinitdelim Á\bibinitperiod}}}%
+      }
+      \strng{namehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{fullhash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{bibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorbibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authornamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorfullhash}{271a566c3eca48734c812a5543ab91a9}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Pattern Recognit.}
+      \field{title}{Analysis of focus measure operators for shape-from-focus}
+      \field{volume}{46}
+      \field{year}{2013}
+      \field{pages}{1415\bibrangedash 1432}
+      \range{pages}{18}
+    \endentry
     \entry{Kupyn2019DeblurGANv2D}{article}{}
       \name{author}{4}{}{%
         {{hash=38e920469eba0bd39c75f75e9228d92e}{%
@@ -944,41 +979,6 @@
       \field{pages}{8877\bibrangedash 8886}
       \range{pages}{10}
     \endentry
-    \entry{Pertuz2013AnalysisOF}{article}{}
-      \name{author}{3}{}{%
-        {{hash=2b5e81fa1c0c06f14a818a816bf3e449}{%
-           family={Pertuz},
-           familyi={P\bibinitperiod},
-           given={Said},
-           giveni={S\bibinitperiod}}}%
-        {{hash=bd0a13d23738d27809950232bea3790a}{%
-           family={Puig},
-           familyi={P\bibinitperiod},
-           given={Domenec},
-           giveni={D\bibinitperiod}}}%
-        {{hash=878940d343e92a1f1dec9850e6927eb5}{%
-           family={Garc{í}a},
-           familyi={G\bibinitperiod},
-           given={Miguel\bibnamedelima {Á}ngel},
-           giveni={M\bibinitperiod\bibinitdelim Á\bibinitperiod}}}%
-      }
-      \strng{namehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{fullhash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{bibnamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authorbibnamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authornamehash}{271a566c3eca48734c812a5543ab91a9}
-      \strng{authorfullhash}{271a566c3eca48734c812a5543ab91a9}
-      \field{sortinit}{6}
-      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Pattern Recognit.}
-      \field{title}{Analysis of focus measure operators for shape-from-focus}
-      \field{volume}{46}
-      \field{year}{2013}
-      \field{pages}{1415\bibrangedash 1432}
-      \range{pages}{18}
-    \endentry
     \entry{Xia2018EndoscopicIE}{article}{}
       \name{author}{3}{}{%
         {{hash=fd5718b75f093cd4cfe3c3c4b92f6ae6}{%
@@ -1014,6 +1014,51 @@
       \field{pages}{154\bibrangedash 157}
       \range{pages}{4}
     \endentry
+    \entry{Yi2020ContextualRA}{article}{}
+      \name{author}{5}{}{%
+        {{hash=0af1cd03c125a45cbc6e888d8be51496}{%
+           family={Yi},
+           familyi={Y\bibinitperiod},
+           given={Zili},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=9ed7f7c44faf74ae3e897895ebfa9136}{%
+           family={Tang},
+           familyi={T\bibinitperiod},
+           given={Qiang},
+           giveni={Q\bibinitperiod}}}%
+        {{hash=179a0bbafb3374578bbd62ae14b96cf1}{%
+           family={Azizi},
+           familyi={A\bibinitperiod},
+           given={Shekoofeh},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e77288da2f9d3cc5c3db1b5f545130d2}{%
+           family={Jang},
+           familyi={J\bibinitperiod},
+           given={Daesik},
+           giveni={D\bibinitperiod}}}%
+        {{hash=7c101a8dfa1589129269994b42774943}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Zhan},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{fullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \strng{bibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorbibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authornamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorfullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \field{extraname}{1}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}
+      \field{title}{Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting}
+      \field{year}{2020}
+      \field{pages}{7505\bibrangedash 7514}
+      \range{pages}{10}
+    \endentry
     \entry{yi2020contextual}{inproceedings}{}
       \name{author}{5}{}{%
         {{hash=0af1cd03c125a45cbc6e888d8be51496}{%
@@ -1048,6 +1093,7 @@
       \strng{authorbibnamehash}{09103b54f0918f944db821b4449b38e6}
       \strng{authornamehash}{09103b54f0918f944db821b4449b38e6}
       \strng{authorfullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \field{extraname}{2}
       \field{sortinit}{6}
       \field{sortinithash}{7851c86048328b027313775d8fbd2131}
       \field{labelnamesource}{author}

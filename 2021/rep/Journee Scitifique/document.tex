@@ -65,10 +65,10 @@
 \subsection{Context}
 
 \begin{frame}{Context}
-    \begin{alertblock}{Alert}
-        Colorectal cancer is a major health problem.
-    \end{alertblock}
-    \pause
+    % \begin{alertblock}{Alert}
+    %     Colorectal cancer is a major health problem.
+    % \end{alertblock}
+    % \pause
     \begin{block}{Example}
         In 2018, the Colorectal cancer (CRC) is the third (second respectively) leading cause of cancer death in the world (France, respectively).\footnote[frame]{\tiny Bray F, Ferlay J, Soerjomataram I, Siegel RL, Torre LA, Jemal A, "Global cancer statistics 2018: GLOBOCAN estimates of \\ \hspace{0.3cm}incidence and mortality worldwide for 36 cancers in 185 countries", CA Cancer J Clin. 2018 Nov; 68(6):394-424.}$^{,}$\footnote[frame]{\tiny Faivre J, Dancourt V, et. al, Santé Publique France, "Cancer du colon rectum", https://www.santepubliquefrance.fr/\\maladies-et-traumatismes/cancers/cancer-du-colon-rectum}
     \end{block}
@@ -84,7 +84,7 @@
 \subsection{Wireless Capsule Endoscopy}
 \begin{frame}{Wireless Capsule Endoscopy}
 
-    \alertbox{ \textbf{Traditional} endoscopy is often \textcolor{red}{unpleasant} and \textcolor{red}{uncomfortable} for the patient, can be \textcolor{red}{painful}, often requires moderate or deep sedation}
+    \alertbox{ \textbf{Colonoscopy} is often \textcolor{red}{unpleasant} and \textcolor{red}{uncomfortable} for the patient, can be \textcolor{red}{painful}, often requires moderate or deep sedation}
 
     \pause
 
@@ -95,7 +95,7 @@
 \begin{frame}{Objectives}
     % enumeration
     \begin{figure}
-        \includegraphics[scale=0.2]{libs/overallalgo.png}
+        \includegraphics[scale=0.09]{libs/overallalgo.png}
         \caption{Model flowchart for overall algorithm to create a system to identify the name of pathologies}
         \label{fig:overallalgo}
     \end{figure}
@@ -110,9 +110,9 @@
 
     \end{itemize}
 
-    \vspace{0.2cm}
+    % \vspace{0.2cm}
 
-    There are \example{many kinds of distortion} $\&$ in \emph{different levels}
+    There are \example{many types of distortions} $\&$ in \emph{different levels}
 \end{frame}
 
 \subsubsection{Challenges}
@@ -126,9 +126,9 @@
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.4]{libs/examdis3.png}
+        \includegraphics[scale=0.02]{libs/examdis3.png}
         % \vspace{0.4cm}
-        \caption{Illustration of some common WCE images distortions. Left column: \textit{polyp} image with uneven illumination. Middle column: \textit{ulcerative colitis} image with noise. Right column: \textit{polyp} image with blur.}
+        \caption{Illustration of some common WCE images distortions. Left column: \textit{Esophagitis} image with Noise. Right column: \textit{polyp} image with a combination of distortions including blur, uneven illmination and specular reflection.}
         \label{fig:endoscopy}
     \end{figure}
 
@@ -143,7 +143,7 @@
         \centering
         \includegraphics[scale=0.2]{libs/blureffect.png}
         % \vspace{0.4cm}
-        \caption{Degradation of the vehicle detection due to image blurring. Left column: Blurred image with kernel width $\sigma=1.0$ detects 41 vehicles. Middle column: Blurred image with kernel width $\sigma=2.0$ detects 31 vehicles. Right column: Blurred image with kernel width $\sigma=3.0$ detects 10 vehicles.}       
+        \caption{Degradation of the vehicle detection due to image blurring. Left column: Blurred image with kernel width $\sigma=1.0$ detects 41 vehicles. Middle column: Blurred image with kernel width $\sigma=2.0$ detects 31 vehicles. Right column: Blurred image with kernel width $\sigma=3.0$ detects 10 vehicles.}
         \label{fig:challenge}
     \end{figure}
 
@@ -156,7 +156,7 @@
         \caption{Vehicle detections for additive noise with $SNR = {1.81, 4.39, 10.24}$.}
         \label{fig:challengenoise}
     \end{figure}
-    
+
     \begin{figure}
         \centering
         \includegraphics[scale=0.15]{libs/noiseeffect2.png}
@@ -219,10 +219,14 @@
 %     \end{tikzpicture}
 
 % \end{frame}
+\begin{frame}
+    \centering
+    \large How we can handle the distortions to enhance the image quality; therefore, improve the classification performace?
+\end{frame}
 \begin{frame}{Method}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.08]{libs/algorithm.png}
+        \includegraphics[scale=0.09]{libs/algorithm.png}
         \caption{ Flow chart of the pathological classification process}
         \label{fig:al}
     \end{figure}
@@ -312,8 +316,8 @@
     \begin{figure}
         \centering
         \tikz[remember picture]{ \node[anchor=base] (t4) {};}
-        \includegraphics[scale=0.1]{libs/hyperkvasir_ex.png}
-        \caption{Image examples of the various labeled classes for images and/or videos.}
+        \includegraphics[scale=0.4]{libs/hyperkvasir_ex.png}
+        \caption{Image examples of the various labeled classes for images \\ and/or videos.}
     \end{figure}
     \begin{tikzpicture}[remember picture,overlay]   %% use here too
         \path[draw=magenta,thick,->]<1-> (n4) to [bend right] (t4);
@@ -333,89 +337,106 @@
         }
 }
 \begin{frame}{Ourwork}
-    \example{Our work} has three stages including cleaning the existing distortion in HyperKvasir dataset, then we create the model to generate the new artificial distortions. Finally, we add the new artificial distortions to the antidistorted images.\\
-    \begin{tikzpicture}
-        % Dialectics
-        \node[draw] (Original) at (0,2) {Original};
-        \node[draw,fill=black,text=white] (Antidistortion) at (2.3,2) {Antidistortion};
-        \node[draw,fill=gray,text=white] (Cleaner) at (1,4) {Cleaner};
+    \example{Our work} has three stages including:
+    \begin{enumerate}
+        \item Remove the existing distortion in HyperKvasir dataset
+        \item Create the model to generate the new artificial distortions
+        \item Add the new artificial distortions to the distortions-free images.
+    \end{enumerate}
+    % \begin{tikzpicture}
+    %     % Dialectics
+    %     \node[draw] (Original) at (0,2) {Original};
+    %     \node[draw,fill=black,text=white] (Antidistortion) at (2.3,2) {Antidistortion};
+    %     \node[draw,fill=gray,text=white] (Cleaner) at (1,4) {Cleaner};
 
-        \draw node[vertex] (Joint) at (1,2) {};
+    %     \draw node[vertex] (Joint) at (1,2) {};
 
-        \draw[-,draw=blue] (Original) to (Joint);
-        \draw[-,draw=blue] (Antidistortion) to (Joint);
-        \draw[->,draw=blue] (Joint) to (Cleaner);
-        \draw[->,draw=blue] (Cleaner) to[in=180,out=180] (Original);
-        \node at (1.0, 1.0) {\textit{a) Clean the image}};
-        % \onslide<1,2>{\node (step1)  at (3,-1){   \example{Step 1} Cleaning the existing distortion in HyperKvasir dataset};}
-        % \pause
-        % \onslide<2>{
-        %     \node (example)  at (7,2){                \includegraphics[width=0.5\columnwidth]{libs/sigmahist.png} };
-        %     \draw[->,draw=red] (example) to (Cleaner);
-
-
-        % }
+    %     \draw[-,draw=blue] (Original) to (Joint);
+    %     \draw[-,draw=blue] (Antidistortion) to (Joint);
+    %     \draw[->,draw=blue] (Joint) to (Cleaner);
+    %     \draw[->,draw=blue] (Cleaner) to[in=180,out=180] (Original);
+    %     \node at (1.0, 1.0) {\textit{a) Clean the image}};
+    %     % \onslide<1,2>{\node (step1)  at (3,-1){   \example{Step 1} Cleaning the existing distortion in HyperKvasir dataset};}
+    %     % \pause
+    %     % \onslide<2>{
+    %     %     \node (example)  at (7,2){                \includegraphics[width=0.5\columnwidth]{libs/sigmahist.png} };
+    %     %     \draw[->,draw=red] (example) to (Cleaner);
 
 
-        % \pause
-        % Opposition
-        \node[draw] (ArgumentA) at (5,2) {Distortion};
-        \node[draw,fill=yellow] (ArgumentB) at (7.5,2) {Model};
+    %     % }
 
-        \draw[->,draw=blue] (ArgumentA) to (ArgumentB);
 
-        \node at (6., 1.0) {\textit{b) Create model}};
-        % \onslide<3>{\node (step2)  at (3,-1){   \example{Step 2} Creating the model to generate the new artificial distortions};}
-        % \pause
-        % \onslide<4>{
-        %     \node (old)  at (5,4){                \includegraphics[width=0.2\columnwidth]{libs/sigmahist.png} };
-        %     \draw[->,draw=yellow] (old) [bend left] to (ArgumentB);
-        %     \node (example)  at (4,-1){
-        %         \includegraphics[width=0.2\columnwidth]{libs/sb_mask.png} };
-        %     \draw[->,draw=red] (example) [bend right] to (ArgumentB);
-        % }
-        % \pause
-        % Innovation
-        \node[draw,fill=black,text=white] (ArgumentA) at (2.1,-0.5) {Antidistortion};
-        \node[draw,fill=violet,text=white] (ArgumentB) at (5.3,-0.5) {Results};
-        \node[draw,fill=yellow] (ArgumentC) at (3,0.5) {Model};
+    %     % \pause
+    %     % Opposition
+    %     \node[draw] (ArgumentA) at (5,2) {Distortion};
+    %     \node[draw,fill=yellow] (ArgumentB) at (7.5,2) {Model};
 
-        \draw node[vertex] (Joint) at (3.6,-0.5) {};
+    %     \draw[->,draw=blue] (ArgumentA) to (ArgumentB);
 
-        \draw[-] (ArgumentA) to (Joint);
-        \draw[-] (ArgumentB) to (Joint);
-        \draw[->,draw=blue] (ArgumentC) to (Joint);
+    %     \node at (6., 1.0) {\textit{b) Create model}};
+    %     % \onslide<3>{\node (step2)  at (3,-1){   \example{Step 2} Creating the model to generate the new artificial distortions};}
+    %     % \pause
+    %     % \onslide<4>{
+    %     %     \node (old)  at (5,4){                \includegraphics[width=0.2\columnwidth]{libs/sigmahist.png} };
+    %     %     \draw[->,draw=yellow] (old) [bend left] to (ArgumentB);
+    %     %     \node (example)  at (4,-1){
+    %     %         \includegraphics[width=0.2\columnwidth]{libs/sb_mask.png} };
+    %     %     \draw[->,draw=red] (example) [bend right] to (ArgumentB);
+    %     % }
+    %     % \pause
+    %     % Innovation
+    %     \node[draw,fill=black,text=white] (ArgumentA) at (2.1,-0.5) {Antidistortion};
+    %     \node[draw,fill=violet,text=white] (ArgumentB) at (5.3,-0.5) {Results};
+    %     \node[draw,fill=yellow] (ArgumentC) at (3,0.5) {Model};
 
-        \node at (3.5, -1.5) {\textit{c) Add artificial distortion}};
-        % \onslide<5>{\node (step2)  at (3,5){   \example{Step 3} Add the new artificial distortions to the antidistorted images};}
-    \end{tikzpicture}
+    %     \draw node[vertex] (Joint) at (3.6,-0.5) {};
+
+    %     \draw[-] (ArgumentA) to (Joint);
+    %     \draw[-] (ArgumentB) to (Joint);
+    %     \draw[->,draw=blue] (ArgumentC) to (Joint);
+
+    %     \node at (3.5, -1.5) {\textit{c) Add artificial distortion}};
+    %     % \onslide<5>{\node (step2)  at (3,5){   \example{Step 3} Add the new artificial distortions to the antidistorted images};}
+    % \end{tikzpicture}
+    \begin{figure}
+        \includegraphics[scale=0.22]{libs/workoverview.png}
+    \end{figure}
 \end{frame}
 
 
 \subsection{Results}
-\begin{frame}{Results}
-    \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ 
-    \begin{tikzpicture}[remember picture]
-        \node[draw] (input) at (-1,-4) {Original Image};
-        \node[draw,fill=yellow] (noise) at (1.5,-4) {Denoising}; %% use here too
-        \path[draw=magenta,thick,->]<1-> (input) to [bend right] (noise);
+\begin{frame}{1. Remove the existing distortion in HyperKvasir dataset}
+    % \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ 
+    % \begin{tikzpicture}[remember picture]
+    %     \node[draw] (input) at (-1,-4) {Original Image};
+    %     \node[draw,fill=yellow] (noise) at (1.5,-4) {Denoising}; %% use here too
+    %     \path[draw=magenta,thick,->]<1-> (input) to [bend right] (noise);
 
-        \node[draw] (blur) at (3.5,-4) {Debluring};
-        \path[draw=magenta,thick,->]<1-> (noise) to [bend left] (blur);
+    %     \node[draw] (blur) at (3.5,-4) {Debluring};
+    %     \path[draw=magenta,thick,->]<1-> (noise) to [bend left] (blur);
 
-        \node[draw,fill=yellow] (uneven) at (6.3,-6) {Uneven Illumination Correction};
-        \path[draw=magenta,thick,->]<1-> (blur) to [bend left] (uneven);
+    %     \node[draw,fill=yellow] (uneven) at (6.3,-6) {Uneven Illumination Correction};
+    %     \path[draw=magenta,thick,->]<1-> (blur) to [bend left] (uneven);
 
-        \node[draw,fill=white] (sr) at (0,-6) {Specular Reflection Removal};
-        \path[draw=magenta,thick,->]<1-> (uneven) to  (sr);
+    %     \node[draw,fill=white] (sr) at (0,-6) {Specular Reflection Removal};
+    %     \path[draw=magenta,thick,->]<1-> (uneven) to  (sr);
 
-        \node[draw,fill=black, text = white] (anti) at (0,-8) {Antidistorted Image};
-        \path[draw=magenta,thick,->]<1-> (sr) to  (anti);
+    %     \node[draw,fill=black, text = white] (anti) at (0,-8) {Antidistorted Image};
+    %     \path[draw=magenta,thick,->]<1-> (sr) to  (anti);
 
-        \node[draw,fill=gray] (add) at (6,-8) {Artificial Distortion Model};
-        \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
+    %     \node[draw,fill=gray] (add) at (6,-8) {Artificial Distortion Model};
+    %     \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
 
-    \end{tikzpicture}
+    % \end{tikzpicture}
+    \begin{figure}
+        \includegraphics[scale=0.25]{libs/stage1.png}
+        \caption{Process to remove the existing distortion in HyperKvasir dataset. The original image will go through four enhancement blocks corresponding to four common distortions: Noise, Blur, Uneven Illumination and Specular Reflection.}
+    \end{figure}
+\end{frame}
+\begin{frame}{ 1.1 Denoising}
+    \begin{figure}
+        \includegraphics[scale=0.25]{libs/stage1.1.png}
+    \end{figure}
 \end{frame}
 % \begin{frame}{Results}
 
@@ -495,131 +516,133 @@
 %     \end{itemize}
 % \end{frame}
 
-\begin{frame}{Results on Image denoising}
-    For an image $I$ with width $W$ and height $H$, the estimated standard deviation $\sigma_n$ of noise is estimated as\footnote[frame]{Immerkær, John. “Fast Noise Variance Estimation.” Comput. Vis. Image \\ Underst. 64 (1996): 300-302.}:
-\begin{equation}
-    \sigma_n = \sqrt{\frac{\pi}{2}}\frac{1}{6(W-2)(H-2)}\sum_{x,y}|{I(x,y)*M_N}|
-\end{equation}
+\begin{frame}{\small Noise standard deviation estimation}
+    For an image $I$ with width $W$ and height $H$, the estimated standard deviation $\sigma_n$ of noise is estimated as\footnote[frame]{\tiny Immerkær, John. “Fast Noise Variance Estimation.” Comput. Vis. Image Underst. 64 (1996): 300-302.}:
+    \begin{equation}
+        \sigma_n = \sqrt{\frac{\pi}{2}}\frac{1}{6(W-2)(H-2)}\sum_{x,y}|{I(x,y)*M_N}|
+    \end{equation}
     where $M_N = 2(L_2-L_1)$ with the given $L_1, L_2$:
-\begin{equation}
-    L_1 = \begin{bmatrix}
-0 & 1 & 0\\
-1 & -4 & 1\\
-0 & 1 & 0
-\end{bmatrix}
-\end{equation}
-\begin{equation}
-    L_2 = \begin{bmatrix}
-1 & 0 & 1\\
-0 & -4 & 0\\
-1 & 0 & 1
-\end{bmatrix}
-\end{equation}
+    \begin{equation}
+        L_1 = \begin{bmatrix}
+            0 & 1  & 0 \\
+            1 & -4 & 1 \\
+            0 & 1  & 0
+        \end{bmatrix}
+    \end{equation}
+    \begin{equation}
+        L_2 = \begin{bmatrix}
+            1 & 0  & 1 \\
+            0 & -4 & 0 \\
+            1 & 0  & 1
+        \end{bmatrix}
+    \end{equation}
 
 \end{frame}
 
 
-\begin{frame}{Results on Image denoising}
-\begin{figure}
-\centering
-\includegraphics[width=0.3\textwidth]{libs/model.png}
-\caption{The Autoencoder model used for denoising}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}{Results on Image denoising}
-
-    % \begin{itemize}
-        % \only<1-4>{\item Blur\\
-              \only<1-3>{
-                  \begin{tikzpicture}[remember picture]
-
-                      \node (in)  at (-3,0){
-                          \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
-                      \node at (-3.0, -3.0) {\small\textit{a) Original image}};
-                      \pause
-                      \node (noisy1)  at (0,0){
-                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
-                      \node at (0.0, -3.0) {\small\textit{b) Denoised image}};
-                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-                      \pause
-                      \only<3>{
-                          \node (tabnoise)  at (4,0){
-                              \begin{adjustbox}{width=0.5\textwidth}
-                                  \begin{tabular}{|l|c|l|c|l|}
-                                      \hline
-                                                                   & \multicolumn{2}{c|}{\textbf{Original image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
-                                      \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{0.75}                     & \multicolumn{2}{c|}{0.7}                     \\ \hline
-                                      \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{1.45}                     & \multicolumn{2}{c|}{0.96}                     \\ \hline
-                                      \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{1.1}                     & \multicolumn{2}{c|}{0.90}                     \\ \hline
-                                  \end{tabular}
-                              \end{adjustbox}};
-                          \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The estimated noise standard deviation before and after denoising.}};
-
-                      }
-                  \end{tikzpicture}}
-            %   }
-
-
-    % \end{itemize}
-\end{frame}
-
-\begin{frame}{Results on Image deblurring}
+\begin{frame}{\small Autoencoder used for denoising}
     \begin{figure}
-    \centering
-    \includegraphics[width=1\textwidth]{libs/pipeline.jpg}
-    \caption{The DeblurGAN v2 model used for deblurring \cite{Kupyn2019DeblurGANv2D}}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/aebuilt.drawio.png}
+        \caption{The Autoencoder model used for denoising}
     \end{figure}
-    
-    \end{frame}
 
-\begin{frame}{Results on Image deblurring}
+\end{frame}
 
-    \begin{itemize}
-        \only<1-4>{\item Blur\\
-              \only<1-4>{
-                  \begin{tikzpicture}[remember picture]
+% \begin{frame}{\small Results on Image denoising}
 
-                      \node (in)  at (-3,0){
-                          \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
-                      \node at (-3.0, -3.0) {\small\textit{a) Denoised}};
-                      \pause
-                      \node (noisy1)  at (-1,0){
-                          \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
-                      \node at (-1.0, -3.0) {\small\textit{b) Deblurred}};
-                      \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
-                      \pause
-                      \only<3>{\node (equablur)  at (3.5,0){
-                              $\begin{aligned}
-                                      index = var(\mathcal{L}(f(x,y)))
-                                  \end{aligned}$};
-                          \node[text width=5.5cm] at (3.5, -2.0) {\small\textit{Apply the \example{variance of the Laplacian}\cite{Pertuz2013AnalysisOF} method to your own photos to detect the amount of blurring.}};
-                      }
-                      \pause
-                      \only<4>{
-                          \node (tabnoise)  at (3.5,0){
-                              \begin{adjustbox}{width=0.5\textwidth}
-                                  \begin{tabular}{|l|c|l|c|l|}
-                                      \hline
-                                                                   & \multicolumn{2}{c|}{\textbf{Denoised-image}} & \multicolumn{2}{c|}{\textbf{Deblured- mage}} \\ \hline
-                                      \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{378}                     & \multicolumn{2}{c|}{501}                     \\ \hline
-                                      \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{321}                     & \multicolumn{2}{c|}{428}                     \\ \hline
-                                      \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{224}                     & \multicolumn{2}{c|}{367}                     \\ \hline
-                                  \end{tabular}
-                              \end{adjustbox}};
-                          \node[text width=5cm] at (3.5, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The variance Laplacian Index before and after deblurring.}};
+%     % \begin{itemize}
+%         % \only<1-4>{\item Blur\\
+%             %   \only<1-3>{
+%                   \begin{tikzpicture}[remember picture]
 
-                      }
-                  \end{tikzpicture}}
-              }
+%                       \node (in)  at (-3,0){
+%                           \includegraphics[width=0.15\columnwidth]{libs/denoised.png} };
+%                       \node at (-3.0, -3.0) {\small\textit{a) Original image}};
+%                     %   \pause
+%                       \node (noisy1)  at (0,0){
+%                           \includegraphics[width=0.15\columnwidth]{libs/deblured.png} };
+%                       \node at (0.0, -3.0) {\small\textit{b) Denoised image}};
+%                       \path[draw=magenta,thick,->]<1-> (in) to  (noisy1);
+%                     %   \pause
+%                       \only<3>{
+%                           \node (tabnoise)  at (4,0){
+%                               \begin{adjustbox}{width=0.5\textwidth}
+%                                   \begin{tabular}{|l|c|l|c|l|}
+%                                       \hline
+%                                                                    & \multicolumn{2}{c|}{\textbf{Original image}} & \multicolumn{2}{c|}{\textbf{Denoised-image}} \\ \hline
+%                                       \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{0.75}                     & \multicolumn{2}{c|}{0.7}                     \\ \hline
+%                                       \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{1.45}                     & \multicolumn{2}{c|}{0.96}                     \\ \hline
+%                                       \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{1.1}                     & \multicolumn{2}{c|}{0.90}                     \\ \hline
+%                                   \end{tabular}
+%                               \end{adjustbox}};
+%                           \node[text width=5cm] at (4.0, -2.0) {\small{\textcolor{blue_theme}{Table 5:} The estimated noise standard deviation\footnote[frame]{Immerkær, John. “Fast Noise Variance Estimation.” Comput. Vis. \\Image Underst. 64 (1996): 300-302.} before and after denoising.}};
+
+%                       }
+%                   \end{tikzpicture}
+%                 %   }
+%             %   }
 
 
-    \end{itemize}
+%     % \end{itemize}
+% \end{frame}
+
+\begin{frame}{\small Results on Image denoising}
+    \begin{figure}
+        \includegraphics[width=0.6\textwidth]{libs/denoiseres.png}
+        \caption{The results of the denoising experiment. The estimated noise standard deviation after denoising has been decreased showing the effectiveness of denoising method.}
+    \end{figure}
+    % \begin{table}
+    %     \begin{adjustbox}{width=0.5\textwidth}
+    %         \begin{tabular}{|l|c|l|c|l|}
+    %             \hline
+    %                                          & \multicolumn{2}{c|}{\textbf{Original image}} & \multicolumn{2}{c|}{\textbf{Denoised-image}} \\ \hline
+    %             \textit{\textbf{First exp}}  & \multicolumn{2}{c|}{0.75}                    & \multicolumn{2}{c|}{0.7}                     \\ \hline
+    %             \textit{\textbf{Second exp}} & \multicolumn{2}{c|}{1.45}                    & \multicolumn{2}{c|}{0.96}                    \\ \hline
+    %             \textit{\textbf{Third exp}}  & \multicolumn{2}{c|}{1.1}                     & \multicolumn{2}{c|}{0.90}                    \\ \hline
+    %         \end{tabular}
+    %     \end{adjustbox}
+    % \end{table}
+\end{frame}
+
+\begin{frame}{ 1.2 Debluring}
+    \begin{figure}
+        \includegraphics[scale=0.25]{libs/stage1.2.png}
+    \end{figure}
 \end{frame}
 
 
-\begin{frame}{Results on Uneven Illumination Correction}
+
+\begin{frame}{\small Blurring index to estimate the level of blur}
+
+   
+    Apply the \example{variance of the Laplacian}\footnote[frame]{\tiny Pertuz, Said et al. “Analysis of focus measure operators for shape-from-focus.” Pattern Recognit. 46 (2013): 1415-1432.}\cite{Pertuz2013AnalysisOF} method to your own images to detect the amount of blurring.
+    \begin{equation}
+        index_b = var(\mathcal{L}(f(x,y))),
+    \end{equation}
+    where $f(x,y)$ is the input image 
+\end{frame}
+\begin{frame}{\small DeblurGAN-v2\footnote[frame]{\tiny Kupyn, Orest et al. “DeblurGAN-v2: Deblurring (Orders-of-Magnitude) Faster and Better.” 2019 IEEE/CVF \\International Conference on Computer Vision (ICCV) (2019): 8877-8886.} model for deblurring }
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/pipeline.jpg}
+        \caption{The DeblurGAN v2 model used for deblurring \cite{Kupyn2019DeblurGANv2D}}
+    \end{figure}
+
+\end{frame}
+\begin{frame}{\small Results on image deblurring}
+    \begin{figure}
+        \includegraphics[width=0.6\textwidth]{libs/deblurres.png}
+        \caption{The deblured result. The Laplacian index after deblurring has been increased. The region of number shows clearly effectiveness of deblurring method.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{ 1.3 Uneven Illumination Correction}
+    \begin{figure}
+        \includegraphics[scale=0.25]{libs/stage1.3.png}
+    \end{figure}
+\end{frame}
+\begin{frame}{\small Uneven Illumination correction\footnote[frame]{\tiny Xia, Wenyao et al. “Endoscopic image enhancement with noise suppression.” Healthcare Technology Letters 5 (2018): 154 - 157.} process}
 
     \begin{figure}
         \centering
@@ -629,46 +652,47 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{\small Results on Uneven Illumination Correction}
 
-        \begin{figure}
-            \centering
-            \includegraphics[width=1\textwidth]{libs/illres2.png}
-            \caption{Uneven Illumination Correction result. The first row is the original image with the some uneven illmination region (red circle). In the second column, these regions have been corrected (green circle)}
-            \label{uneven_illumination_correction2}
-        \end{figure}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/illres2.png}
+        \caption{Uneven Illumination Correction result. The first row is the original image with the some uneven illmination region (cyan circle). In the second column, these regions have been corrected (green circle)}
+        \label{uneven_illumination_correction2}
+    \end{figure}
+\end{frame}
+\begin{frame}{ 1.3 Specular Reflection Removal}
+    \begin{figure}
+        \includegraphics[scale=0.25]{libs/stage1.4.png}
+    \end{figure}
+\end{frame}
+\begin{frame}{\small Specular Reflection removal\footnote[frame]{\tiny Yi, Zili et al. “Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting.” 2020 IEEE/CVF \\ Conference on Computer Vision and Pattern Recognition (CVPR) (2020): 7505-7514.}}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{libs/srover.png}
+        \caption{The overall pipeline of the method: (top) Contextual Residual Aggregation (CRA) mechanism, (bottom) the architecture of the generator \cite{Yi2020ContextualRA}}
+        \label{uneven_illumination_correction}
+    \end{figure}
+\end{frame}
+\begin{frame}{\small Results on Specular Reflection Removal}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{libs/srres3.png}
+        \caption{Specular Reflection Removal result. First columns: the input image with specular references. The third column is the result of the Specular Reflection inpainted image using the SR mask (second column) insprired from \cite{yi2020contextual}.}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{Results on Specular Reflection Removal}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\textwidth]{libs/srres.png}
-    \caption{Specular Reflection Removal result. First columns: the input image with specular references. The third column is the result of the Specular Reflection inpainted image using the SR mask (second column) insprired from \cite{yi2020contextual}.} 
-\end{figure}
-\end{frame}
-
-\begin{frame}{Results}
-
-    \begin{tikzpicture}[remember picture]
-
-        \node[text width=10cm](text) at (0,2) {In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.};
-
-        \node[draw,fill=black, text = white] (anti) at (-2,0) {Antidistorted Image};
-        \pause
-        \node[draw,fill=gray] (add) at (3,0) {Artificial Distortion Model};
-        \path[draw=magenta,thick,->,dashed]<1-> (anti) to  (add);
-        \pause
-        \node[draw,fill=yellow] (res) at (3,-2) {Results};
-        \path[draw=magenta,thick,->]<1-> (add) to  (res);
-
-
-
-    \end{tikzpicture}
+\begin{frame}{2. Create model and add the artificial distortions to the distortions-free images}
+    In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.
+    \begin{figure}
+        \includegraphics[width=\textwidth]{libs/stage2.png}
+    \end{figure}
 \end{frame}
 
 
-\begin{frame}{Result images after adding Noise}
+\begin{frame}{2.1 Result images after adding Noise}
 
     % % \begin{itemize}
     %     % \only<1-3>{\item Noise\\
@@ -703,7 +727,7 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}{Result images after adding Blur}
+\begin{frame}{2.2 Result images after adding Blur}
 
     % % \begin{itemize}
     %     % \only<1-3>{\item Blur\\
@@ -738,7 +762,7 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}{Result images after adding Uneven Illumination}
+\begin{frame}{2.3 Result images after adding Uneven Illumination}
 
     % % \begin{itemize}
     %     % {\item Uneven Illumination\\
@@ -765,7 +789,7 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}{Result images after adding Specular Reflection}
+\begin{frame}{2.4 Result images after adding Specular Reflection}
 
     % % \begin{itemize}
     %     % \only<1-3>{\item Specular Reflection\\

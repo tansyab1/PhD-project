@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.9.28)  8 OCT 2021 13:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.9.28)  15 OCT 2021 18:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1262,7 +1262,11 @@ Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
 Package csquotes Info: Redefining alias 'default' -> 'english'.
- (/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.aux)
+ (/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.aux
+
+LaTeX Warning: Label `uneven_illumination_correction' multiply defined.
+
+)
 \openout1 = `document.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 43.
@@ -1468,7 +1472,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-<libs/logoUSPN-site.png, id=86, 1003.75pt x 433.62pt>
+<libs/logoUSPN-site.png, id=93, 1003.75pt x 433.62pt>
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
 Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 51.
@@ -1481,12 +1485,12 @@ Overfull \hbox (66.00436pt too wide) has occurred while \output is active
 
 Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
-<libs/logoLAGA.png, id=88, 217.81375pt x 193.72375pt>
+<libs/logoLAGA.png, id=95, 217.81375pt x 193.72375pt>
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
 Package pdftex.def Info: libs/logoLAGA.png  used on input line 51.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
-<libs/logoL2TI.png, id=89, 448.67625pt x 283.0575pt>
+<libs/logoL2TI.png, id=96, 448.67625pt x 283.0575pt>
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 51.
@@ -1617,7 +1621,7 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 80.
 ]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 80.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 93.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1629,11 +1633,11 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 80.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 93.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 80.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 93.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [5
 
@@ -1661,34 +1665,20 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 93.
  [6
 
 ]
-File: libs/logoUSPN-site.png Graphic file (type png)
-<use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 93.
-(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
-
-Overfull \hbox (66.00436pt too wide) has occurred while \output is active
- []
- []
-
-
-Overfull \vbox (31.0536pt too high) has occurred while \output is active []
-
-File: libs/logoLAGA.png Graphic file (type png)
-<use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 93.
-(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
-File: libs/logoL2TI.png Graphic file (type png)
-<use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 93.
-(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [7
-
-]
-<libs/overallalgo.png, id=411, 1427.3325pt x 343.2825pt>
+<libs/overallalgo.png, id=428, 3568.33125pt x 858.20625pt>
 File: libs/overallalgo.png Graphic file (type png)
 <use libs/overallalgo.png>
 Package pdftex.def Info: libs/overallalgo.png  used on input line 116.
-(pdftex.def)             Requested size: 285.46144pt x 68.65527pt.
+(pdftex.def)             Requested size: 321.13596pt x 77.23523pt.
+
+Overfull \hbox (13.84608pt too wide) in paragraph at lines 116--116
+ [] 
+ []
+
+
+Overfull \vbox (1.15074pt too high) detected at line 116
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
 Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 116.
@@ -1709,14 +1699,18 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 116.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [8
+ [7
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.png>]
-<libs/examdis3.png, id=452, 592.2125pt x 182.6825pt>
+<libs/examdis3.png, id=476, 10283.41875pt x 6087.74374pt>
 File: libs/examdis3.png Graphic file (type png)
 <use libs/examdis3.png>
 Package pdftex.def Info: libs/examdis3.png  used on input line 135.
-(pdftex.def)             Requested size: 236.8808pt x 73.07169pt.
+(pdftex.def)             Requested size: 205.7118pt x 121.78058pt.
+
+Overfull \vbox (1.95692pt too high) detected at line 135
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
 Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 135.
@@ -1737,7 +1731,7 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 135.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [9
+ [8
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/examdis3.png>]
 File: libs/logoUSPN-site.png Graphic file (type png)
@@ -1760,10 +1754,10 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 139.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [10
+ [9
 
 ]
-<libs/blureffect.png, id=530, 1147.28625pt x 668.4975pt>
+<libs/blureffect.png, id=568, 1147.28625pt x 668.4975pt>
 File: libs/blureffect.png Graphic file (type png)
 <use libs/blureffect.png>
 Package pdftex.def Info: libs/blureffect.png  used on input line 150.
@@ -1792,15 +1786,15 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 150.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [11
+ [10
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/blureffect.png>]
-<libs/noiseeffect.png, id=571, 1409.265pt x 458.71375pt>
+<libs/noiseeffect.png, id=616, 1409.265pt x 458.71375pt>
 File: libs/noiseeffect.png Graphic file (type png)
 <use libs/noiseeffect.png>
 Package pdftex.def Info: libs/noiseeffect.png  used on input line 167.
 (pdftex.def)             Requested size: 211.38063pt x 68.8041pt.
-<libs/noiseeffect2.png, id=572, 1309.89375pt x 393.47pt>
+<libs/noiseeffect2.png, id=617, 1309.89375pt x 393.47pt>
 File: libs/noiseeffect2.png Graphic file (type png)
 <use libs/noiseeffect2.png>
 Package pdftex.def Info: libs/noiseeffect2.png  used on input line 167.
@@ -1829,10 +1823,10 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 167.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [12
+ [11
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseeffect.png> </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseeffect2.png>]
-<libs/acceffect.png, id=613, 1293.83376pt x 752.8125pt>
+<libs/acceffect.png, id=666, 1293.83376pt x 752.8125pt>
 File: libs/acceffect.png Graphic file (type png)
 <use libs/acceffect.png>
 Package pdftex.def Info: libs/acceffect.png  used on input line 178.
@@ -1857,17 +1851,12 @@ File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
 Package pdftex.def Info: libs/logoL2TI.png  used on input line 178.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [13
+ [12
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/acceffect.png>]
-<libs/algorithm.png, id=654, 3417.76875pt x 2112.89375pt>
-File: libs/algorithm.png Graphic file (type png)
-<use libs/algorithm.png>
-Package pdftex.def Info: libs/algorithm.png  used on input line 229.
-(pdftex.def)             Requested size: 273.4271pt x 169.03496pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 229.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 225.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1879,18 +1868,51 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 229.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 225.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 229.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 225.
+(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
+ [13
+
+]
+<libs/algorithm.png, id=758, 3467.95625pt x 1560.83125pt>
+File: libs/algorithm.png Graphic file (type png)
+<use libs/algorithm.png>
+Package pdftex.def Info: libs/algorithm.png  used on input line 233.
+(pdftex.def)             Requested size: 312.1026pt x 140.46875pt.
+
+Overfull \hbox (4.81273pt too wide) in paragraph at lines 233--233
+ [] 
+ []
+
+File: libs/logoUSPN-site.png Graphic file (type png)
+<use libs/logoUSPN-site.png>
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 233.
+(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
+
+Overfull \hbox (66.00436pt too wide) has occurred while \output is active
+ []
+ []
+
+
+Overfull \vbox (31.0536pt too high) has occurred while \output is active []
+
+File: libs/logoLAGA.png Graphic file (type png)
+<use libs/logoLAGA.png>
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 233.
+(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
+File: libs/logoL2TI.png Graphic file (type png)
+<use libs/logoL2TI.png>
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 233.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [14
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/algorithm.png>]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 294.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 298.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1902,18 +1924,18 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 294.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 298.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 294.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 298.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [15
 
 ]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 294.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 298.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1925,18 +1947,18 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 294.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 298.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 294.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 298.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [16
 
 ]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 294.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 298.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1948,23 +1970,27 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 294.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 298.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 294.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 298.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [17
 
 ]
-<libs/hyperkvasir_ex.png, id=880, 1913.1475pt x 772.8875pt>
+<libs/hyperkvasir_ex.png, id=1011, 468.75125pt x 214.8025pt>
 File: libs/hyperkvasir_ex.png Graphic file (type png)
 <use libs/hyperkvasir_ex.png>
-Package pdftex.def Info: libs/hyperkvasir_ex.png  used on input line 322.
-(pdftex.def)             Requested size: 191.32596pt x 77.29327pt.
+Package pdftex.def Info: libs/hyperkvasir_ex.png  used on input line 326.
+(pdftex.def)             Requested size: 187.49716pt x 85.91946pt.
+
+Overfull \vbox (12.64131pt too high) detected at line 326
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 322.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 326.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -1976,22 +2002,26 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 322.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 326.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 322.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 326.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [18
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/hyperkvasir_ex.png>]
 File: libs/hyperkvasir_ex.png Graphic file (type png)
 <use libs/hyperkvasir_ex.png>
-Package pdftex.def Info: libs/hyperkvasir_ex.png  used on input line 322.
-(pdftex.def)             Requested size: 191.32596pt x 77.29327pt.
+Package pdftex.def Info: libs/hyperkvasir_ex.png  used on input line 326.
+(pdftex.def)             Requested size: 187.49716pt x 85.91946pt.
+
+Overfull \vbox (12.64131pt too high) detected at line 326
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 322.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 326.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2003,18 +2033,28 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 322.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 326.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 322.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 326.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [19
 
 ]
+<libs/workoverview.png, id=1102, 1481.535pt x 501.875pt>
+File: libs/workoverview.png Graphic file (type png)
+<use libs/workoverview.png>
+Package pdftex.def Info: libs/workoverview.png  used on input line 404.
+(pdftex.def)             Requested size: 325.9387pt x 110.41283pt.
+
+Overfull \hbox (18.64883pt too wide) in paragraph at lines 404--404
+ [] 
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 392.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 404.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2026,22 +2066,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 392.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 404.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 392.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 404.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [20
 
-]
-Overfull \hbox (3.32715pt too wide) in paragraph at lines 419--419
-[][]  
- []
-
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/workoverview.png>]
+<libs/stage1.png, id=1147, 523.9575pt x 564.1075pt>
+File: libs/stage1.png Graphic file (type png)
+<use libs/stage1.png>
+Package pdftex.def Info: libs/stage1.png  used on input line 435.
+(pdftex.def)             Requested size: 130.98904pt x 141.02652pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 419.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 435.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2053,18 +2094,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 419.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 435.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 419.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 435.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [21
 
-]
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage1.png>]
+<libs/stage1.1.png, id=1193, 523.9575pt x 564.1075pt>
+File: libs/stage1.1.png Graphic file (type png)
+<use libs/stage1.1.png>
+Package pdftex.def Info: libs/stage1.1.png  used on input line 440.
+(pdftex.def)             Requested size: 130.98904pt x 141.02652pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 519.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 440.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2076,23 +2122,18 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 519.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 440.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 519.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 440.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [22
 
-]
-<libs/model.png, id=1070, 546.04pt x 1073.00874pt>
-File: libs/model.png Graphic file (type png)
-<use libs/model.png>
-Package pdftex.def Info: libs/model.png  used on input line 529.
-(pdftex.def)             Requested size: 92.1879pt x 181.14836pt.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage1.1.png>]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 529.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 540.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2104,28 +2145,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 529.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 540.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 529.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 540.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [23
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/model.png>]
-<libs/denoised.png, id=1107, 259.97125pt x 792.9625pt>
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-<libs/deblured.png, id=1108, 258.9675pt x 807.015pt>
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
+]
+<libs/aebuilt.drawio.png, id=1286, 2089.8075pt x 1146.2825pt>
+File: libs/aebuilt.drawio.png Graphic file (type png)
+<use libs/aebuilt.drawio.png>
+Package pdftex.def Info: libs/aebuilt.drawio.png  used on input line 550.
+(pdftex.def)             Requested size: 307.28987pt x 168.54173pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 566.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 550.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2137,26 +2173,27 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 566.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 550.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 566.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 550.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [24
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/denoised.png> </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/deblured.png>]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/aebuilt.drawio.png>]
+<libs/denoiseres.png, id=1331, 2431.0825pt x 2284.535pt>
+File: libs/denoiseres.png Graphic file (type png)
+<use libs/denoiseres.png>
+Package pdftex.def Info: libs/denoiseres.png  used on input line 606.
+(pdftex.def)             Requested size: 184.3758pt x 173.24998pt.
+
+Overfull \vbox (1.72107pt too high) detected at line 606
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 566.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 606.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2168,33 +2205,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 566.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 606.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 566.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 606.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [25
 
-]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 566.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
-LaTeX Font Info:    Font shape `T1/lmss/bx/it' in size <10> not available
-(Font)              Font shape `T1/lmss/bx/sl' tried instead on input line 566.
-
-Overfull \hbox (9.31871pt too wide) in paragraph at lines 566--566
-[][]  
- []
-
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/denoiseres.png>]
+<libs/stage1.2.png, id=1377, 523.9575pt x 564.1075pt>
+File: libs/stage1.2.png Graphic file (type png)
+<use libs/stage1.2.png>
+Package pdftex.def Info: libs/stage1.2.png  used on input line 612.
+(pdftex.def)             Requested size: 130.98904pt x 141.02652pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 566.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 612.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2206,23 +2233,18 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 566.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 612.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 566.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 612.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [26
 
-]
-<libs/pipeline.jpg, id=1225, 3652.64626pt x 1295.84125pt>
-File: libs/pipeline.jpg Graphic file (type jpg)
-<use libs/pipeline.jpg>
-Package pdftex.def Info: libs/pipeline.jpg  used on input line 575.
-(pdftex.def)             Requested size: 307.28987pt x 109.0081pt.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage1.2.png>]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 575.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 624.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2234,26 +2256,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 575.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 624.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 575.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 624.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [27
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/pipeline.jpg>]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
+]
+<libs/pipeline.jpg, id=1468, 3652.64626pt x 1295.84125pt>
+File: libs/pipeline.jpg Graphic file (type jpg)
+<use libs/pipeline.jpg>
+Package pdftex.def Info: libs/pipeline.jpg  used on input line 632.
+(pdftex.def)             Requested size: 307.28987pt x 109.0081pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 619.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 632.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2265,26 +2284,27 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 619.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 632.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 619.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 632.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [28
 
-]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/pipeline.jpg>]
+<libs/deblurres.png, id=1516, 2549.525pt x 2441.12pt>
+File: libs/deblurres.png Graphic file (type png)
+<use libs/deblurres.png>
+Package pdftex.def Info: libs/deblurres.png  used on input line 638.
+(pdftex.def)             Requested size: 184.3758pt x 176.52037pt.
+
+Overfull \vbox (4.99146pt too high) detected at line 638
+ []
+
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 619.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 638.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2296,33 +2316,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 619.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 638.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 619.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 638.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [29
 
-]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
-LaTeX Font Info:    Font shape `T1/lmss/bx/it' in size <9> not available
-(Font)              Font shape `T1/lmss/bx/sl' tried instead on input line 619.
-
-Overfull \hbox (5.96086pt too wide) in paragraph at lines 619--619
-[][] 
- []
-
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/deblurres.png>]
+<libs/stage1.3.png, id=1561, 523.9575pt x 564.1075pt>
+File: libs/stage1.3.png Graphic file (type png)
+<use libs/stage1.3.png>
+Package pdftex.def Info: libs/stage1.3.png  used on input line 644.
+(pdftex.def)             Requested size: 130.98904pt x 141.02652pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 619.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 644.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2334,59 +2344,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 619.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 644.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 619.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 644.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [30
 
-]
-File: libs/denoised.png Graphic file (type png)
-<use libs/denoised.png>
-Package pdftex.def Info: libs/denoised.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 140.58545pt.
-File: libs/deblured.png Graphic file (type png)
-<use libs/deblured.png>
-Package pdftex.def Info: libs/deblured.png  used on input line 619.
-(pdftex.def)             Requested size: 46.0916pt x 143.63097pt.
-
-Overfull \hbox (4.5392pt too wide) in paragraph at lines 619--619
-[][] 
- []
-
-File: libs/logoUSPN-site.png Graphic file (type png)
-<use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 619.
-(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
-
-Overfull \hbox (66.00436pt too wide) has occurred while \output is active
- []
- []
-
-
-Overfull \vbox (31.0536pt too high) has occurred while \output is active []
-
-File: libs/logoLAGA.png Graphic file (type png)
-<use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 619.
-(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
-File: libs/logoL2TI.png Graphic file (type png)
-<use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 619.
-(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [31
-
-]
-<libs/illres.png, id=1417, 2236.355pt x 885.3075pt>
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage1.3.png>]
+<libs/illres.png, id=1607, 2236.355pt x 885.3075pt>
 File: libs/illres.png Graphic file (type png)
 <use libs/illres.png>
-Package pdftex.def Info: libs/illres.png  used on input line 630.
+Package pdftex.def Info: libs/illres.png  used on input line 653.
 (pdftex.def)             Requested size: 307.28987pt x 121.64572pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 630.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 653.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2398,23 +2372,55 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 630.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 653.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 630.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 653.
+(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
+ [31
+
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/illres.png>]
+<libs/illres2.png, id=1657, 2754.29pt x 1614.03pt>
+File: libs/illres2.png Graphic file (type png)
+<use libs/illres2.png>
+Package pdftex.def Info: libs/illres2.png  used on input line 663.
+(pdftex.def)             Requested size: 307.28987pt x 180.05591pt.
+
+Overfull \vbox (8.527pt too high) detected at line 663
+ []
+
+File: libs/logoUSPN-site.png Graphic file (type png)
+<use libs/logoUSPN-site.png>
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 663.
+(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
+
+Overfull \hbox (66.00436pt too wide) has occurred while \output is active
+ []
+ []
+
+
+Overfull \vbox (31.0536pt too high) has occurred while \output is active []
+
+File: libs/logoLAGA.png Graphic file (type png)
+<use libs/logoLAGA.png>
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 663.
+(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
+File: libs/logoL2TI.png Graphic file (type png)
+<use libs/logoL2TI.png>
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 663.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [32
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/illres.png>]
-<libs/illres2.png, id=1459, 3739.9725pt x 2077.7625pt>
-File: libs/illres2.png Graphic file (type png)
-<use libs/illres2.png>
-Package pdftex.def Info: libs/illres2.png  used on input line 640.
-(pdftex.def)             Requested size: 307.28987pt x 170.69467pt.
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/illres2.png>]
+<libs/stage1.4.png, id=1703, 523.9575pt x 564.1075pt>
+File: libs/stage1.4.png Graphic file (type png)
+<use libs/stage1.4.png>
+Package pdftex.def Info: libs/stage1.4.png  used on input line 668.
+(pdftex.def)             Requested size: 130.98904pt x 141.02652pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 640.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 668.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2426,27 +2432,28 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 640.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 668.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 640.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 668.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [33
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/illres2.png>]
-<libs/srres.png, id=1499, 4081.2475pt x 2378.8875pt>
-File: libs/srres.png Graphic file (type png)
-<use libs/srres.png>
-Package pdftex.def Info: libs/srres.png  used on input line 649.
-(pdftex.def)             Requested size: 307.28987pt x 179.09854pt.
-
-Overfull \vbox (17.06963pt too high) detected at line 649
- []
-
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage1.4.png>]
+<libs/srover.png, id=1749, 2969.0925pt x 1786.675pt>
+File: libs/srover.png Graphic file (type png)
+<use libs/srover.png>
+Package pdftex.def Info: libs/srover.png  used on input line 677.
+(pdftex.def)             Requested size: 276.559pt x 166.40987pt.
+pdfTeX warning (ext4): destination with the same identifier (name{uneven_illumination_correction}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.677 \end{frame}
+                 
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 649.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 677.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2458,18 +2465,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 649.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 677.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 649.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 677.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [34
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srres.png>]
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srover.png>]
+<libs/srres3.png, id=1797, 3950.76pt x 1108.14pt>
+File: libs/srres3.png Graphic file (type png)
+<use libs/srres3.png>
+Package pdftex.def Info: libs/srres3.png  used on input line 685.
+(pdftex.def)             Requested size: 307.28987pt x 86.18431pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 668.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 685.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2481,18 +2493,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 668.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 685.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 668.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 685.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [35
 
-]
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srres3.png>]
+<libs/stage2.png, id=1846, 1481.535pt x 501.875pt>
+File: libs/stage2.png Graphic file (type png)
+<use libs/stage2.png>
+Package pdftex.def Info: libs/stage2.png  used on input line 692.
+(pdftex.def)             Requested size: 307.28987pt x 104.095pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 668.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 692.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2504,46 +2521,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 668.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 692.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 668.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 692.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [36
 
-]
-File: libs/logoUSPN-site.png Graphic file (type png)
-<use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 668.
-(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
-
-Overfull \hbox (66.00436pt too wide) has occurred while \output is active
- []
- []
-
-
-Overfull \vbox (31.0536pt too high) has occurred while \output is active []
-
-File: libs/logoLAGA.png Graphic file (type png)
-<use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 668.
-(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
-File: libs/logoL2TI.png Graphic file (type png)
-<use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 668.
-(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [37
-
-]
-<libs/noiseres.png, id=1652, 3454.9075pt x 1738.495pt>
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/stage2.png>]
+<libs/noiseres.png, id=1891, 3454.9075pt x 1738.495pt>
 File: libs/noiseres.png Graphic file (type png)
 <use libs/noiseres.png>
-Package pdftex.def Info: libs/noiseres.png  used on input line 704.
+Package pdftex.def Info: libs/noiseres.png  used on input line 728.
 (pdftex.def)             Requested size: 307.28987pt x 154.62741pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 704.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 728.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2555,23 +2549,23 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 704.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 728.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 704.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 728.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [38
+ [37
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseres.png>]
-<libs/bluraddres2.png, id=1692, 3551.2675pt x 1172.38pt>
+<libs/bluraddres2.png, id=1940, 3551.2675pt x 1172.38pt>
 File: libs/bluraddres2.png Graphic file (type png)
 <use libs/bluraddres2.png>
-Package pdftex.def Info: libs/bluraddres2.png  used on input line 739.
+Package pdftex.def Info: libs/bluraddres2.png  used on input line 763.
 (pdftex.def)             Requested size: 307.28987pt x 101.43094pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 739.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 763.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2583,55 +2577,55 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 739.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 763.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 739.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 763.
+(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
+ [38
+
+ </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/bluraddres2.png>]
+<libs/unevencreate.png, id=1986, 1438.37375pt x 1071.00125pt>
+File: libs/unevencreate.png Graphic file (type png)
+<use libs/unevencreate.png>
+Package pdftex.def Info: libs/unevencreate.png  used on input line 790.
+(pdftex.def)             Requested size: 245.83282pt x 183.03198pt.
+
+Overfull \vbox (2.00307pt too high) detected at line 790
+ []
+
+File: libs/logoUSPN-site.png Graphic file (type png)
+<use libs/logoUSPN-site.png>
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 790.
+(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
+
+Overfull \hbox (66.00436pt too wide) has occurred while \output is active
+ []
+ []
+
+
+Overfull \vbox (31.0536pt too high) has occurred while \output is active []
+
+File: libs/logoLAGA.png Graphic file (type png)
+<use libs/logoLAGA.png>
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 790.
+(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
+File: libs/logoL2TI.png Graphic file (type png)
+<use libs/logoL2TI.png>
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 790.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
  [39
 
- </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/bluraddres2.png>]
-<libs/unevencreate.png, id=1732, 1438.37375pt x 1071.00125pt>
-File: libs/unevencreate.png Graphic file (type png)
-<use libs/unevencreate.png>
-Package pdftex.def Info: libs/unevencreate.png  used on input line 766.
-(pdftex.def)             Requested size: 245.83282pt x 183.03198pt.
-
-Overfull \vbox (2.00307pt too high) detected at line 766
- []
-
-File: libs/logoUSPN-site.png Graphic file (type png)
-<use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 766.
-(pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
-
-Overfull \hbox (66.00436pt too wide) has occurred while \output is active
- []
- []
-
-
-Overfull \vbox (31.0536pt too high) has occurred while \output is active []
-
-File: libs/logoLAGA.png Graphic file (type png)
-<use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 766.
-(pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
-File: libs/logoL2TI.png Graphic file (type png)
-<use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 766.
-(pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [40
-
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/unevencreate.png>]
-<libs/srres4.png, id=1770, 3216.015pt x 937.5025pt>
+<libs/srres4.png, id=2032, 3216.015pt x 937.5025pt>
 File: libs/srres4.png Graphic file (type png)
 <use libs/srres4.png>
-Package pdftex.def Info: libs/srres4.png  used on input line 800.
+Package pdftex.def Info: libs/srres4.png  used on input line 824.
 (pdftex.def)             Requested size: 307.28987pt x 89.56433pt.
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 800.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 824.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2643,31 +2637,31 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 800.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 824.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 800.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 824.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [41
+ [40
 
  </home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/srres4.png>]
-Overfull \hbox (0.506pt too wide) in paragraph at lines 807--807
+Overfull \hbox (0.506pt too wide) in paragraph at lines 831--831
 []\T1/lmss/bx/n/10 Com-put-er-ized med-i-cal imag-ing and graph-ics : the of-fi-cial jour-nal of the Com-put-er-ized Med-i-cal Imag-ing So-ci-ety[] \T1/lmss/m/n/10 (-20) 43 (2015), pp. 99^^U 
  []
 
 
-Overfull \hbox (0.14174pt too wide) in paragraph at lines 807--807
+Overfull \hbox (0.14174pt too wide) in paragraph at lines 831--831
 [][]\T1/lmss/m/n/10 (+10) Juan Silva et al.[] ^^P  Toward embedded detection of polyps in WCE images for early diagnosis of colorectal cancer^^Q.[] In: []\T1/lmss/bx/n/10 International Journal 
  []
 
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 807.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 831.
 (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 
 LaTeX Font Warning: Font shape `T1/lmss/m/sc' in size <10> not available
-(Font)              Font shape `T1/lmr/m/sc' tried instead on input line 807.
+(Font)              Font shape `T1/lmr/m/sc' tried instead on input line 831.
 
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
@@ -2677,11 +2671,11 @@ Package microtype Info: Character `029' is missing
 (microtype)             Ignoring protrusion settings for this character.
 
 
-Class beamer Warning: Frame text is shrunk by a factor of 56.01044 percent instead of 50 percent on input line 807.
+Class beamer Warning: Frame text is shrunk by a factor of 58.31299 percent instead of 50 percent on input line 831.
 
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 807.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 831.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2693,18 +2687,18 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 807.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 831.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 807.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 831.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [42
+ [41
 
 ]
 File: libs/logoUSPN-site.png Graphic file (type png)
 <use libs/logoUSPN-site.png>
-Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 821.
+Package pdftex.def Info: libs/logoUSPN-site.png  used on input line 845.
 (pdftex.def)             Requested size: 1003.74756pt x 433.61894pt.
 
 Overfull \hbox (66.00436pt too wide) has occurred while \output is active
@@ -2716,13 +2710,13 @@ Overfull \vbox (31.0536pt too high) has occurred while \output is active []
 
 File: libs/logoLAGA.png Graphic file (type png)
 <use libs/logoLAGA.png>
-Package pdftex.def Info: libs/logoLAGA.png  used on input line 821.
+Package pdftex.def Info: libs/logoLAGA.png  used on input line 845.
 (pdftex.def)             Requested size: 21.78264pt x 19.3735pt.
 File: libs/logoL2TI.png Graphic file (type png)
 <use libs/logoL2TI.png>
-Package pdftex.def Info: libs/logoL2TI.png  used on input line 821.
+Package pdftex.def Info: libs/logoL2TI.png  used on input line 845.
 (pdftex.def)             Requested size: 26.9194pt x 16.98271pt.
- [43
+ [42
 
 ]
 \tf@nav=\write10
@@ -2734,30 +2728,34 @@ Package pdftex.def Info: libs/logoL2TI.png  used on input line 821.
 \tf@snm=\write12
 \openout12 = `document.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 823.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 823.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 847.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 847.
  (/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 823.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 823.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 847.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 847.
 Package rerunfilecheck Info: File `document.out' has not changed.
-(rerunfilecheck)             Checksum: 1768A665A30283593C332F0EC552626D;582.
+(rerunfilecheck)             Checksum: 507720C65D795F799F265FE8D1DF2B04;582.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package logreq Info: Writing requests to 'document.run.xml'.
 \openout1 = `document.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 42342 strings out of 481239
- 846591 string characters out of 5920377
- 1563892 words of memory out of 5000000
- 56537 multiletter control sequences out of 15000+600000
- 626019 words of font info for 112 fonts, out of 8000000 for 9000
+ 42186 strings out of 481239
+ 843687 string characters out of 5920377
+ 1566595 words of memory out of 5000000
+ 56373 multiletter control sequences out of 15000+600000
+ 620516 words of font info for 111 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  65i,19n,84p,887b,1959s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}</usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmss9.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbo10.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso9.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb>
-Output written on "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.pdf" (43 pages, 39204539 bytes).
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}</usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmss9.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb>
+Output written on "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/document.pdf" (42 pages, 76212941 bytes).
 PDF statistics:
- 1986 PDF objects out of 2073 (max. 8388607)
- 1816 compressed objects within 19 object streams
- 132 named destinations out of 1000 (max. 500000)
- 33037 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 2261 PDF objects out of 2487 (max. 8388607)
+ 2068 compressed objects within 21 object streams
+ 131 named destinations out of 1000 (max. 500000)
+ 32047 words of extra memory for PDF output out of 35830 (max. 10000000)
 
