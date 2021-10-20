@@ -17,8 +17,8 @@
 \defcounter {refsection}{0}\relax 
 \beamer@subsectionintoc {2}{2}{HyperKvasir dataset}{18}{0}{2}
 \defcounter {refsection}{0}\relax 
-\beamer@sectionintoc {3}{Our work}{20}{0}{3}
+\beamer@sectionintoc {3}{Ongoing work}{20}{0}{3}
 \defcounter {refsection}{0}\relax 
 \beamer@subsectionintoc {3}{1}{Method}{20}{0}{3}
 \defcounter {refsection}{0}\relax 
-\beamer@subsectionintoc {3}{2}{Results}{21}{0}{3}
+\beamer@subsectionintoc {3}{2}{Preliminary results}{21}{0}{3}

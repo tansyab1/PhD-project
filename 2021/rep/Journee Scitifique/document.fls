@@ -511,12 +511,12 @@ INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/do
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmss8.tfm
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/code_style.tex
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/code_style.tex
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/back.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/back.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/back.png
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmss12.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmss8.tfm
-INPUT /usr/share/texmf/tex/latex/lm/t1lmtt.fd
-INPUT /usr/share/texmf/tex/latex/lm/t1lmtt.fd
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
@@ -611,9 +611,9 @@ INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/li
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.drawio.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.drawio.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/overallalgo.drawio.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
@@ -870,9 +870,9 @@ INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/li
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseres.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseres.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noiseres.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noisres.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noisres.png
+INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/noisres.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
@@ -882,15 +882,6 @@ INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/li
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/bluraddres2.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/bluraddres2.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/bluraddres2.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoL2TI.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/unevencreate.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/unevencreate.png
-INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/unevencreate.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png
@@ -911,6 +902,9 @@ INPUT /usr/share/texmf/tex/latex/lm/t1lmr.fd
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmcsc10.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+INPUT /usr/share/texmf/tex/latex/lm/t1lmtt.fd
+INPUT /usr/share/texmf/tex/latex/lm/t1lmtt.fd
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoUSPN-site.png
 INPUT /home/nguyentansy/DATA/PhD-work/PhD-project/2021/rep/Journee Scitifique/libs/logoLAGA.png

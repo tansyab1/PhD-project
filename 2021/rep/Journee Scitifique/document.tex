@@ -21,20 +21,21 @@
 % Subtitle
 % \subtitle{Subtítulo da Apresentação}
 % Author of the presentation
-\author{Tan Sy NGUYEN}
+\author{PhD student: Tan Sy NGUYEN }
 % Institute's Name
 \institute[]{
+    \normalsize Thesis director: Prof. Hatem Zaag (LAGA) \\ Thesis supervisors: Assoc. Prof. John Chaussard (LAGA),\\ \hspace{2.1cm}Assoc. Prof. Marie Luong (L2TI)\\Tutor : Prof. Azeddine Beghdadi (L2TI)
     % email for contact
-    \normalsize{\email{tansy.nguyen@math.univ-paris13.fr}}
+    % \normalsize{\email{tansy.nguyen@math.univ-paris13.fr}}
     \newline
     % Department Name
-    \department{LAGA, L2TI}
-    \newline
+    % \department{LAGA, L2TI}
+    % \newline
     % university name
     \uspn
 }
 % date of the presentation
-\date{\today}
+% \date{\today}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,9 +47,13 @@
 
 %% ---------------------------------------------------------------------------
 % First frame (with tile, subtitle, ...)
+% \usebackgroundtemplate{\includegraphics{libs/Presentation1.pdf}
 \begin{frame}{}
+    \centering
+    \includegraphics[scale=0.4]{libs/back.png}
     \maketitle
 \end{frame}
+% }
 
 %% ---------------------------------------------------------------------------
 % Second frame
@@ -88,14 +93,14 @@
 
     \pause
 
-    \successbox{\textbf{Wireless capsule endoscopy} include its \example{non-invasive} character and its ability to visualize proximal and distal parts of the intestine}
+    \successbox{\textbf{Wireless capsule endoscopy} is a minimally \example{non-invasive} technology and effects better analysis of proximal and distal parts of the intestine compares to the classical endoscopy.}
 
 \end{frame}
 
 \begin{frame}{Objectives}
     % enumeration
     \begin{figure}
-        \includegraphics[scale=0.09]{libs/overallalgo.png}
+        \includegraphics[scale=0.2]{libs/overallalgo.drawio.png}
         \caption{Model flowchart for overall algorithm to create a system to identify the name of pathologies}
         \label{fig:overallalgo}
     \end{figure}
@@ -104,7 +109,7 @@
         \item Identify the pathologies on wireless capsule endoscopy (WCE) images
               \begin{itemize}
                   \item Including a pre-processing module that aims at improving the quality of the acquired images
-                  \item Develop a set of image quality enhancement solutions based on kinds of distortion
+                  \item Develop a set of image quality enhancement solutions based on various kinds of distortion
               \end{itemize}
 
 
@@ -138,7 +143,7 @@
     \large How image \example{quality affects} the classification performance ?
 \end{frame}
 
-\begin{frame}{\small Effect of distortion (Blur) on the classification performace \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
+\begin{frame}{\small Effect of distortion (Blur) on the object detection and counting \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
     \begin{figure}
         \centering
         \includegraphics[scale=0.2]{libs/blureffect.png}
@@ -149,7 +154,7 @@
 
 \end{frame}
 
-\begin{frame}{\small Effect of distortion (Noise) on the classification performace \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
+\begin{frame}{\small Effect of distortion (Noise) on the object detection and counting \footnote[frame]{\tiny Borel-Donohue, Christoph and S. Young. “Image quality and super resolution effects on object recognition using deep \\ neural networks.” Defense + Commercial Sensing (2019).}}
     \begin{figure}
         \centering
         \includegraphics[scale=0.15]{libs/noiseeffect.png}
@@ -221,7 +226,7 @@
 % \end{frame}
 \begin{frame}
     \centering
-    \large How we can handle the distortions to enhance the image quality; therefore, improve the classification performace?
+    \large How can we handle the distortions to enhance the image quality, hence improving the classification performace?
 \end{frame}
 \begin{frame}{Method}
     \begin{figure}
@@ -281,7 +286,7 @@
                 GI Lesions in Regular Colonoscopy Data Set \cite{uci}             & GI lesions                                   & 76 images                         \\ \hline
                 Atlas of Gastrointestinal Endoscope  \cite{as72}                  & GI lesions                                   & 1295 images                       \\ \hline
                 El salvador atlas of gastrointestinal video endoscopy \cite{as73} & GI lesions                                   & 5071 video clips                  \\ \hline
-                Kvasir  \cite{Pogorelov2017KVASIRAM}                              & \begin{tabular}[c]{@{}l@{}} Polyps, esophagitis, ulcerative colitis, Z-line,pylorus\\ cecum, dyed polyp, dyed resection margins, stool \end{tabular}                   & 8000 images                       \\ \hline
+                \textbf{Kvasir}  \cite{Pogorelov2017KVASIRAM}                              & \begin{tabular}[c]{@{}l@{}} Polyps, esophagitis, ulcerative colitis, Z-line,pylorus\\ cecum, dyed polyp, dyed resection margins, stool \end{tabular}                   & 8000 images                       \\ \hline
                 Kvasir-SEG   \cite{Jha2020KvasirSEGAS}                            & Polyps                                       & 1000 images                       \\ \hline
                 Nerthus  \cite{Pogorelov2017NerthusAB}                            & Stool - categorization of bowel cleanliness  & 21 videos                         \\ \hline
             \end{tabular}
@@ -291,7 +296,7 @@
     \pause
     \alertbox{They are rather small, and often limited to polyps. Several of these have also lately become unavailable.\tikz[remember picture]{ \node[anchor=base] (n3) {};}}
     \pause
-    \tikz[remember picture]{ \node[fill=green!20,anchor=base] (t3) {Using \emph{HyperKvasir} \cite{Borgli2020HyperKvasirAC} dataset};}
+    \tikz[remember picture]{ \node[anchor=base] (t3) {Using \emph{HyperKvasir}\footnote[frame]{\tiny Borgli, Hanna et al. “HyperKvasir, a comprehensive multi-class image and video dataset for gastrointestinal endoscopy.” \\Scientific Data 7 (2020)} \cite{Borgli2020HyperKvasirAC} dataset};}
     \begin{tikzpicture}[remember picture,overlay]   %% use here too
         \path[draw=magenta,thick,->]<1-> (n3) to [bend right] (t3);
     \end{tikzpicture}
@@ -304,7 +309,7 @@
             \begin{tabular}{|l|l|l|}
                 \hline
                 \multicolumn{1}{|c|}{\textbf{Data Record}}                          & \multicolumn{1}{c|}{\textbf{\# Files}} & \multicolumn{1}{c|}{\textbf{Description}} \\ \hline
-                \tikz[remember picture]{ \node[anchor=base] (n4) {};}Labeled images & 10,662 images                          & 23 classes of findings                    \\ \hline
+                \tikz[remember picture]{ \node[anchor=base] (n4) {};}Labeled images & 10,662 images                          & 8 pathologies                    \\ \hline
                 Segmented Images                                                    & 1,000 images                           & Segmentation masks for polyp findings     \\ \hline
                 Unlabeled Images                                                    & 99,417 images                          & Unlabeled                                 \\ \hline
                 \tikz[remember picture]{ \node[anchor=base] (n5) {};}Videos         & 374 videos                             & 30 different classes                      \\ \hline
@@ -326,7 +331,7 @@
 \end{frame}
 %% ---------------------------------------------------------------------------
 % This frame show an example to insert figures
-\section{Our work}
+\section{Ongoing work}
 \subsection{Method}
 \tikzset{
     vertex/.style = {
@@ -336,7 +341,7 @@
             inner sep = 1pt,
         }
 }
-\begin{frame}{Ourwork}
+\begin{frame}{Ongoing work}
     \example{Our work} has three stages including:
     \begin{enumerate}
         \item Remove the existing distortion in HyperKvasir dataset
@@ -404,7 +409,7 @@
 \end{frame}
 
 
-\subsection{Results}
+\subsection{Preliminary results}
 \begin{frame}{1. Remove the existing distortion in HyperKvasir dataset}
     % \example{Stage 1:} we have to clean the existing distortion in the HyperKvasir dataset.\\ 
     % \begin{tikzpicture}[remember picture]
@@ -684,8 +689,12 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}{2. Create model and add the artificial distortions to the distortions-free images}
-    In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.
+\begin{frame}{2. Generating artificial distortions and creating distorted image with controlled levels of distortions}
+    % In this work, we create a model to add the artificial distortion to the image. There will be \example{four} different models corresponding to four kinds of distortions. We analysed the common level of distortion to simulate to realest artificial distortion which will make the dataset meaningful.
+    \begin{itemize}
+        \item Create a model to generate the artificial distortions
+        \item Add the artificial distortions to the distortions-free images
+    \end{itemize}
     \begin{figure}
         \includegraphics[width=\textwidth]{libs/stage2.png}
     \end{figure}
@@ -721,10 +730,14 @@
     % % \end{itemize}
     \begin{figure}
         \centering
-        \includegraphics[width=1\textwidth]{libs/noiseres.png}
-        \caption{Noising image with Gaussian Noise $n \sim N(0, \sigma^2_n)$}
+        \includegraphics[width=1\textwidth]{libs/noisres.png}
+        \caption{Creation of noisy image with controlled Gaussian Noise $n \sim N(0, \sigma^2_n)$}
         \label{noise_inpainted}
     \end{figure}
+    \begin{equation}
+        \hat{I}=I+n,
+    \end{equation}
+    where $n$ is the Gaussian noise which distributed according to the Gaussian distribution $N(0,\sigma^2_n)$.
 \end{frame}
 
 \begin{frame}{2.2 Result images after adding Blur}
@@ -757,39 +770,39 @@
     \begin{figure}
         \centering
         \includegraphics[width=1\textwidth]{libs/bluraddres2.png}
-        \caption{Bluring image with Defocus Blur $b \sim N(0, \sigma^2_{db})$ and motion blur PSF kernel width $l_{mb}$}
+        \caption{Bluring image with Defocus Blur $b \sim N(0, \sigma^2_{db})$ and motion blur PSF kernel width $d_{mb}$}
         \label{blur_inpainted}
     \end{figure}
 \end{frame}
 
-\begin{frame}{2.3 Result images after adding Uneven Illumination}
+% \begin{frame}{2.3 Result images after adding Uneven Illumination}
 
-    % % \begin{itemize}
-    %     % {\item Uneven Illumination\\
+%     % % \begin{itemize}
+%     %     % {\item Uneven Illumination\\
 
-    %           \begin{tikzpicture}[remember picture]
+%     %           \begin{tikzpicture}[remember picture]
 
-    %               \node (in)  at (0,0){
-    %                   \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
-    %               \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
-
-
-
-    %           \end{tikzpicture}
-    %         %   }
+%     %               \node (in)  at (0,0){
+%     %                   \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png} };
+%     %               \node at (0.0, -3.5) {\small\textit{Artificial Uneven Illumination process}};
 
 
 
-    % \end{itemize}
-    \begin{figure}[h]
-        \begin{center}
-            \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png}
-            \caption{Artificial Uneven Illumination process. The first row is the result after adding the mask (second row) into the V-channel of image (third row).}
-        \end{center}
-    \end{figure}
-\end{frame}
+%     %           \end{tikzpicture}
+%     %         %   }
 
-\begin{frame}{2.4 Result images after adding Specular Reflection}
+
+
+%     % \end{itemize}
+%     \begin{figure}[h]
+%         \begin{center}
+%             \includegraphics[width=0.8\columnwidth]{libs/unevencreate.png}
+%             \caption{Artificial Uneven Illumination process. The first row is the result after adding the mask (second row) into the V-channel of image (third row).}
+%         \end{center}
+%     \end{figure}
+% \end{frame}
+
+\begin{frame}{2.3 Result images after adding Specular Reflection}
 
     % % \begin{itemize}
     %     % \only<1-3>{\item Specular Reflection\\
@@ -818,7 +831,7 @@
     \begin{figure}
         \centering
         \includegraphics[width=1\textwidth]{libs/srres4.png}
-        \caption{Artificial Specular Reflection by using the artificial PSF with the random position}
+        \caption{Artificial Specular Reflection by using the artificial SR mask with the random position}
         \label{sr_inpainted}
     \end{figure}
 \end{frame}
