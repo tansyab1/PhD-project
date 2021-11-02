@@ -1,0 +1,1110 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{Bernal2012TowardsAP}{article}{}
+      \name{author}{3}{}{%
+        {{hash=7085bb22468f089481719e9c4c795e30}{%
+           family={Bernal},
+           familyi={B\bibinitperiod},
+           given={Jorge},
+           giveni={J\bibinitperiod}}}%
+        {{hash=29af5f80ef5691bf32648cd015226f84}{%
+           family={S{á}nchez},
+           familyi={S\bibinitperiod},
+           given={F.\bibnamedelimi J.},
+           giveni={F\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=0e78a220a43502ec17d097707aa7cc89}{%
+           family={Vilari{ñ}o},
+           familyi={V\bibinitperiod},
+           given={F.},
+           giveni={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \strng{fullhash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \strng{bibnamehash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \strng{authorbibnamehash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \strng{authornamehash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \strng{authorfullhash}{24e3f06d67dc692f61bd006d43e0ccfd}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Pattern Recognit.}
+      \field{title}{Towards automatic polyp detection with a polyp appearance model}
+      \field{volume}{45}
+      \field{year}{2012}
+      \field{pages}{3166\bibrangedash 3182}
+      \range{pages}{17}
+    \endentry
+    \entry{Bernal2015WMDOVAMF}{article}{}
+      \name{author}{6}{}{%
+        {{hash=7085bb22468f089481719e9c4c795e30}{%
+           family={Bernal},
+           familyi={B\bibinitperiod},
+           given={Jorge},
+           giveni={J\bibinitperiod}}}%
+        {{hash=a08fa36eda7cdfcaf48f85d41e147cbb}{%
+           family={Sanchez},
+           familyi={S\bibinitperiod},
+           given={F.\bibnamedelimi J.},
+           giveni={F\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=f8e42cb16f44a5f12e43b4da19ac6bdf}{%
+           family={Fernandez-Esparrach},
+           familyi={F\bibinithyphendelim E\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+        {{hash=21f379d55401d19e4393b0932bb8c8f1}{%
+           family={Gil},
+           familyi={G\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=a7eb7bb328e62c393df9f28bb8495aa4}{%
+           family={Miguel},
+           familyi={M\bibinitperiod},
+           given={C.\bibnamedelimi R.},
+           giveni={C\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=11b15cfc399caabc454e4019cc8e4d63}{%
+           family={Vilarino},
+           familyi={V\bibinitperiod},
+           given={F.},
+           giveni={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{fullhash}{59ef41d4073cf2d30a4f6bb52806bf21}
+      \strng{bibnamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authorbibnamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authornamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authorfullhash}{59ef41d4073cf2d30a4f6bb52806bf21}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{ed39bb39cf854d5250e95b1c1f94f4ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computerized medical imaging and graphics : the official journal of the Computerized Medical Imaging Society}
+      \field{title}{WM-DOVA maps for accurate polyp highlighting in colonoscopy: Validation vs. saliency maps from physicians}
+      \field{volume}{43}
+      \field{year}{2015}
+      \field{pages}{99\bibrangedash 111}
+      \range{pages}{13}
+    \endentry
+    \entry{Ali2019EndoscopyAD}{article}{}
+      \name{author}{12}{}{%
+        {{hash=afb59a98a0ec2d6aec6ef2aa974a9321}{%
+           family={Ali},
+           familyi={A\bibinitperiod},
+           given={Sharib},
+           giveni={S\bibinitperiod}}}%
+        {{hash=702d37d6d9639265d9b684fb27cef367}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Felix\bibnamedelima Y},
+           giveni={F\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+        {{hash=57fff0d9ab3ba5584d5bb80a4471c141}{%
+           family={Daul},
+           familyi={D\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=57d1e9c2f6a771a98c89851dbb889e07}{%
+           family={Braden},
+           familyi={B\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+        {{hash=a43251d18b2d6f20d0e8bda5056ad845}{%
+           family={Bailey},
+           familyi={B\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=0c35bc55df059942beaac0d368ab778a}{%
+           family={Realdon},
+           familyi={R\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=9b6c0f3660b4d51cee84f358faf2f4c9}{%
+           family={East},
+           familyi={E\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=bf263c4e76e3ad73bbb4a75db8b8213e}{%
+           family={Wagni{è}res},
+           familyi={W\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+        {{hash=fac09e1123750fda7d506bfcac65f37f}{%
+           family={Loschenov},
+           familyi={L\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+        {{hash=46ef7446956ef54a8c37d2dc85b52235}{%
+           family={Grisan},
+           familyi={G\bibinitperiod},
+           given={E.},
+           giveni={E\bibinitperiod}}}%
+        {{hash=899bdc8a3b46a0d70760afab420f689f}{%
+           family={Blondel},
+           familyi={B\bibinitperiod},
+           given={W.},
+           giveni={W\bibinitperiod}}}%
+        {{hash=93ce2d5498ae75b2a6b11b62a0f5c4fd}{%
+           family={Rittscher},
+           familyi={R\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{ce0b106926e073a6417c609badd0e2df}
+      \strng{fullhash}{ddd829038d8ac9eaf1c1de178b83d490}
+      \strng{bibnamehash}{ce0b106926e073a6417c609badd0e2df}
+      \strng{authorbibnamehash}{ce0b106926e073a6417c609badd0e2df}
+      \strng{authornamehash}{ce0b106926e073a6417c609badd0e2df}
+      \strng{authorfullhash}{ddd829038d8ac9eaf1c1de178b83d490}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ArXiv}
+      \field{title}{Endoscopy artifact detection (EAD 2019) challenge dataset}
+      \field{volume}{abs/1905.03209}
+      \field{year}{2019}
+    \endentry
+    \entry{Tajbakhsh2016AutomatedPD}{article}{}
+      \name{author}{3}{}{%
+        {{hash=9c9511dbe0081a03151f75360a5829cc}{%
+           family={Tajbakhsh},
+           familyi={T\bibinitperiod},
+           given={Nima},
+           giveni={N\bibinitperiod}}}%
+        {{hash=a2e787b6a03c16bf55924521e4812dbb}{%
+           family={Gurudu},
+           familyi={G\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=561f0f41078c23c163560f0f8cdf8c23}{%
+           family={Liang},
+           familyi={L\bibinitperiod},
+           given={Jianming},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \strng{fullhash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \strng{bibnamehash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \strng{authorbibnamehash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \strng{authornamehash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \strng{authorfullhash}{2cf18bcdd8eccfc18ae01ad4d2e975ae}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IEEE Transactions on Medical Imaging}
+      \field{title}{Automated Polyp Detection in Colonoscopy Videos Using Shape and Context Information}
+      \field{volume}{35}
+      \field{year}{2016}
+      \field{pages}{630\bibrangedash 644}
+      \range{pages}{15}
+    \endentry
+    \entry{Silva2013TowardED}{article}{}
+      \name{author}{5}{}{%
+        {{hash=1ccba46f94a216b4e2249534d8efcddd}{%
+           family={Silva},
+           familyi={S\bibinitperiod},
+           given={Juan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=6f3915bbf88c2da4efe8116c54490dfc}{%
+           family={Histace},
+           familyi={H\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=c030cbf92b5284762d4ae8d5a9d261c2}{%
+           family={Romain},
+           familyi={R\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod}}}%
+        {{hash=78249fba1d8d891146396ab4dca75b16}{%
+           family={Dray},
+           familyi={D\bibinitperiod},
+           given={X.},
+           giveni={X\bibinitperiod}}}%
+        {{hash=e4ee26212307d8dbfa1c831f91838dd7}{%
+           family={Granado},
+           familyi={G\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{4b0bab7c8b8969cae6aff0c1ebccd36b}
+      \strng{fullhash}{93d978b90b7f214e7f0600ea960510d9}
+      \strng{bibnamehash}{4b0bab7c8b8969cae6aff0c1ebccd36b}
+      \strng{authorbibnamehash}{4b0bab7c8b8969cae6aff0c1ebccd36b}
+      \strng{authornamehash}{4b0bab7c8b8969cae6aff0c1ebccd36b}
+      \strng{authorfullhash}{93d978b90b7f214e7f0600ea960510d9}
+      \field{sortinit}{7}
+      \field{sortinithash}{f615fb9c6fba11c6f962fb3fd599810e}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{International Journal of Computer Assisted Radiology and Surgery}
+      \field{title}{Toward embedded detection of polyps in WCE images for early diagnosis of colorectal cancer}
+      \field{volume}{9}
+      \field{year}{2013}
+      \field{pages}{283\bibrangedash 293}
+      \range{pages}{11}
+    \endentry
+    \entry{Koulaouzidis2017KIDPA}{article}{}
+      \name{author}{14}{}{%
+        {{hash=a178b10737e14c69d45f2d23df2047d7}{%
+           family={Koulaouzidis},
+           familyi={K\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=e32db4bf95726fd3e1c8dde81f8140a3}{%
+           family={Iakovidis},
+           familyi={I\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=23a077e2d45cc6bc4562782f5f7bab84}{%
+           family={Yung},
+           familyi={Y\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=759586a600e3d96912c249e1011f51df}{%
+           family={Rondonotti},
+           familyi={R\bibinitperiod},
+           given={E.},
+           giveni={E\bibinitperiod}}}%
+        {{hash=98d2e7e5d4d78d399be47ad94fb01b86}{%
+           family={Kopylov},
+           familyi={K\bibinitperiod},
+           given={U.},
+           giveni={U\bibinitperiod}}}%
+        {{hash=ae1c208416aa7630c540993dfa60aea4}{%
+           family={Plevris},
+           familyi={P\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=27fad0ffedd5fb5c6350bc3d10f25b67}{%
+           family={Toth},
+           familyi={T\bibinitperiod},
+           given={E.},
+           giveni={E\bibinitperiod}}}%
+        {{hash=d68f9c9f2aa42060d5a4b45add48373b}{%
+           family={Eliakim},
+           familyi={E\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=e98241080eda075ed62ac2052ffaa346}{%
+           family={Johansson},
+           familyi={J\bibinitperiod},
+           given={Gabrielle\bibnamedelima Wurm},
+           giveni={G\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+        {{hash=25858cda7114e0164de35cc69a0e06e2}{%
+           family={Marlicz},
+           familyi={M\bibinitperiod},
+           given={W.},
+           giveni={W\bibinitperiod}}}%
+        {{hash=435aebc3978ad94479c9a4f811629f7a}{%
+           family={Mavrogenis},
+           familyi={M\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+        {{hash=4d16f4d32682bba4f44491e0245b73dc}{%
+           family={N{é}meth},
+           familyi={N\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=5c7835071b6586651660995f34687c96}{%
+           family={Thorlacius},
+           familyi={T\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+        {{hash=153e619d550442634d943fba77c0bd30}{%
+           family={Tontini},
+           familyi={T\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{9b8ceec042a73d1bbad0ac1dd00522f6}
+      \strng{fullhash}{b8a3a6760f933429eaa8c8fc4dfb5208}
+      \strng{bibnamehash}{9b8ceec042a73d1bbad0ac1dd00522f6}
+      \strng{authorbibnamehash}{9b8ceec042a73d1bbad0ac1dd00522f6}
+      \strng{authornamehash}{9b8ceec042a73d1bbad0ac1dd00522f6}
+      \strng{authorfullhash}{b8a3a6760f933429eaa8c8fc4dfb5208}
+      \field{sortinit}{8}
+      \field{sortinithash}{1b24cab5087933ef0826a7cd3b99e994}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Endoscopy International Open}
+      \field{title}{KID Project: an internet-based digital video atlas of capsule endoscopy for research purposes}
+      \field{volume}{5}
+      \field{year}{2017}
+      \field{pages}{E477\bibrangedash E483}
+      \range{pages}{-1}
+    \endentry
+    \entry{Guo2019GIANAPS}{article}{}
+      \name{author}{2}{}{%
+        {{hash=cdfee844c95f916f2619a26fab25991b}{%
+           family={Guo},
+           familyi={G\bibinitperiod},
+           given={Y.},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=5b68efd026f7aeec58e18bc03cf56a72}{%
+           family={Matuszewski},
+           familyi={M\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{a32618afe11b8b84dd832f2d72e79bce}
+      \strng{fullhash}{a32618afe11b8b84dd832f2d72e79bce}
+      \strng{bibnamehash}{a32618afe11b8b84dd832f2d72e79bce}
+      \strng{authorbibnamehash}{a32618afe11b8b84dd832f2d72e79bce}
+      \strng{authornamehash}{a32618afe11b8b84dd832f2d72e79bce}
+      \strng{authorfullhash}{a32618afe11b8b84dd832f2d72e79bce}
+      \field{sortinit}{9}
+      \field{sortinithash}{54047ffb55bdefa0694bbd554c1b11a0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{VISIGRAPP}
+      \field{title}{GIANA Polyp Segmentation with Fully Convolutional Dilation Neural Networks}
+      \field{year}{2019}
+    \endentry
+    \entry{Bernal2018PolypDB}{article}{}
+      \name{author}{13}{}{%
+        {{hash=7085bb22468f089481719e9c4c795e30}{%
+           family={Bernal},
+           familyi={B\bibinitperiod},
+           given={Jorge},
+           giveni={J\bibinitperiod}}}%
+        {{hash=6f3915bbf88c2da4efe8116c54490dfc}{%
+           family={Histace},
+           familyi={H\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=ddc7b5131ae7337f1ad5a3ccd21a9895}{%
+           family={Masana},
+           familyi={M\bibinitperiod},
+           given={Marc},
+           giveni={M\bibinitperiod}}}%
+        {{hash=ad84a04986e91382def72756ddede49f}{%
+           family={Angermann},
+           familyi={A\bibinitperiod},
+           given={Q.},
+           giveni={Q\bibinitperiod}}}%
+        {{hash=0b1d46d5e4ba7819eb250bfa14804d28}{%
+           family={S{á}nchez-Montes},
+           familyi={S\bibinithyphendelim M\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=def99593cb650a1f519379dcf1684ef4}{%
+           family={Rodr{í}guez},
+           familyi={R\bibinitperiod},
+           given={Cristina},
+           giveni={C\bibinitperiod}}}%
+        {{hash=56098a76b0692130fc86244e6d3b01df}{%
+           family={Hammami},
+           familyi={H\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=fba5f30037c94d2cc9420072517b3f38}{%
+           family={Garc{í}a-Rodr{í}guez},
+           familyi={G\bibinithyphendelim R\bibinitperiod},
+           given={Ana},
+           giveni={A\bibinitperiod}}}%
+        {{hash=b6bab83750dc7fe036f0da0a6b1114c5}{%
+           family={C{ó}rdova},
+           familyi={C\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+        {{hash=c030cbf92b5284762d4ae8d5a9d261c2}{%
+           family={Romain},
+           familyi={R\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod}}}%
+        {{hash=e81d0f975fae53cb1a45c1da7ff75c83}{%
+           family={Fern{á}ndez-Esparrach},
+           familyi={F\bibinithyphendelim E\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+        {{hash=78249fba1d8d891146396ab4dca75b16}{%
+           family={Dray},
+           familyi={D\bibinitperiod},
+           given={X.},
+           giveni={X\bibinitperiod}}}%
+        {{hash=54c8c27a96a1513959ac18517c5a8cfb}{%
+           family={S{á}nchez},
+           familyi={S\bibinitperiod},
+           given={Javier},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{fullhash}{cc0cfd1b61d840417d0b12f4b7ca60b9}
+      \strng{bibnamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authorbibnamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authornamehash}{829157309291b8abf0fbc7fba995c6e8}
+      \strng{authorfullhash}{cc0cfd1b61d840417d0b12f4b7ca60b9}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Polyp Detection Benchmark in Colonoscopy Videos using GTCreator: A Novel Fully Configurable Tool for Easy and Fast Annotation of Image Databases}
+      \field{year}{2018}
+    \endentry
+    \entry{gastro}{article}{}
+      \name{author}{1}{}{%
+        {{hash=3ab6ed146135ae2930eb52c6fcde4437}{%
+           family={site},
+           familyi={s\bibinitperiod},
+           prefix={the\bibnamedelima gastrointestinal},
+           prefixi={t\bibinitperiod\bibinitdelim g\bibinitperiod}}}%
+      }
+      \strng{namehash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \strng{fullhash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \strng{bibnamehash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \strng{authorbibnamehash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \strng{authornamehash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \strng{authorfullhash}{3ab6ed146135ae2930eb52c6fcde4437}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{http://www.gastrolab.net/index.htm. Accessed: 2019-12-12}
+      \field{title}{Gastrolab}
+      \field{year}{2019}
+    \endentry
+    \entry{weo}{article}{}
+      \name{author}{1}{}{%
+        {{hash=956f10f2d467ccec96af24ca0c2a3088}{%
+           family={Endoatlas},
+           familyi={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{956f10f2d467ccec96af24ca0c2a3088}
+      \strng{fullhash}{956f10f2d467ccec96af24ca0c2a3088}
+      \strng{bibnamehash}{956f10f2d467ccec96af24ca0c2a3088}
+      \strng{authorbibnamehash}{956f10f2d467ccec96af24ca0c2a3088}
+      \strng{authornamehash}{956f10f2d467ccec96af24ca0c2a3088}
+      \strng{authorfullhash}{956f10f2d467ccec96af24ca0c2a3088}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{http://www.endoatlas.org/index.php. Accessed: 2019-12-12}
+      \field{title}{Weo clinical endoscopy atlas}
+      \field{year}{2019}
+    \endentry
+    \entry{uci}{article}{}
+      \name{author}{1}{}{%
+        {{hash=0e9999073557ade7bbeb28f3194b8980}{%
+           family={UCI},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{0e9999073557ade7bbeb28f3194b8980}
+      \strng{fullhash}{0e9999073557ade7bbeb28f3194b8980}
+      \strng{bibnamehash}{0e9999073557ade7bbeb28f3194b8980}
+      \strng{authorbibnamehash}{0e9999073557ade7bbeb28f3194b8980}
+      \strng{authornamehash}{0e9999073557ade7bbeb28f3194b8980}
+      \strng{authorfullhash}{0e9999073557ade7bbeb28f3194b8980}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Gastrointestinal lesions in regular colonoscopy dataset}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb http://www.depeca.uah.es/colonoscopy_dataset/
+      \endverb
+      \verb{url}
+      \verb http://www.depeca.uah.es/colonoscopy_dataset/
+      \endverb
+    \endentry
+    \entry{as72}{article}{}
+      \name{author}{1}{}{%
+        {{hash=a6567816e007283cf9781c35b95dd56f}{%
+           family={Atlas},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{fullhash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{bibnamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authorbibnamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authornamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authorfullhash}{a6567816e007283cf9781c35b95dd56f}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The atlas of gastrointestinal endoscope}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb http://www.endoatlas.com/atlas_1.html
+      \endverb
+      \verb{url}
+      \verb http://www.endoatlas.com/atlas_1.html
+      \endverb
+    \endentry
+    \entry{as73}{article}{}
+      \name{author}{1}{}{%
+        {{hash=a6567816e007283cf9781c35b95dd56f}{%
+           family={Atlas},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{fullhash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{bibnamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authorbibnamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authornamehash}{a6567816e007283cf9781c35b95dd56f}
+      \strng{authorfullhash}{a6567816e007283cf9781c35b95dd56f}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{	El salvador atlas of gastrointestinal video endoscopy}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb http://www.gastrointestinalatlas.com/index.html
+      \endverb
+      \verb{url}
+      \verb http://www.gastrointestinalatlas.com/index.html
+      \endverb
+    \endentry
+    \entry{Pogorelov2017KVASIRAM}{article}{}
+      \name{author}{12}{}{%
+        {{hash=694f5d63806b51177ee1f571e058faab}{%
+           family={Pogorelov},
+           familyi={P\bibinitperiod},
+           given={Konstantin},
+           giveni={K\bibinitperiod}}}%
+        {{hash=7bb1409610e63fb016552219b3bec1fa}{%
+           family={Randel},
+           familyi={R\bibinitperiod},
+           given={K.\bibnamedelimi R.},
+           giveni={K\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=456343ac1425f986654dc5e08ca12fd2}{%
+           family={Griwodz},
+           familyi={G\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=ad8ea6214b372219fa017c20967e94d4}{%
+           family={Eskeland},
+           familyi={E\bibinitperiod},
+           given={S.\bibnamedelimi L.},
+           giveni={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=0b6fa0222faac95cc038f0cd9e2a7f20}{%
+           family={Lange},
+           familyi={L\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=f62b80846bf8b2af039b6533d43cf113}{%
+           family={Johansen},
+           familyi={J\bibinitperiod},
+           given={Dag},
+           giveni={D\bibinitperiod}}}%
+        {{hash=70f84e53ee2d2b479e28ee57e724c690}{%
+           family={Spampinato},
+           familyi={S\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=48524bcc05150e37521b34d51e0a9644}{%
+           family={Dang-Nguyen},
+           familyi={D\bibinithyphendelim N\bibinitperiod},
+           given={Duc-Tien},
+           giveni={D\bibinithyphendelim T\bibinitperiod}}}%
+        {{hash=40378dff6f01063bdb0d6dd1c57aa8e0}{%
+           family={Lux},
+           familyi={L\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=19be4f3f43e26f598e9e16954447123b}{%
+           family={Schmidt},
+           familyi={S\bibinitperiod},
+           given={P.\bibnamedelimi T.},
+           giveni={P\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=7a29e213570ac9fbea05dcd360d68fcd}{%
+           family={Riegler},
+           familyi={R\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=45d0e8dfff9ac479c5f88d364da48e28}{%
+           family={Halvorsen},
+           familyi={H\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{fullhash}{76080913513d57b6426bc2cda85753b0}
+      \strng{bibnamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authorbibnamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authornamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authorfullhash}{76080913513d57b6426bc2cda85753b0}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the 8th ACM on Multimedia Systems Conference}
+      \field{title}{KVASIR: A Multi-Class Image Dataset for Computer Aided Gastrointestinal Disease Detection}
+      \field{year}{2017}
+    \endentry
+    \entry{Jha2020KvasirSEGAS}{article}{}
+      \name{author}{7}{}{%
+        {{hash=cc0ea5d06a0d6784e6f369417742da18}{%
+           family={Jha},
+           familyi={J\bibinitperiod},
+           given={Debesh},
+           giveni={D\bibinitperiod}}}%
+        {{hash=701187822fccf57862c6a97acd311442}{%
+           family={Smedsrud},
+           familyi={S\bibinitperiod},
+           given={P.\bibnamedelimi H.},
+           giveni={P\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=7a29e213570ac9fbea05dcd360d68fcd}{%
+           family={Riegler},
+           familyi={R\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=45d0e8dfff9ac479c5f88d364da48e28}{%
+           family={Halvorsen},
+           familyi={H\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=0b6fa0222faac95cc038f0cd9e2a7f20}{%
+           family={Lange},
+           familyi={L\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=f62b80846bf8b2af039b6533d43cf113}{%
+           family={Johansen},
+           familyi={J\bibinitperiod},
+           given={Dag},
+           giveni={D\bibinitperiod}}}%
+        {{hash=4e78fc6b0be8d58af40d3e5a3edbaf97}{%
+           family={Johansen},
+           familyi={J\bibinitperiod},
+           given={Haavard\bibnamedelima D.},
+           giveni={H\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \strng{namehash}{3b88a59d4e1b9f9212bdfdb1d99309ac}
+      \strng{fullhash}{c58efa1394b643776866dbcfc89fd6a7}
+      \strng{bibnamehash}{3b88a59d4e1b9f9212bdfdb1d99309ac}
+      \strng{authorbibnamehash}{3b88a59d4e1b9f9212bdfdb1d99309ac}
+      \strng{authornamehash}{3b88a59d4e1b9f9212bdfdb1d99309ac}
+      \strng{authorfullhash}{c58efa1394b643776866dbcfc89fd6a7}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ArXiv}
+      \field{title}{Kvasir-SEG: A Segmented Polyp Dataset}
+      \field{volume}{abs/1911.07069}
+      \field{year}{2020}
+    \endentry
+    \entry{Pogorelov2017NerthusAB}{article}{}
+      \name{author}{12}{}{%
+        {{hash=694f5d63806b51177ee1f571e058faab}{%
+           family={Pogorelov},
+           familyi={P\bibinitperiod},
+           given={Konstantin},
+           giveni={K\bibinitperiod}}}%
+        {{hash=7bb1409610e63fb016552219b3bec1fa}{%
+           family={Randel},
+           familyi={R\bibinitperiod},
+           given={K.\bibnamedelimi R.},
+           giveni={K\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=0b6fa0222faac95cc038f0cd9e2a7f20}{%
+           family={Lange},
+           familyi={L\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=ad8ea6214b372219fa017c20967e94d4}{%
+           family={Eskeland},
+           familyi={E\bibinitperiod},
+           given={S.\bibnamedelimi L.},
+           giveni={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=456343ac1425f986654dc5e08ca12fd2}{%
+           family={Griwodz},
+           familyi={G\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=f62b80846bf8b2af039b6533d43cf113}{%
+           family={Johansen},
+           familyi={J\bibinitperiod},
+           given={Dag},
+           giveni={D\bibinitperiod}}}%
+        {{hash=70f84e53ee2d2b479e28ee57e724c690}{%
+           family={Spampinato},
+           familyi={S\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=f3a804154abbcc53d741421c0ed06ec0}{%
+           family={Taschwer},
+           familyi={T\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=40378dff6f01063bdb0d6dd1c57aa8e0}{%
+           family={Lux},
+           familyi={L\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=19be4f3f43e26f598e9e16954447123b}{%
+           family={Schmidt},
+           familyi={S\bibinitperiod},
+           given={P.\bibnamedelimi T.},
+           giveni={P\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=7a29e213570ac9fbea05dcd360d68fcd}{%
+           family={Riegler},
+           familyi={R\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=45d0e8dfff9ac479c5f88d364da48e28}{%
+           family={Halvorsen},
+           familyi={H\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{fullhash}{b0773fdcbe6edfad9de49a327b330dff}
+      \strng{bibnamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authorbibnamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authornamehash}{aeab62c073f1e90595bc3f413ac08e29}
+      \strng{authorfullhash}{b0773fdcbe6edfad9de49a327b330dff}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the 8th ACM on Multimedia Systems Conference}
+      \field{title}{Nerthus: A Bowel Preparation Quality Video Dataset}
+      \field{year}{2017}
+    \endentry
+    \entry{Borgli2020HyperKvasirAC}{article}{}
+      \name{author}{19}{}{%
+        {{hash=85ef1ab5348df1b7b7d72aad8345bb1b}{%
+           family={Borgli},
+           familyi={B\bibinitperiod},
+           given={Hanna},
+           giveni={H\bibinitperiod}}}%
+        {{hash=cd68cf27f7212062363d457bb3e052ec}{%
+           family={Thambawita},
+           familyi={T\bibinitperiod},
+           given={Vajira\bibnamedelima Lasantha},
+           giveni={V\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=d4396ca0b8c2f77f3329e7258f6638eb}{%
+           family={Smedsrud},
+           familyi={S\bibinitperiod},
+           given={Pia\bibnamedelima Helen},
+           giveni={P\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=94f89b3f8edc2f60a8a0b94609cbe845}{%
+           family={Hicks},
+           familyi={H\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=cc0ea5d06a0d6784e6f369417742da18}{%
+           family={Jha},
+           familyi={J\bibinitperiod},
+           given={Debesh},
+           giveni={D\bibinitperiod}}}%
+        {{hash=22cbaebee734e7f2f2041bda56354321}{%
+           family={Eskeland},
+           familyi={E\bibinitperiod},
+           given={Sigrun\bibnamedelima Losada},
+           giveni={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=2f9c1b61938eee3b22130301f4722646}{%
+           family={Randel},
+           familyi={R\bibinitperiod},
+           given={Kristin\bibnamedelima Ranheim},
+           giveni={K\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=694f5d63806b51177ee1f571e058faab}{%
+           family={Pogorelov},
+           familyi={P\bibinitperiod},
+           given={Konstantin},
+           giveni={K\bibinitperiod}}}%
+        {{hash=1f50a5cd9c6f5db039861699ea332a66}{%
+           family={Lux},
+           familyi={L\bibinitperiod},
+           given={Mathias},
+           giveni={M\bibinitperiod}}}%
+        {{hash=d48531ef35988356a843175f8a3f72fb}{%
+           family={Nguyen},
+           familyi={N\bibinitperiod},
+           given={Duc\bibnamedelimb Tien\bibnamedelima Dang},
+           giveni={D\bibinitperiod\bibinitdelim T\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=f62b80846bf8b2af039b6533d43cf113}{%
+           family={Johansen},
+           familyi={J\bibinitperiod},
+           given={Dag},
+           giveni={D\bibinitperiod}}}%
+        {{hash=160890b3c15f83f00b98819b01f0ec9e}{%
+           family={Griwodz},
+           familyi={G\bibinitperiod},
+           given={Carsten},
+           giveni={C\bibinitperiod}}}%
+        {{hash=e0d0143bc78215f02e75c19b93f85745}{%
+           family={Stensland},
+           familyi={S\bibinitperiod},
+           given={H{å}kon\bibnamedelima Kvale},
+           giveni={H\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=6d9466c977efa3acc65e534d98057aac}{%
+           family={Garcia-Ceja},
+           familyi={G\bibinithyphendelim C\bibinitperiod},
+           given={Enrique},
+           giveni={E\bibinitperiod}}}%
+        {{hash=85a0f80f226f5cea875db297e816a31f}{%
+           family={Schmidt},
+           familyi={S\bibinitperiod},
+           given={Peter\bibnamedelima Thelin},
+           giveni={P\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=dcc8c8c7a0c36b736d7795667689550c}{%
+           family={Hammer},
+           familyi={H\bibinitperiod},
+           given={Hugo\bibnamedelima Lewi},
+           giveni={H\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=7a29e213570ac9fbea05dcd360d68fcd}{%
+           family={Riegler},
+           familyi={R\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=45d0e8dfff9ac479c5f88d364da48e28}{%
+           family={Halvorsen},
+           familyi={H\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=9ee0864c6e2a4c6136a0219c7b81c22e}{%
+           family={Lange},
+           familyi={L\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+      }
+      \strng{namehash}{55d422a945a1fe8eb27eefd12bb10df3}
+      \strng{fullhash}{9ec09395b9f90808c779560748a8cee9}
+      \strng{bibnamehash}{55d422a945a1fe8eb27eefd12bb10df3}
+      \strng{authorbibnamehash}{55d422a945a1fe8eb27eefd12bb10df3}
+      \strng{authornamehash}{55d422a945a1fe8eb27eefd12bb10df3}
+      \strng{authorfullhash}{9ec09395b9f90808c779560748a8cee9}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Scientific Data}
+      \field{title}{HyperKvasir, a comprehensive multi-class image and video dataset for gastrointestinal endoscopy}
+      \field{volume}{7}
+      \field{year}{2020}
+    \endentry
+    \entry{Pertuz2013AnalysisOF}{article}{}
+      \name{author}{3}{}{%
+        {{hash=2b5e81fa1c0c06f14a818a816bf3e449}{%
+           family={Pertuz},
+           familyi={P\bibinitperiod},
+           given={Said},
+           giveni={S\bibinitperiod}}}%
+        {{hash=bd0a13d23738d27809950232bea3790a}{%
+           family={Puig},
+           familyi={P\bibinitperiod},
+           given={Domenec},
+           giveni={D\bibinitperiod}}}%
+        {{hash=878940d343e92a1f1dec9850e6927eb5}{%
+           family={Garc{í}a},
+           familyi={G\bibinitperiod},
+           given={Miguel\bibnamedelima {Á}ngel},
+           giveni={M\bibinitperiod\bibinitdelim Á\bibinitperiod}}}%
+      }
+      \strng{namehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{fullhash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{bibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorbibnamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authornamehash}{271a566c3eca48734c812a5543ab91a9}
+      \strng{authorfullhash}{271a566c3eca48734c812a5543ab91a9}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Pattern Recognit.}
+      \field{title}{Analysis of focus measure operators for shape-from-focus}
+      \field{volume}{46}
+      \field{year}{2013}
+      \field{pages}{1415\bibrangedash 1432}
+      \range{pages}{18}
+    \endentry
+    \entry{Kupyn2019DeblurGANv2D}{article}{}
+      \name{author}{4}{}{%
+        {{hash=38e920469eba0bd39c75f75e9228d92e}{%
+           family={Kupyn},
+           familyi={K\bibinitperiod},
+           given={Orest},
+           giveni={O\bibinitperiod}}}%
+        {{hash=ced1b360218f2dc3a98edeff9f08bca6}{%
+           family={Martyniuk},
+           familyi={M\bibinitperiod},
+           given={T.},
+           giveni={T\bibinitperiod}}}%
+        {{hash=91edb8042db22854d115815a4216c541}{%
+           family={Wu},
+           familyi={W\bibinitperiod},
+           given={Junru},
+           giveni={J\bibinitperiod}}}%
+        {{hash=4f87ba962b43f4d664922e1f3c38c9c0}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Zhangyang},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{fullhash}{6b64137bfc67d75acdba84eb2a46a243}
+      \strng{bibnamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authorbibnamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authornamehash}{c93c67a5ac85d3bff54b5d9d634901e4}
+      \strng{authorfullhash}{6b64137bfc67d75acdba84eb2a46a243}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{2019 IEEE/CVF International Conference on Computer Vision (ICCV)}
+      \field{title}{DeblurGAN-v2: Deblurring (Orders-of-Magnitude) Faster and Better}
+      \field{year}{2019}
+      \field{pages}{8877\bibrangedash 8886}
+      \range{pages}{10}
+    \endentry
+    \entry{Xia2018EndoscopicIE}{article}{}
+      \name{author}{3}{}{%
+        {{hash=fd5718b75f093cd4cfe3c3c4b92f6ae6}{%
+           family={Xia},
+           familyi={X\bibinitperiod},
+           given={Wenyao},
+           giveni={W\bibinitperiod}}}%
+        {{hash=008323cf8c8792921b7dfeb037c2e356}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Elvis\bibnamedelimb C.\bibnamedelimi S.},
+           giveni={E\bibinitperiod\bibinitdelim C\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=2e9e8ad6e5b81ddb8a49e01d8924307d}{%
+           family={Peters},
+           familyi={P\bibinitperiod},
+           given={Terry\bibnamedelima M.},
+           giveni={T\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{fullhash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{bibnamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authorbibnamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authornamehash}{d3363f4e0ea6c2664a756af73a23195d}
+      \strng{authorfullhash}{d3363f4e0ea6c2664a756af73a23195d}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Healthcare Technology Letters}
+      \field{title}{Endoscopic image enhancement with noise suppression}
+      \field{volume}{5}
+      \field{year}{2018}
+      \field{pages}{154\bibrangedash 157}
+      \range{pages}{4}
+    \endentry
+    \entry{Yi2020ContextualRA}{article}{}
+      \name{author}{5}{}{%
+        {{hash=0af1cd03c125a45cbc6e888d8be51496}{%
+           family={Yi},
+           familyi={Y\bibinitperiod},
+           given={Zili},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=9ed7f7c44faf74ae3e897895ebfa9136}{%
+           family={Tang},
+           familyi={T\bibinitperiod},
+           given={Qiang},
+           giveni={Q\bibinitperiod}}}%
+        {{hash=179a0bbafb3374578bbd62ae14b96cf1}{%
+           family={Azizi},
+           familyi={A\bibinitperiod},
+           given={Shekoofeh},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e77288da2f9d3cc5c3db1b5f545130d2}{%
+           family={Jang},
+           familyi={J\bibinitperiod},
+           given={Daesik},
+           giveni={D\bibinitperiod}}}%
+        {{hash=7c101a8dfa1589129269994b42774943}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Zhan},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{fullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \strng{bibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorbibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authornamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorfullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \field{extraname}{1}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}
+      \field{title}{Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting}
+      \field{year}{2020}
+      \field{pages}{7505\bibrangedash 7514}
+      \range{pages}{10}
+    \endentry
+    \entry{yi2020contextual}{inproceedings}{}
+      \name{author}{5}{}{%
+        {{hash=0af1cd03c125a45cbc6e888d8be51496}{%
+           family={Yi},
+           familyi={Y\bibinitperiod},
+           given={Zili},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=9ed7f7c44faf74ae3e897895ebfa9136}{%
+           family={Tang},
+           familyi={T\bibinitperiod},
+           given={Qiang},
+           giveni={Q\bibinitperiod}}}%
+        {{hash=179a0bbafb3374578bbd62ae14b96cf1}{%
+           family={Azizi},
+           familyi={A\bibinitperiod},
+           given={Shekoofeh},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e77288da2f9d3cc5c3db1b5f545130d2}{%
+           family={Jang},
+           familyi={J\bibinitperiod},
+           given={Daesik},
+           giveni={D\bibinitperiod}}}%
+        {{hash=7c101a8dfa1589129269994b42774943}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Zhan},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{fullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \strng{bibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorbibnamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authornamehash}{09103b54f0918f944db821b4449b38e6}
+      \strng{authorfullhash}{968fceed4110bab7017b3ce33fa7ef86}
+      \field{extraname}{2}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition}
+      \field{title}{Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting}
+      \field{year}{2020}
+      \field{pages}{7508\bibrangedash 7517}
+      \range{pages}{10}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

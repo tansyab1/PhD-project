@@ -1,0 +1,24 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {english}{}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {1}{Motivation \& Context}{3}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {1}{1}{Context}{3}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {1}{2}{Wireless Capsule Endoscopy}{5}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@subsubsectionintoc {1}{2}{1}{Challenges}{8}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@subsubsectionintoc {1}{2}{2}{Solutions}{13}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {2}{Existing datasets}{15}{0}{2}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {2}{1}{Existing GI datasets}{15}{0}{2}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {2}{2}{HyperKvasir dataset}{18}{0}{2}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {3}{Ongoing work}{20}{0}{3}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {3}{1}{Method}{20}{0}{3}
+\defcounter {refsection}{0}\relax 
+\beamer@subsectionintoc {3}{2}{Preliminary results}{21}{0}{3}
