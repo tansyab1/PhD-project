@@ -16,7 +16,7 @@ Original file is located at
 # #Download the dataset
 # ! unzip '/content/drive/MyDrive/Colab Notebooks/PhD-project/Dataset/kvasircapsule.zip' -d "/content/kvasir_capsule/"
 
-import numpy as np
+# import numpy as np
 import cv2
 # import math
 import csv
@@ -55,18 +55,18 @@ for file in glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/
         if ret is True:
             # Display the resulting frame
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            median = cv2.medianBlur(img[:, :, 2], 201)
-            ori = median.copy()
-            equ = cv2.equalizeHist(median)
-            res = np.abs(equ-ori)
+            # median = cv2.medianBlur(img[:, :, 2], 201)
+            # ori = median.copy()
+            # equ = cv2.equalizeHist(median)
+            # res = np.abs(equ-ori)
 
             # cv2.imshow('x', median)
             # cv2.imshow('eq', res)
             # plt.hist(img.ravel(), 256, [0, 256])
             # plt.show()
-            mean, std = cv2.meanStdDev(np.abs(equ-ori), mask=None)
-            dot = np.mean(ori)
-            stds.append(std*dot/255)
+            mean, std = cv2.meanStdDev(img[:, :, 2], mask=None)
+            # dot = np.mean(ori)
+            stds.append(std)
             # Press Q on keyboard to  exit
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
@@ -76,6 +76,6 @@ for file in glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/
             break
     stdss.append(Average(stds))
 
-with open('./ihed.csv', 'w') as f:
+with open('./2021/src/Pre-processing/Isotropic/UnevenIllumination/src/sdv.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerows(zip(names, stdss))
