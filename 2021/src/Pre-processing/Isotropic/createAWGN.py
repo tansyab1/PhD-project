@@ -6,7 +6,7 @@ import os
 
 
 def create_noise(image, var, mean=0):
-    noise_img = random_noise(img, mode='gaussian',
+    noise_img = random_noise(image, mode='gaussian',
                              mean=mean, var=var/255, clip=True)
     return np.array(255*noise_img, dtype='uint8')
 
