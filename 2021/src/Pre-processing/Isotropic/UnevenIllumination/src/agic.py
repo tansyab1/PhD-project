@@ -48,7 +48,7 @@ def Average(lst):
 stdss = []
 names = []
 
-for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video*.avi")):
+for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video1_1.avi")):
     cap = cv2.VideoCapture(file)
     names.append(os.path.basename(file))
     # Check if camera opened successfully
