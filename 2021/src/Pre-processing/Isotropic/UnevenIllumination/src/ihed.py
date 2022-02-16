@@ -25,7 +25,7 @@ import os
 # from skimage.util import random_noise
 import glob
 # import seaborn as sns
-# from tqdm import tqdm
+from tqdm import tqdm
 # import matplotlib as mpl
 # import pywt
 from functools import reduce
@@ -40,7 +40,8 @@ def Average(lst):
 
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
-for file in glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video*.avi"):
+clahe = cv2.createCLAHE(tileGridSize=(8, 8), clipLimit=2.0)
+for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video*.avi")):
     cap = cv2.VideoCapture(file)
     names.append(os.path.basename(file))
     # Check if camera opened successfully
@@ -58,13 +59,17 @@ for file in glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/
             median = cv2.medianBlur(img[:, :, 2], 201)
             ori = median.copy()
             equ = cv2.equalizeHist(median)
-            res = np.abs(equ-ori)
+            res = np.zeros(equ.shape)
+            # equ = clahe.apply(median)
+            for i in range(0, ori.shape[0]):
+                for j in range(0, ori.shape[1]):
+                    res[i][j] = np.maximum(ori[i][j], equ[i][j])-np.minimum(ori[i][j], equ[i][j])
 
             # cv2.imshow('x', median)
             # cv2.imshow('eq', res)
             # plt.hist(img.ravel(), 256, [0, 256])
             # plt.show()
-            mean, std = cv2.meanStdDev(np.abs(equ-ori), mask=None)
+            mean, std = cv2.meanStdDev(res, mask=None)
             dot = np.mean(ori)
             stds.append(std*dot/255)
             # Press Q on keyboard to  exit
@@ -76,6 +81,6 @@ for file in glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/
             break
     stdss.append(Average(stds))
 
-with open('./ihed.csv', 'w') as f:
+with open('./ihed_AHE.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerows(zip(names, stdss))

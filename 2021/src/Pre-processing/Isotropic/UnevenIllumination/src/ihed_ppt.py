@@ -24,9 +24,10 @@ import glob
 from functools import reduce
 
 stdss = []
-names = []
+orinames = []
 
-file_folder = '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/'
+file_folder = '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/'
+
 
 def Average(lst):
     return reduce(lambda a, b: a + b, lst) / len(lst)
@@ -34,18 +35,22 @@ def Average(lst):
 
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
-for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/img_pptvideo2*.png"):
-    names=os.path.basename(file)+str('.png')
+clahe = cv2.createCLAHE(tileGridSize=(8, 8))
+for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/test/test/*out*.png"):
+    # names = os.path.basename(file)+str('.png')
+    orinames.append(os.path.basename(file))
     frame = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
-    # img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    # median = cv2.medianBlur(img[:, :, 2], 201)
-    ori = frame.copy()
-    equ = cv2.equalizeHist(frame)
-    cv2.imwrite(file_folder+str(names), equ)
-    res = np.abs(equ-ori)
-    print(names)
-    print(np.mean(res))
+    # img = cv2.cvtColor(frame, cv2.COLOR_GRAY2HSV)
+    median = cv2.medianBlur(frame, 101)
+    ori = median.copy()
+    dot = np.mean(ori)
+    equ = cv2.equalizeHist(median)
+    # equ = clahe.apply(frame)
+    cv2.imwrite(file_folder+"diff"+str(os.path.basename(file)), np.abs(equ-ori))
+    mean, std = cv2.meanStdDev(np.abs(equ-ori), mask=None)
+    stdss.append(std*dot/(ori.shape[0]*ori.shape[1]))
 
+    print(mean)
 #     # cv2.imshow('x', median)
 #     # cv2.imshow('eq', res)
 #     # plt.hist(img.ravel(), 256, [0, 256])
@@ -57,6 +62,6 @@ for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-
 #     if cv2.waitKey(25) & 0xFF == ord('q'):
 #         break
 
-# with open('./ihed.csv', 'w') as f:
-#     writer = csv.writer(f, delimiter='\t')
-#     writer.writerows(zip(names, stdss))
+with open('./ihed_test.csv', 'w') as f:
+    writer = csv.writer(f, delimiter='\t')
+    writer.writerows(zip(orinames, stdss))

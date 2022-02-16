@@ -7,6 +7,8 @@ import csv
 from tqdm import tqdm
 from functools import reduce
 
+# from zmq import frame
+
 
 def neighbors(im, i, j, d=1):
     b = im[i-d:i+d+1, j-d:j+d+1].flatten()
@@ -39,7 +41,7 @@ def estimateuneven(img):
             if image[i, j]:
                 res.append(neighbors(image, i, j))
 
-    return Average(res),illmask
+    return Average(res), illmask
 
 
 def Average(lst):
@@ -49,38 +51,40 @@ def Average(lst):
 stdss = []
 names = []
 
-file_folder = '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/'
+file_folder = '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/test/'
 
-for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video1_*.avi")):
-    cap = cv2.VideoCapture(file)
-    names=os.path.basename(file)+str('.png')
-    names2=str('img_ppt')+os.path.basename(file)+str('.png')
-    names3=str('ori')+os.path.basename(file)+str('.png')
+for file in tqdm(glob.glob("/home/nguyentansy/Downloads/test/level*.png")):
+    # cap = cv2.VideoCapture(file)
+    names = os.path.basename(file)+str('.png')
+    names2 = str('img_ppt')+os.path.basename(file)+str('.png')
+    names3 = str('ori')+os.path.basename(file)+str('.png')
     print(names2)
     # Check if camera opened successfully
-    if (cap.isOpened() is False):
-        print("Error opening video stream or file")
+    # if (cap.isOpened() is False):
+    #     print("Error opening video stream or file")
 
     stds = []
     # Read until video is completed
-    if(cap.isOpened()):
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        if ret is True:
-            # Display the resulting frame
-            img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # if(cap.isOpened()):
+    # Capture frame-by-frame
+    # ret, frame = cap.read()
+    x = cv2.imread(file, 0)
+    if True:
+        # Display the resulting frame
+        # img = cv2.cvtColor(x, cv2.COLOR_BGR2HSV)
 
-            std, illmask = estimateuneven(img[:, :, 2])
-            # cv2.imshow('frame', illmask)
-            # cv2.waitKey(0) 
-            # cv2.destroyAllWindows() 
-            # stds.append(std)
-            # cv2.imwrite(file_folder+str(names), img[:, :, 2])
-            # cv2.imwrite(file_folder+str(names2), illmask)
-            cv2.imwrite(file_folder+str(names3), frame)
-            # Press Q on keyboard to  exit
-            # if cv2.waitKey(25) & 0xFF == ord('q'):
-            #     break
+        std, illmask = estimateuneven(x)
+        print(std)
+        # cv2.imshow('frame', illmask)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        # stds.append(std)
+        # cv2.imwrite(file_folder+str(names), img[:, :, 2])
+        # cv2.imwrite(file_folder+str(names2), illmask)
+        # cv2.imwrite(file_folder+str(names3), x)
+        # Press Q on keyboard to  exit
+        # if cv2.waitKey(25) & 0xFF == ord('q'):
+        #     break
 
         # Break the loop
     #     else:

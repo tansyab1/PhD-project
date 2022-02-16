@@ -54,6 +54,7 @@ def estimateuneven(img, d=1, name=None):
 
     Ba = 0.923*BsMat + 0.077*np.mean(illmask)
     res = np.abs(Ba-illmask)/Ba
+    print(np.mean(res))
     cv2.imwrite("test"+name, res)
     return np.mean(res)
 
@@ -70,11 +71,12 @@ if __name__ == '__main__':
     stdss = []
     names = []
 
-    for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/video*.png")):
+    for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/*.png")):
         print(file)
         names.append(os.path.basename(file))
-        img = cv2.imread(file, 0)
-        std = estimateuneven(img, d=3, name=os.path.basename(file))
+        img = cv2.imread(file)
+        img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        std = estimateuneven(img2[:, :, 2], d=3, name=os.path.basename(file))
         stdss.append(std)
 
     # with open('test_artificial.csv', 'w') as f:
