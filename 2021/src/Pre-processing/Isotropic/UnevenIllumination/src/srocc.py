@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from sklearn.linear_model import LogisticRegression
+from scipy.special import expit
 
 df_sdv = pd.read_csv(
     '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/sdv2.csv', delimiter=',', header=None)
@@ -9,7 +14,7 @@ df_agic = pd.read_csv(
     '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/agic.csv', delimiter='\t', header=None)
 
 df_ihed = pd.read_csv(
-    '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/ihed2.csv', delimiter=',', header=None)
+    '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/ihed_corected_done.csv', delimiter=',', header=None)
 
 df_mosEx = pd.read_csv(
     '/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/mosEx.csv', delimiter=' ', header=None)
@@ -43,32 +48,58 @@ print("SROCC between each measure and MOS expert:")
 print("Spearman correlation coefficient between SDV and MOS expert==>",
       stats.spearmanr(sorted_sdv, sorted_mosEx))
 print("Spearman correlation coefficient between AGIC and MOS expert==>",
-      stats.spearmanr(sorted_agic, sorted_mosEx))
+      stats.spearmanr(1/sorted_agic, sorted_mosEx))
 print("Spearman correlation coefficient between IHED and MOS expert==>",
-      stats.spearmanr(sorted_ihed, sorted_mosEx))
+      stats.spearmanr(1/sorted_ihed, sorted_mosEx))
 
 print("SROCC between each measure and MOS non-expert:")
 print("Spearman correlation coefficient between SDV and MOS non-expert==>",
-      stats.spearmanr(sorted_sdv, sorted_mosNonEx))
+      (stats.spearmanr(sorted_sdv, sorted_mosNonEx)))
 print("Spearman correlation coefficient between AGIC and MOS non-expert==>",
-      stats.spearmanr(sorted_agic, sorted_mosNonEx))
+      (stats.spearmanr(1/sorted_agic, sorted_mosNonEx)))
 print("Spearman correlation coefficient between IHED and MOS non-expert==>",
-      stats.spearmanr(sorted_ihed, sorted_mosNonEx))
+      (stats.spearmanr(1/sorted_ihed, sorted_mosNonEx)))
 
 
 # Calcalate the Pearson correlation coefficient
 print("LCC between each measure and MOS expert:")
 print("Pearson correlation coefficient between SDV and MOS expert==>",
-      stats.pearsonr(sorted_sdv, sorted_mosEx))
+      (stats.pearsonr(sorted_sdv, sorted_mosEx)))
 print("Pearson correlation coefficient between AGIC and MOS expert==>",
-      stats.pearsonr(sorted_agic, sorted_mosEx))
+      (stats.pearsonr(1/sorted_agic, sorted_mosEx)))
 print("Pearson correlation coefficient between IHED and MOS expert==>",
-      stats.pearsonr(sorted_ihed, sorted_mosEx))
+      (stats.pearsonr(1/sorted_ihed, sorted_mosEx)))
 
 print("LCC between each measure and MOS non-expert:")
 print("Pearson correlation coefficient between SDV and MOS non-expert==>",
-      stats.pearsonr(sorted_sdv, sorted_mosNonEx))
+      (stats.pearsonr(sorted_sdv, sorted_mosNonEx)))
 print("Pearson correlation coefficient between AGIC and MOS non-expert==>",
-      stats.pearsonr(sorted_agic, sorted_mosNonEx))
+      (stats.pearsonr(1/sorted_agic, sorted_mosNonEx)))
 print("Pearson correlation coefficient between IHED and MOS non-expert==>",
-      stats.pearsonr(sorted_ihed, sorted_mosNonEx))
+      (stats.pearsonr(1/sorted_ihed, sorted_mosNonEx)))
+
+x = np.array(sorted_ihed, dtype=float).reshape(-1, 1)
+y = np.array(sorted_mosEx, dtype=float)
+print(np.shape(y))
+# sns_plot = sns.regplot(x=x, y=y, logistic=True, scatter_kws={
+#                        'color': 'black'}, line_kws={'color': 'red'})
+
+LogR = LogisticRegression(
+    max_iter=1000, multi_class='multinomial', solver='lbfgs')
+
+lab_enc = preprocessing.LabelEncoder()
+# training_scores_encoded = lab_enc.fit_transform(y)
+
+# LogR.fit(x, training_scores_encoded)
+# X_test = np.linspace(-5, 10, 120)
+
+# loss = expit(X_test * LogR.coef_ + LogR.intercept_).ravel()
+# plt.plot(X_test, loss, color="red", linewidth=3)
+
+# # matplotlib scatter funcion w/ logistic regression
+# plt.scatter(x, y)
+# plt.plot(X_test, loss, color="red", linewidth=3)
+# plt.LogR()
+plt.xlabel("IHED")
+plt.ylabel("MOS expert")
+plt.show()

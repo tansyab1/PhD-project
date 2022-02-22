@@ -41,7 +41,7 @@ def Average(lst):
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
 clahe = cv2.createCLAHE(tileGridSize=(8, 8), clipLimit=2.0)
-for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video5_*.avi")):
+for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video2_*.avi")):
     cap = cv2.VideoCapture(file)
     names.append(os.path.basename(file))
     # Check if camera opened successfully
@@ -70,11 +70,12 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
         # plt.show()
         for i in range(0, res.shape[0]):
             for j in range(0, res.shape[1]):
-                diff[i][j] = np.maximum(ori[i][j], equ[i][j])-np.minimum(ori[i][j], equ[i][j])
+                diff[i][j] = max(equ[i][j], ori[i][j])-min(equ[i][j], ori[i][j])
         # diff = res
         mean = np.mean(diff)
         print(os.path.basename(file))
         print(mean)
+
         # dot = np.mean(ori)
         # stds.append(std*dot/255)
         # Press Q on keyboard to  exit
@@ -82,15 +83,15 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
         #     break
         cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
                     "diff"+os.path.basename(file)+".png", diff)
-        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/paper/' +
-        #             "ori"+os.path.basename(file)+".png", frame)
-        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/paper/' +
-        #             "hsv"+os.path.basename(file)+".png", img[:, :, 2])
+        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+                    "ori"+os.path.basename(file)+".png", frame)
+        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+                    "hsv"+os.path.basename(file)+".png", img[:, :, 2])
 
-        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/paper/' +
-        #             "equal"+os.path.basename(file)+".png", equ)
-        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/paper/' +
-        #             "median"+os.path.basename(file)+".png", ori)
+        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+                    "equal"+os.path.basename(file)+".png", equ)
+        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+                    "median"+os.path.basename(file)+".png", ori)
 
         # Break the loop
     #     else:

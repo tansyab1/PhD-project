@@ -65,22 +65,18 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
                 for j in range(0, ori.shape[1]):
                     res[i][j] = np.maximum(ori[i][j], equ[i][j])-np.minimum(ori[i][j], equ[i][j])
 
-            # cv2.imshow('x', median)
-            # cv2.imshow('eq', res)
-            # plt.hist(img.ravel(), 256, [0, 256])
-            # plt.show()
-            mean, std = cv2.meanStdDev(res, mask=None)
+            mean, std = cv2.meanStdDev(res)
             dot = np.mean(ori)
-            stds.append(std*dot/255)
+            stds.append(std/dot)
             # Press Q on keyboard to  exit
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
+            # if cv2.waitKey(25) & 0xFF == ord('q'):
+            #     break
 
         # Break the loop
         else:
             break
     stdss.append(Average(stds))
 
-with open('./ihed_AHE.csv', 'w') as f:
+with open('./ihed_corected.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerows(zip(names, stdss))

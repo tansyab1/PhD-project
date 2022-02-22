@@ -36,7 +36,7 @@ def Average(lst):
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
 clahe = cv2.createCLAHE(tileGridSize=(8, 8))
-for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/test/test/*out*.png"):
+for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/agic/artificial/test/test/*v-*.png"):
     # names = os.path.basename(file)+str('.png')
     orinames.append(os.path.basename(file))
     frame = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
@@ -45,12 +45,19 @@ for file in glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-
     ori = median.copy()
     dot = np.mean(ori)
     equ = cv2.equalizeHist(median)
+    diff = equ.copy()
     # equ = clahe.apply(frame)
-    cv2.imwrite(file_folder+"diff"+str(os.path.basename(file)), np.abs(equ-ori))
-    mean, std = cv2.meanStdDev(np.abs(equ-ori), mask=None)
-    stdss.append(std*dot/(ori.shape[0]*ori.shape[1]))
-
+    for i in range(0, equ.shape[0]):
+        for j in range(0, equ.shape[1]):
+            diff[i][j] = np.abs(
+                int(equ[i][j]) - int(ori[i][j])).astype(np.uint8)
+    cv2.imwrite(file_folder+"diff" +
+                str(os.path.basename(file)), diff)
+    mean, std = cv2.meanStdDev(diff, mask=None)
+    stdss.append(std/dot)
+    print(os.path.basename(file))
     print(mean)
+    hist = cv2.calcHist([img],[0],None,[256],[0,256])
 #     # cv2.imshow('x', median)
 #     # cv2.imshow('eq', res)
 #     # plt.hist(img.ravel(), 256, [0, 256])
