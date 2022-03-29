@@ -34,8 +34,8 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_caps
     plt.legend(["Noise"])
 
     plt.subplot(313)
-    plt.plot(t, data_blur/max(data_blur), color='tab:green', marker='o')
-    plt.plot(t, data_blur/max(data_blur), color='black')
+    plt.plot(t, 1/(max(1/data_blur)*data_blur), color='tab:green', marker='o')
+    plt.plot(t, 1/(max(1/data_blur)*data_blur), color='black')
     plt.xticks(np.arange(0, len(t)+1, 100))
     plt.legend(["Blur"])
     print("===============================")
@@ -43,14 +43,14 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_caps
     plt.suptitle(orinames)
     plt.show()
 
-    num = input("get number:")
-    nums.append(len(t)-int(num))
+#     num = input("get number:")
+#     nums.append(len(t)-int(num))
 
-    names.append(orinames)
+#     names.append(orinames)
 
-# write to csv
-df = pd.DataFrame({"name":names, "num":nums})
-df.to_csv("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/label.csv", index=False)
+# # write to csv
+# df = pd.DataFrame({"name":names, "num":nums})
+# df.to_csv("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/label.csv", index=False)
 
 
 
