@@ -64,46 +64,46 @@ mask_dir = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_ima
 save_dir = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/"
 input_dir = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ref/"
 
-# print("Start adding noise")
-# # apply Noise to input images
-# for sig_Noise in tqdm(sigma_Noise):
-#     for name in names:
-#         # check if the folder exists
-#         if not os.path.exists(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/"):
-#             os.makedirs(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/")
-#         for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
-#             image = cv2.imread(file)
-#             noise_img = create_noise(image, sig_Noise)
-#             finalnoise= np.where(mask <10, image, noise_img)
-#             cv2.imwrite(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/"+os.path.basename(file), finalnoise)
+print("Start adding noise")
+# apply Noise to input images
+for sig_Noise in tqdm(sigma_Noise):
+    for name in names:
+        # check if the folder exists
+        if not os.path.exists(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/"):
+            os.makedirs(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/")
+        for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
+            image = cv2.imread(file)
+            noise_img = create_noise(image, sig_Noise)
+            finalnoise= np.where(mask <10, image, noise_img)
+            cv2.imwrite(save_dir+"Noise/"+str(sig_Noise)+"/"+name+"/"+os.path.basename(file), finalnoise)
 
 
-# print("Start adding blur")
-# # apply Defocus Blur to input images
-# for sig_DefocusBlur in tqdm(sigma_DefocusBlur):
-#     for name in names:
-#         # check if the folder exists
-#         if not os.path.exists(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/"):
-#             os.makedirs(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/")
-#         for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
-#             image = cv2.imread(file)
-#             blur_img = apply_defocus_blur(image, sig_DefocusBlur)
-#             finalblur= np.where(mask <10, image, blur_img)
-#             cv2.imwrite(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/"+os.path.basename(file), finalblur)
+print("Start adding blur")
+# apply Defocus Blur to input images
+for sig_DefocusBlur in tqdm(sigma_DefocusBlur):
+    for name in names:
+        # check if the folder exists
+        if not os.path.exists(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/"):
+            os.makedirs(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/")
+        for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
+            image = cv2.imread(file)
+            blur_img = apply_defocus_blur(image, sig_DefocusBlur)
+            finalblur= np.where(mask <10, image, blur_img)
+            cv2.imwrite(save_dir+"DefocusBlur/"+str(sig_DefocusBlur)+"/"+name+"/"+os.path.basename(file), finalblur)
 
 
-# # apply Motion Blur to input images
-# for angle_MotionBlur in tqdm(angle_MotionBlurs):
-#     for size_MotionBlur in tqdm(size_MotionBlurs):
-#         for name in names:
-#             # check if the folder exists
-#             if not os.path.exists(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/"):
-#                 os.makedirs(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/")
-#             for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
-#                 image = cv2.imread(file)
-#                 blur_img = apply_motion_blur(image, size_MotionBlur, angle_MotionBlur)
-#                 finalblur= np.where(mask <10, image, blur_img)
-#                 cv2.imwrite(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/"+os.path.basename(file), finalblur)
+# apply Motion Blur to input images
+for angle_MotionBlur in tqdm(angle_MotionBlurs):
+    for size_MotionBlur in tqdm(size_MotionBlurs):
+        for name in names:
+            # check if the folder exists
+            if not os.path.exists(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/"):
+                os.makedirs(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/")
+            for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
+                image = cv2.imread(file)
+                blur_img = apply_motion_blur(image, size_MotionBlur, angle_MotionBlur)
+                finalblur= np.where(mask <10, image, blur_img)
+                cv2.imwrite(save_dir+"MotionBlur/"+str(angle_MotionBlur)+"/"+str(size_MotionBlur)+"/"+name+"/"+os.path.basename(file), finalblur)
 
 print("Start adding UI")
 # apply UI to input images

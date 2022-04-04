@@ -7,10 +7,10 @@ parser = argparse.ArgumentParser(description="Split data into k folds.")
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
-parser.add_argument("-s", "--src-dir", type=str)
-parser.add_argument("-d", "--dest-dir", type=str, default=None)
+parser.add_argument("-s", "--src-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/UI/200/168/")
+parser.add_argument("-d", "--dest-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/UI")
 parser.add_argument("-f", "--number-of-folds", type=int, default=2)
-parser.add_argument("-e", "--exclude-classes", nargs='+')
+parser.add_argument("-e", "--exclude-classes", nargs='+',default=[])
 
 def split_data_into_equal_parts(data, number_of_parts):
     part_length = len(data) // number_of_parts
