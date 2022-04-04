@@ -63,20 +63,20 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 
 # Directories
 parser.add_argument("--data_root",
-                    default="~/dataport/ExperimentalDATA/noise/",
+                    default="dataport/ExperimentalDATA/noise/",
                     help="data root directory")
 
 
 parser.add_argument("--data_to_inference",
-                    default="~/dataport/interference/clean/",
+                    default="dataport/interference/clean2/",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
-                    default="~/dataport/output/clean/",
+                    default="dataport/output/clean2/",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="~/dataport/tensorboard/clean/",
+                    default="dataport/tensorboard/clean2/",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -444,7 +444,7 @@ def check_model_graph():
 
 
 def test_model():
-
+    print("Testing model")
     test_model_checkpoint = input("Please enter the path of test model:")
     checkpoint = torch.load(test_model_checkpoint)
 
@@ -470,7 +470,7 @@ def test_model():
             inputs = inputs.to(device)
             labels = labels.to(device)
 
-            outputs,original, decoded_image = model(inputs)
+            outputs, original, decoded_image = model(inputs)
             outputs = F.softmax(outputs, 1)
             predicted_probability, predicted = torch.max(outputs.data, 1)
 
