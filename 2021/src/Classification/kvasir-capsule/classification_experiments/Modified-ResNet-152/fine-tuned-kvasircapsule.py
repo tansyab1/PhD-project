@@ -13,6 +13,7 @@
 ###########################################
 
 from __future__ import print_function, division
+from cgi import test
 
 import datetime
 
@@ -65,7 +66,7 @@ parser.add_argument("--py_file",default=os.path.abspath(__file__)) # store curre
 
 # Directories
 parser.add_argument("--data_root", 
-                default="~/dataport/ExperimentalDATA/ref/",
+                default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/ref/",
                 help="data root directory")
 
 
@@ -74,11 +75,10 @@ parser.add_argument("--data_to_inference",
                 help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir", 
-                default="~/dataport/output/",
+                default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref-ref/",
                 help="Main output dierectory")
-
 parser.add_argument("--tensorboard_dir", 
-                default="~/dataport/tensorboard/",
+                default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref-ref/",
                 help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -96,7 +96,7 @@ parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs t
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
 parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
-parser.add_argument("--val_fold", type=str, default="0", help="Select the validation fold", choices=["0", "1"])
+parser.add_argument("--val_fold", type=str, default="1", help="Select the validation fold", choices=["0", "1"])
 parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
 
 parser.add_argument("--best_resnet", default="~/dataport/output/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:38.pt", help="Resnet best weight file")
@@ -418,7 +418,10 @@ def check_model_graph():
 
 def test_model():
     
-    test_model_checkpoint = input("Please enter the path of test model:")
+    # test_model_checkpoint = input("Please enter the path of test model:")
+
+    test_model_checkpoint ="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt"
+
     checkpoint = torch.load(test_model_checkpoint)
 
     model = prepare_model()
@@ -481,7 +484,7 @@ def test_model():
 
     print("Generating confution matrix")
 
-    plot_confusion_matrix(cm, classes=class_names, title='my confusion matrix')
+    plot_confusion_matrix(cm, classes=class_names)
 
     
 
@@ -489,6 +492,9 @@ def test_model():
     # classification report
     #################################################################
     print(classification_report(y_true, y_predicted, target_names=class_names))
+    # print classfication report to csv
+    report_df = pd.DataFrame(classification_report(y_true, y_predicted, target_names=class_names, output_dict=True))
+    report_df.to_csv(os.path.join(checkpoint_dir, py_file_name + "_report.csv"))
 
     ##################################################################
     # Standard metrics for medico Task
@@ -667,10 +673,10 @@ def prepare_submission_file(image_names, predicted_labels, max_probability, time
 # Plot confusion matrix - method
 ############################################################
 def plot_confusion_matrix(cm, classes,
-                            normalize=False,
-                            title='Confusion matrix',
+                            normalize=True,
+                            title='Predictive Confusion Matrix of reference images using the model trained on the reference dataset',
                             cmap=plt.cm.Blues,
-                            plt_size=[10,10]):
+                            plt_size=[15,12]):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -687,9 +693,17 @@ def plot_confusion_matrix(cm, classes,
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
+    LABEL_TO_LETTER = {
+    "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
+    "Erythema": "F", "Foreign body": "G", "Ileocecal valve": "H", "Lymphangiectasia": "I", "Normal clean mucosa": "J",
+    "Polyp": "K", "Pylorus": "L", "Reduced mucosal view": "M", "Ulcer": "N"
+}
+
     tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
+
+    class_str = [LABEL_TO_LETTER[i] for i in classes]
+    plt.xticks(tick_marks, class_str, rotation=90)
+    plt.yticks(tick_marks, class_str)
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
@@ -701,7 +715,9 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    # plt.savefig(os.path.join(plot_dir, cm_plot_name))
+    fig_path = "%s/%s_matrix.png" % (opt.out_dir, py_file_name)
+    plt.show()
+    plt.waitforbuttonpress(0)
     figure = plt.gcf()
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")

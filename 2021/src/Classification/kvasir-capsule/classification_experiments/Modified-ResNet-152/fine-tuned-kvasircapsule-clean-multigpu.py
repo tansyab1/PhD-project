@@ -15,6 +15,7 @@ import datetime
 # #start = datetime.datetime.now()
 import argparse
 from email.mime import base
+from operator import mod
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -68,15 +69,15 @@ parser.add_argument("--data_root",
 
 
 parser.add_argument("--data_to_inference",
-                    default="dataport/interference/clean2/",
+                    default="dataport/interference/clean-multigpu/",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
-                    default="dataport/output/clean2/",
+                    default="dataport/output/clean-multigpu/",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="dataport/tensorboard/clean2/",
+                    default="dataport/tensorboard/clean-multigpu/",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -114,9 +115,8 @@ opt = parser.parse_args()
 # ==========================================
 # Device handling
 # ==========================================
-torch.cuda.set_device(opt.device_id)
+# torch.cuda.set_device([opt.device_id])
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 # ===========================================
 # Folder handling
 # ===========================================
@@ -228,7 +228,7 @@ def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, sch
             running_corrects = 0
 
             for i, data in tqdm(enumerate(dataloader, 0)):
-
+                
                 inputs, labels, paths = data
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -309,11 +309,12 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         self.base_model = BaseNet(num_out)
-        self.base_model = nn.DataParallel(self.base_model, device_ids=[opt.device_id])
+        self.base_model = nn.DataParallel(self.base_model)
+        self.base_model.to(device)
         checkpoint_resnet = torch.load(opt.best_resnet)
         self.base_model.load_state_dict(
             checkpoint_resnet["model_state_dict"])  # Load best weight
-        self.base_model.to(device)
+        
         # freeze all layers
         for param in self.base_model.parameters():
             param.requires_grad = False
@@ -327,6 +328,7 @@ class MyNet(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(),
         )
+        self.encoder.to(device)
 
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(64, 64, kernel_size=3, stride=1, padding=1),
@@ -338,6 +340,7 @@ class MyNet(nn.Module):
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
             nn.Tanh(),
         )
+        self.decoder.to(device)
         
         
 
@@ -355,8 +358,8 @@ class MyNet(nn.Module):
 def prepare_model():
     
     model = MyNet()
-    model = nn.DataParallel(model, device_ids=[opt.device_id])
-    model = model.to(device)
+    model = nn.DataParallel(model)
+    model.to(device)
 
     return model
 
@@ -365,7 +368,6 @@ def prepare_model():
 # Run training process
 # ====================================
 def run_train(retrain=False):
-    torch.cuda.empty_cache()
     model = prepare_model()
 
     dataloaders = prepare_data()
