@@ -692,10 +692,10 @@ def prepare_submission_file(image_names, predicted_labels, max_probability, time
 # Plot confusion matrix - method
 ############################################################
 def plot_confusion_matrix(cm, classes,
-                          normalize=False,
+                          normalize=True,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues,
-                          plt_size=[10, 10]):
+                          plt_size=[15, 12]):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -713,8 +713,14 @@ def plot_confusion_matrix(cm, classes,
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
+    LABEL_TO_LETTER = {
+    "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
+    "Erythema": "F", "Foreign body": "G", "Ileocecal valve": "H", "Lymphangiectasia": "I", "Normal clean mucosa": "J",
+    "Polyp": "K", "Pylorus": "L", "Reduced mucosal view": "M", "Ulcer": "N"
+}
+    class_str = [LABEL_TO_LETTER[i] for i in classes]
+    plt.xticks(tick_marks, class_str, rotation=90)
+    plt.yticks(tick_marks, class_str)
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
@@ -726,7 +732,8 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    # plt.savefig(os.path.join(plot_dir, cm_plot_name))
+    fig_path = "%s/%s_matrix.png" % (opt.out_dir, py_file_name)
+    plt.savefig(fig_path)
     figure = plt.gcf()
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")
