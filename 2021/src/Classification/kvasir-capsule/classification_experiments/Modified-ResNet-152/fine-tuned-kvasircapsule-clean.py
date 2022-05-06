@@ -99,7 +99,7 @@ parser.add_argument("--lr_sch_patience", type=int, default=10,
 parser.add_argument("--num_epochs", type=int, default=0,
                     help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("action", type=str, help="Select an action to run", choices=[
+parser.add_argument("--action", type=str, help="Select an action to run", choices=[
                     "train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int,
                     default=25, help="Interval to save checkpoint models")

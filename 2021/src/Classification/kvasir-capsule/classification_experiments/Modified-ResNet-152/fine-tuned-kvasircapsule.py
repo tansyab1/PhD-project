@@ -94,9 +94,10 @@ parser.add_argument("--lr_sch_patience", type=int, default=10, help="Num of epoc
 # Action handling 
 parser.add_argument("--num_epochs", type=int, default=0, help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
+parser.add_argument("--action", type=str, help="Select an action to run", choices=["train", "retrain", "test", "check", "prepare", "inference"])
 parser.add_argument("--checkpoint_interval", type=int, default=25, help="Interval to save checkpoint models")
 parser.add_argument("--val_fold", type=str, default="1", help="Select the validation fold", choices=["0", "1"])
+parser.add_argument("--modelnumber", type=str, default="48", help="Select the validation fold")
 parser.add_argument("--all_folds", default=["0", "1"], help="list of all folds available in data folder")
 
 parser.add_argument("--best_resnet", default="~/dataport/output/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:38.pt", help="Resnet best weight file")
@@ -416,11 +417,13 @@ def check_model_graph():
 #  Model testing method
 #===============================================
 
-def test_model():
+def test_model(modelnumber,val_fold=1):
     
     # test_model_checkpoint = input("Please enter the path of test model:")
 
-    test_model_checkpoint ="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt"
+    test_model_checkpoint ="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/"\
+    "labelled_images/process/labelled_images/output/model/ref/%s/fine-tuned-kvasircapsule.py/"\
+    "checkpoints/fine-tuned-kvasircapsule.py_epoch:%s.pt" % (val_fold,modelnumber)
 
     checkpoint = torch.load(test_model_checkpoint)
 
@@ -716,8 +719,7 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     fig_path = "%s/%s_matrix.png" % (opt.out_dir, py_file_name)
-    plt.show()
-    plt.waitforbuttonpress(0)
+    plt.savefig(fig_path)
     figure = plt.gcf()
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")
@@ -850,7 +852,7 @@ if __name__ == '__main__':
        # pass
     elif opt.action == "test":
         print("Inference process is strted..!")
-        test_model()
+        test_model(opt.modelnumber,opt.val_fold)
     elif opt.action == "check":
         check_model_graph()
         print("Check pass")
