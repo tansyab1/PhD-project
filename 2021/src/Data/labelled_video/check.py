@@ -7,11 +7,12 @@ import glob
 from tqdm import tqdm
 from functools import reduce
 from checkNoise import estimateStandardDeviation
-from checkBlur import getVarianofLaplace
+from checkBlur import getGlobalBlur
 from checkUI import getIHED
 
-name = 'Angiectasia'
-names = ["Blood - fresh",
+names = ["Ampulla of vater", 
+         "Angiectasia",
+         "Blood - fresh",
          "Blood - hematin",
          "Erosion",
          "Erythema",
@@ -19,21 +20,24 @@ names = ["Blood - fresh",
          "Ileocecal valve",
          "Lymphangiectasia",
          "Normal clean mucosa",
-         "Polyp","Pylorus",
+         "Polyp",
+         "Pylorus",
          "Reduced mucosal view",
          "Ulcer"]
-save_folder ='D:/Datasets/kvasircapsule/labelled_images/'
+save_folder ='/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/'\
+    'labelled_images/process/labelled_images/visualization/new_index/'
 for name in names:
     ui = []
     noise = []
     blur = []
-    for file in tqdm(glob.glob("D:/Datasets/kvasircapsule/labelled_images/"+name+"/*.jpg")):
+    for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/Datasets/"\
+        "kvasir_capsule/labelled_images/"+name+"/*.jpg")):
 
         frame =cv2.imread(file)
         # Display the resulting frame
         ui_coefficient = getIHED(frame)
         noise_coefficient = estimateStandardDeviation(frame)
-        blur_coefficient = getVarianofLaplace(frame)
+        blur_coefficient = getGlobalBlur(frame)
 
         ui.append(ui_coefficient[0][0])
         noise.append(noise_coefficient)

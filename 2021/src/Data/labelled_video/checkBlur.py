@@ -2,8 +2,9 @@ import cv2
 # import os
 import seaborn as sns
 from tqdm import tqdm
-# import numpy as np
+import numpy as np
 import glob
+from skimage.transform import warp_polar
 import matplotlib.pyplot as plt
 
 
@@ -75,6 +76,97 @@ def getVarianofLaplace(img):
         float: variance of laplace
     """
     return cv2.Laplacian(img, cv2.CV_64F).var()
+
+# Discret fourier transform of image
+def getDFT(img):
+    """get DFT of the image
+    Args:
+        img (numpy array): image
+    Returns:
+        numpy array: DFT of the image
+    """
+    dft=cv2.dft(np.float32(img), flags=cv2.DFT_COMPLEX_OUTPUT)
+    dft_shift = np.fft.fftshift(dft)
+    magnitude_spectrum = cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, :, 1])
+    return magnitude_spectrum
+
+# convert image RGB to gray
+def convertRGBtoGray(img):
+    """convert image RGB to gray
+    Args:
+        img (numpy array): image
+    Returns:
+        numpy array: gray image
+    """
+    return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+# convert image gray from cartesian to polar coordinate system
+def convertCartesianToPolar(img):
+    """convert image gray from cartesian to polar coordinate system
+    Args:
+        img (numpy array): image gray
+    Returns:
+        numpy array: polar image gray
+    """
+    return warp_polar(img, scaling='linear')
+
+# binominal filteing of the image
+def binomialFilter(img):
+    """binominal filteing of the image
+    Args:
+        img (numpy array): image gray
+        kernal_size (int): size of the kernal
+    Returns:
+        numpy array: binominal filteing of the image
+    """
+    # Create a binomial kernel
+    kernel = np.array([[0.0625, 0.125, 0.0625],
+                        [0.125, 0.25, 0.125],
+                        [0.0625, 0.125, 0.0625]])
+    # Apply the filter
+    return cv2.filter2D(img, -1, kernel)
+
+
+# calculate the total radial energy of the image
+def getRadialEnergy(img):
+    """calculate the total radial energy of the image
+    Args:
+        img (numpy array): image gray
+    Returns:
+        float: total radial energy of the image
+    """
+    return np.sum(img, axis=0) / img.shape[0]
+
+# calcuate the global blur of the image
+def getGlobalBlur(img):
+    """calculate the global blur of the image
+    Args:
+        img (numpy array): image gray
+    Returns:
+        float: global blur of the image
+    """
+    gray_img = convertRGBtoGray(img)
+    gray_img_norminal = binomialFilter(gray_img)
+
+    # fourier transform of the image
+    dft_img = getDFT(gray_img)
+    # print(dft_img.shape)
+    dft_img_norminal = getDFT(gray_img_norminal)
+
+    # convert image gray from cartesian to polar coordinate system
+    img_polar = convertCartesianToPolar(dft_img)
+    img_polar_norminal = convertCartesianToPolar(dft_img_norminal)
+
+    # calculate the total radial energy of the image
+    radial_energy_gray = getRadialEnergy(img_polar)
+    radial_energy_gray_norminal = getRadialEnergy(img_polar_norminal)
+
+    return np.log(np.sum(np.abs(radial_energy_gray - radial_energy_gray_norminal)) / np.max(radial_energy_gray.shape))
+
+
+    
+
+
 
 
 if __name__ == '__main__':
