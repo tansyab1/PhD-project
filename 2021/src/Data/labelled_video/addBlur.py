@@ -12,10 +12,24 @@ mask = cv2.imread("D:/Datasets/kvasircapsule/labelled_videos/mask.png")
 
 def apply_motion_blur(image, size, angle):
     k = np.zeros((size, size), dtype=np.float32)
-    k[(size - 1) // 2, :] = np.ones(size, dtype=np.float32)
-    k = cv2.warpAffine(k, cv2.getRotationMatrix2D(
-        (size / 2 - 0.5, size / 2 - 0.5), angle, 1.0), (size, size))
-    k = k * (1.0 / np.sum(k))
+    # k[(size -1) // 2, :] = np.ones(size, dtype=np.float32)
+# cach 1
+    if round(np.cos(angle)):
+      k[(size//2),(size//2)]=1
+      for i in range(size):
+        for j in range(size):
+          if (j-size//2):
+            # print((i-size//2)/(j-size//2))
+            # print(int(-np.tan(np.pi)))
+            if np.sqrt((i-size//2)**2+(j-size//2)**2)<=size and (i-size//2)/(j-size//2) == -round(np.tan(angle)):
+              k[i,j]=1
+    else:
+      k[:,(size -1) // 2] = np.ones(size, dtype=np.float32)
+# cach 2
+    # k = cv2.warpAffine(k, cv2.getRotationMatrix2D(
+    #     (size / 2 - 0.5, size / 2 - 0.5), angle, 1.0), (size, size))
+    # k = np.where(k<np.max(k), 0,255)
+    # k = k * (1.0 / np.sum(k))
     dst = cv2.filter2D(image, -1, k)
     out = np.where(mask == np.array([0, 0, 0]), image, dst)
     return out

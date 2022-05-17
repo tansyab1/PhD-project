@@ -43,7 +43,7 @@ from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
 
-from Dataloader_with_path_Pytorch import ImageFolderWithPaths as dataset
+from Dataloader_with_path_2labels import ImageFolderWithPaths as dataset
 
 import string
 
@@ -229,9 +229,10 @@ def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, sch
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
-                inputs, labels, paths = data
+                inputs, labels, noise_level = data
                 inputs = inputs.to(device)
                 labels = labels.to(device)
+                noise_level = noise_level.to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -291,6 +292,7 @@ def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, sch
 # ================================================
 # New architecture
 # ================================================
+
 
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):

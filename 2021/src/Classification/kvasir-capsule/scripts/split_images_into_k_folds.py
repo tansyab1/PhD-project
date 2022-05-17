@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser(description="Split data into k folds.")
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
-parser.add_argument("-s", "--src-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/DefocusBlur/5/")
-parser.add_argument("-d", "--dest-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/DefocusBlur/5")
+parser.add_argument("-s", "--src-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/Noise_var/")
+parser.add_argument("-d", "--dest-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Noise_var")
 parser.add_argument("-f", "--number-of-folds", type=int, default=2)
 parser.add_argument("-e", "--exclude-classes", nargs='+',default=[])
 
