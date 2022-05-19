@@ -183,7 +183,7 @@ def prepare_data():
     validation_fold = opt.val_fold
 
     # Train datasets
-    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x), opt.pkl_root,
+    image_datasets_train_all = {x: dataset((os.path.join(opt.data_root, x), opt.pkl_root),
                                            data_transforms["train"])
                                 for x in train_folds}
 
