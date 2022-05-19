@@ -22,6 +22,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms, utils
 import pickle
+import TripletLoss as TripletLoss
 # from pandas_ml import ConfusionMatrix
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -65,6 +66,10 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 parser.add_argument("--data_root",
                     default="dataport/ExperimentalDATA/ui/",
                     help="data root directory")
+
+parser.add_argument("--pkl_root",
+                    default="dataport/ExperimentalDATA/ui/",
+                    help="pkl root directory")
 
 
 parser.add_argument("--data_to_inference",
@@ -178,7 +183,7 @@ def prepare_data():
     validation_fold = opt.val_fold
 
     # Train datasets
-    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x),
+    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x), opt.pkl_root,
                                            data_transforms["train"])
                                 for x in train_folds}
 
@@ -209,9 +214,11 @@ def prepare_data():
 # Train model
 # ===========================================================
 
-def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
+def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
 
     best_model_wts = copy.deepcopy(model.state_dict())
+    # init triplet loss
+    triplet_loss = nn.TripletMarginLoss(margin=1.0, p=2)
 
     for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
 
@@ -229,9 +236,11 @@ def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, sch
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
-                inputs, labels, noise_level = data
+                inputs, labels, positive, negative, noise_level = data
                 inputs = inputs.to(device)
                 labels = labels.to(device)
+                positive = positive.to(device)
+                negative = negative.to(device)
                 noise_level = noise_level.to(device)
 
                 # zero the parameter gradients
@@ -240,12 +249,16 @@ def train_model(model, optimizer, criterion,criterion_ae, dataloaders: dict, sch
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs, original, decoded_image = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels) + criterion_ae(
-                        original.view(-1, 224*224*3).to(device), decoded_image.view(-1, 224*224*3).to(device))
-                    #  print("outputs=", outputs) # only for testing - vajira
-                    #  print("labels = ", labels) # only for testing - vajira
+                    resnet_out, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
+                        inputs, positive, negative)
+                    _, preds = torch.max(resnet_out, 1)
+                    loss_resnet = criterion(resnet_out, labels)
+                    loss_ae = criterion_ae(decoded_image, inputs)
+                    loss_triplet = triplet_loss(
+                        encoded_positive, encoded_negative, encoded_noise)
+                    loss_KL = 0.5 * \
+                        torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
+                    loss = loss_resnet + loss_ae + loss_triplet + loss_KL
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -311,7 +324,8 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         self.base_model = BaseNet(num_out)
-        self.base_model = nn.DataParallel(self.base_model, device_ids=[opt.device_id])
+        self.base_model = nn.DataParallel(
+            self.base_model, device_ids=[opt.device_id])
         checkpoint_resnet = torch.load(opt.best_resnet)
         self.base_model.load_state_dict(
             checkpoint_resnet["model_state_dict"])  # Load best weight
@@ -330,6 +344,30 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
+        self.fc_mu = nn.Linear(512, 256)
+        self.fc_var = nn.Linear(512, 256)
+        # self.fc3 = nn.Linear(256, 336*336*3)
+
+        # MLP to encode the image to extract the noise level
+        self.encoder_mlp = nn.Sequential(
+            nn.Linear(336*336*3, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+        )
+
+        # MLP to decode the image
+        self.decoder_mlp = nn.Sequential(
+            nn.Linear(256, 512),
+            nn.ReLU(),
+            nn.Linear(512, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 336*336*3),
+            nn.Tanh(),
+        )
+
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(64, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
@@ -340,14 +378,35 @@ class MyNet(nn.Module):
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
             nn.Tanh(),
         )
-        
-        
 
-    def forward(self, x):
+    def reparameterize(self, mu, logvar):
+        std = logvar.mul(0.5).exp_()
+        # return torch.normal(mu, std)
+        esp = torch.randn(*mu.size())
+        z = mu + std * esp
+        return z
+
+    def bottleneck(self, h):
+        mu, logvar = self.fc_mu(h), self.fc_var(h)
+        z = self.reparameterize(mu, logvar)
+        return z, mu, logvar
+
+    def forward(self, x, positive, negative):
         encoded_image = self.encoder(x)
+        encoded_noise = self.encoder_mlp(x)
+        encoded_positive = self.encoder_mlp(positive)
+        encoded_negative = self.encoder_mlp(negative)
+
+        z, mu, logvar = self.bottleneck(encoded_noise)
+        noise = self.decoder_mlp(z)
+
         decoded_image = self.decoder(encoded_image)
+
+        # cacade the noise to the decoded image
+        decoded_image = decoded_image + noise
+
         resnet_out = self.base_model(decoded_image)
-        return resnet_out, x, decoded_image
+        return resnet_out, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
 # ===============================================
@@ -355,7 +414,7 @@ class MyNet(nn.Module):
 # ===============================================
 
 def prepare_model():
-    
+
     model = MyNet()
     model = nn.DataParallel(model, device_ids=[opt.device_id])
     model = model.to(device)
@@ -378,7 +437,7 @@ def run_train(retrain=False):
 
     # criterion =  nn.MSELoss() # backprop loss calculation
     criterion = nn.CrossEntropyLoss()  # weight=weights
-    criterion_ae = nn.MSELoss() # Absolute error for real loss calculations
+    criterion_ae = nn.MSELoss()  # Absolute error for real loss calculations
 
     # LR shceduler
     scheduler = lr_scheduler.ReduceLROnPlateau(
@@ -394,7 +453,7 @@ def run_train(retrain=False):
         start_epoch = checkpoint["epoch"]
         loss = checkpoint["loss"]
         acc = checkpoint["acc"]
-        train_model(model, optimizer, criterion,criterion_ae, dataloaders,
+        train_model(model, optimizer, criterion, criterion_ae, dataloaders,
                     scheduler, best_acc=acc, start_epoch=start_epoch)
 
     else:
@@ -468,12 +527,16 @@ def test_model():
     with torch.no_grad():
         for i, data in tqdm(enumerate(test_dataloader, 0)):
 
-            inputs, labels, paths = data
+            inputs, labels, positive, negative, noise_level = data
             inputs = inputs.to(device)
             labels = labels.to(device)
+            positive = positive.to(device)
+            negative = negative.to(device)
+            noise_level = noise_level.to(device)
 
-            outputs,original, decoded_image = model(inputs)
-            outputs = F.softmax(outputs, 1)
+            resnet_out, _, _, _, _, _, _ = model(
+                        inputs, positive, negative)
+            outputs = F.softmax(resnet_out, 1)
             predicted_probability, predicted = torch.max(outputs.data, 1)
 
             total += labels.size(0)
@@ -716,10 +779,10 @@ def plot_confusion_matrix(cm, classes,
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     LABEL_TO_LETTER = {
-    "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
-    "Erythema": "F", "Foreign body": "G", "Ileocecal valve": "H", "Lymphangiectasia": "I", "Normal clean mucosa": "J",
-    "Polyp": "K", "Pylorus": "L", "Reduced mucosal view": "M", "Ulcer": "N"
-}
+        "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
+        "Erythema": "F", "Foreign body": "G", "Ileocecal valve": "H", "Lymphangiectasia": "I", "Normal clean mucosa": "J",
+        "Polyp": "K", "Pylorus": "L", "Reduced mucosal view": "M", "Ulcer": "N"
+    }
     class_str = [LABEL_TO_LETTER[i] for i in classes]
     plt.xticks(tick_marks, class_str, rotation=90)
     plt.yticks(tick_marks, class_str)

@@ -2,6 +2,8 @@ import torch
 from torchvision import datasets
 import pickle
 import os
+import random
+import numpy as np
 # from dataset.Dataloader_with_path import ImageFolderWithPaths
 
 
@@ -17,7 +19,37 @@ class ImageFolderWithPaths(datasets.ImageFolder):
     def read_pickle(self, pickle_file):
         with open(pickle_file, 'rb') as f:
             return pickle.load(f)
-    
+
+    # create triplet of anchor, positive and negative images
+    def create_triplet(self, index):
+
+        # read pickle file
+        pickle_file = self.read_pickle(self.pickle_file)
+
+        # the image file path
+        path = self.imgs[index][0]
+        # get the noise level from the dictionary
+        anchor_label = self.read_pickle(self.pickle_file)[os.path.basename(path)]
+        
+        # get the list of the positive images with the same label as the anchor image
+        # but different from the anchor image
+        positive_images = [x for x in self.imgs if pickle_file[os.path.basename(x[0])] == anchor_label and x[0] != path]
+        # get the list of the negative images with the different label than the anchor image
+        negative_images = [x for x in self.imgs if pickle_file[os.path.basename(x[0])] != anchor_label]
+        
+        # get a random positive image
+        positive_image = random.choice(positive_images)
+        # get a random negative image
+        negative_image = random.choice(negative_images)
+
+        # get index of the positive image in the dataset
+        positive_index = self.imgs.index(positive_image)
+        # get index of the negative image in the dataset
+        negative_index = self.imgs.index(negative_image)
+
+        # return the triplet including the anchor, positive and negative images
+        return positive_index, negative_index
+
     # init the class
     def __init__(self, root, pickle_file):
         super(ImageFolderWithPaths, self).__init__(root)
@@ -27,13 +59,19 @@ class ImageFolderWithPaths(datasets.ImageFolder):
     def __getitem__(self, index):
         # this is what ImageFolder normally returns 
         original_tuple = super(ImageFolderWithPaths, self).__getitem__(index)
-        # the image file path
-        path = self.imgs[index][0]
-        # get the noise level from the dictionary
-        noise_level = self.read_pickle(self.pickle_file)[os.path.basename(path)]
+
+        # print(original_tuple)
+
+        # create triplet of anchor, positive and negative images
+        positive_index, negative_index = self.create_triplet(index)
+        positive = super(ImageFolderWithPaths, self).__getitem__(positive_index)
+        negative = super(ImageFolderWithPaths, self).__getitem__(negative_index)
+
+        
         
         # make a new tuple that includes original and the path
-        tuple_with_path = (original_tuple + (noise_level,))
+        tuple_with_path = (original_tuple + (positive,)+ (negative,))
+
         return tuple_with_path
 
 
