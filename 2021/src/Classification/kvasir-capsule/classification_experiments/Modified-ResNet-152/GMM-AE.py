@@ -183,8 +183,8 @@ def prepare_data():
     validation_fold = opt.val_fold
 
     # Train datasets
-    image_datasets_train_all = {x: dataset((os.path.join(opt.data_root, x), opt.pkl_root),
-                                           data_transforms["train"])
+    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x), opt.pkl_root,
+                                           transform=data_transforms["train"])
                                 for x in train_folds}
 
     # create one dataset from all datasets of training
@@ -192,8 +192,8 @@ def prepare_data():
         [image_datasets_train_all[i] for i in train_folds])
 
     # Validation datasets
-    dataset_val = dataset(os.path.join(opt.data_root, validation_fold),
-                          data_transforms["validation"])
+    dataset_val = dataset(os.path.join(opt.data_root, validation_fold),opt.pkl_root,
+                          transform=data_transforms["validation"])
 
     dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=opt.bs,
                                                    shuffle=True, num_workers=opt.num_workers)
@@ -236,12 +236,12 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
-                inputs, labels, positive, negative, noise_level = data
+                inputs, labels, positive, negative = data
+                input_view = inputs.view(inputs.size(0), -1)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                positive = positive.to(device)
-                negative = negative.to(device)
-                noise_level = noise_level.to(device)
+                positive = positive.view(positive.size(0), -1).to(device)
+                negative = negative.view(negative.size(0), -1).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -250,7 +250,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     resnet_out, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, positive, negative)
+                        inputs, input_view, positive, negative, positive.size(0))
                     _, preds = torch.max(resnet_out, 1)
                     loss_resnet = criterion(resnet_out, labels)
                     loss_ae = criterion_ae(decoded_image, inputs)
@@ -258,6 +258,8 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                         encoded_positive, encoded_negative, encoded_noise)
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
+
+                    # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
                     loss = loss_resnet + loss_ae + loss_triplet + loss_KL
 
                     # backward + optimize only if in training phase
@@ -344,27 +346,35 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc_mu = nn.Linear(512, 256)
-        self.fc_var = nn.Linear(512, 256)
+        self.fc_mu = nn.Linear(256, 128)
+        self.fc_var = nn.Linear(256, 128)
         # self.fc3 = nn.Linear(256, 336*336*3)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
-            nn.Linear(336*336*3, 1024),
+            nn.Linear(224*224*3, 1024),
+            nn.BatchNorm1d(1024),
             nn.ReLU(),
             nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
             nn.ReLU(),
         )
 
         # MLP to decode the image
         self.decoder_mlp = nn.Sequential(
+            nn.Linear(128, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
             nn.Linear(256, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Linear(512, 1024),
+            nn.BatchNorm1d(1024),
             nn.ReLU(),
-            nn.Linear(1024, 336*336*3),
+            nn.Linear(1024, 224*224*3),
             nn.Tanh(),
         )
 
@@ -381,8 +391,10 @@ class MyNet(nn.Module):
 
     def reparameterize(self, mu, logvar):
         std = logvar.mul(0.5).exp_()
+        std = std.to(device)
         # return torch.normal(mu, std)
         esp = torch.randn(*mu.size())
+        esp = esp.to(device)
         z = mu + std * esp
         return z
 
@@ -391,16 +403,18 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x, positive, negative):
+    def forward(self, x,x_view, positive, negative, shape):
         encoded_image = self.encoder(x)
-        encoded_noise = self.encoder_mlp(x)
+        encoded_noise = self.encoder_mlp(x_view)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
         noise = self.decoder_mlp(z)
+        noise = noise.view(shape, 3, 224, 224)
 
         decoded_image = self.decoder(encoded_image)
+
 
         # cacade the noise to the decoded image
         decoded_image = decoded_image + noise

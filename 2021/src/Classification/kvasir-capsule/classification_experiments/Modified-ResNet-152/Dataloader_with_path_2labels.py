@@ -4,6 +4,7 @@ import pickle
 import os
 import random
 import numpy as np
+import torchvision.transforms as transforms
 # from dataset.Dataloader_with_path import ImageFolderWithPaths
 
 
@@ -51,8 +52,8 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         return positive_index, negative_index
 
     # init the class
-    def __init__(self, root, pickle_file):
-        super(ImageFolderWithPaths, self).__init__(root)
+    def __init__(self, root, pickle_file,transform=None):
+        super(ImageFolderWithPaths, self).__init__(root,transform)
         self.pickle_file = pickle_file
 
     # override the __getitem__ method. this is the method that dataloader calls
@@ -70,7 +71,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         
         
         # make a new tuple that includes original and the path
-        tuple_with_path = (original_tuple + (positive,)+ (negative,))
+        tuple_with_path = (original_tuple + (positive[0],)+ (negative[0],))
 
         return tuple_with_path
 
@@ -80,5 +81,5 @@ if __name__=="__main__":
     root_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Noise/5/0"
     pickle_file = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/Noise_var/noise_dict.pkl"
 
-    test = ImageFolderWithPaths(root_path, pickle_file)
+    test = ImageFolderWithPaths(root_path, pickle_file,transform=None)
     print(test[0][2])
