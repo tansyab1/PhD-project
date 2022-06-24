@@ -102,20 +102,24 @@ def jnc_plus(img, filter=None, name=None):
     
     # save the image to a file in the folder
     BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
+    # print(np.count_nonzero(BMat))
     # get the folder link
     folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
     # save the image to a file in the folder
     plt.imsave(folder_link+"/jnc_plus_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(folder_link+"/jnc_plus_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
     # save gambor image to a file in the folder
     cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
     
-    result = plt.hist(BsMat_normalize.ravel(), color='c', edgecolor='k', alpha=0.65)
+    result = plt.hist(BsMat_normalize.ravel(), color='c', edgecolor='k', alpha=0.65, bins=128)
     plt.axvline(BsMat_normalize.mean(), color='k', linestyle='dashed', linewidth=1)
     min_ylim, max_ylim = plt.ylim()
     plt.text(BsMat_normalize.mean()*1.1, max_ylim*0.9, 'Mean: {:.2f}'.format(BsMat_normalize.mean()))
     plt.savefig(folder_link+"/fig_jnc_plus_"+name+".png")
 
     return np.mean(BsMat)
+
+# calculate Just Noticable Difference for all images in the folder
 
 
 def jnc(img, d=1, name=None):
@@ -163,9 +167,9 @@ def jnc(img, d=1, name=None):
     BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
     # save the image to a file in the folder
     # get the folder link
-    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
-    # save the image to a file in the folder
-    cv2.imwrite(folder_link+"/jnc_"+name+".png", BMat*255)
+    # folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
+    # # save the image to a file in the folder
+    # cv2.imwrite(folder_link+"/jnc_"+name+".png", BMat*255)
 
     return np.mean(BsMat)
 
@@ -190,7 +194,6 @@ if __name__ == '__main__':
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         jnc_plus_level = jnc_plus(img[:, :, 2], filter=filter, name = name)
         # jnc_level = jnc(img[:, :, 2], name = name)
-        print(jnc_plus_level)
 
     # with open('test_artificial.csv', 'w') as f:
     #     writer = csv.writer(f, delimiter='\t')
