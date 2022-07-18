@@ -81,9 +81,10 @@ def gabor_filter(img, filters):
         gabor_img += np.abs(cv2.filter2D(img, cv2.CV_64F, kern, borderType=cv2.BORDER_REFLECT))
     return gabor_img/4
 
-def jnc_plus(img, filter=None, name=None):
+def GlobalC(img, filter=None, name=None):
     plt.figure()
     illmask = cv2.medianBlur(img, 201)
+    # illmask = img.copy()
     gabor_img=gabor_filter(illmask, filter)
     BsMat = np.zeros(img.shape)
     image_global = cv2.copyMakeBorder(illmask, 3, 3, 3, 3, cv2.BORDER_REFLECT)
@@ -106,8 +107,8 @@ def jnc_plus(img, filter=None, name=None):
     # get the folder link
     folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
     # save the image to a file in the folder
-    plt.imsave(folder_link+"/jnc_plus_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
-    plt.imsave(folder_link+"/jnc_plus_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(folder_link+"/GlobalC_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
     # save gambor image to a file in the folder
     cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
     
@@ -115,14 +116,12 @@ def jnc_plus(img, filter=None, name=None):
     plt.axvline(BsMat_normalize.mean(), color='k', linestyle='dashed', linewidth=1)
     min_ylim, max_ylim = plt.ylim()
     plt.text(BsMat_normalize.mean()*1.1, max_ylim*0.9, 'Mean: {:.2f}'.format(BsMat_normalize.mean()))
-    plt.savefig(folder_link+"/fig_jnc_plus_"+name+".png")
+    plt.savefig(folder_link+"/fig_GlobalC_"+name+".png")
 
     return np.mean(BsMat)
 
-# calculate Just Noticable Difference for all images in the folder
 
-
-def jnc(img, d=1, name=None):
+def LocalC(img, d=1, name=None):
     """
     Estimate the standard deviation of the image.
 
@@ -139,6 +138,7 @@ def jnc(img, d=1, name=None):
     """
 
     illmask = cv2.medianBlur(img, 201)
+    # illmask = img.copy()
     BsMat = np.zeros(img.shape)
     res = np.zeros(img.shape)
     # BgMat = np.zeros(img.shape)
@@ -162,14 +162,17 @@ def jnc(img, d=1, name=None):
                 BsMat[i-1, j-1] = np.max(B_top/Ba)
 
     # normalize the image
-    # BMat = BsMat/np.max(BsMat)
+    BMat = BsMat/np.max(BsMat)
+
+    print(BMat)
     # binarize the image with a threshold of 0.5
-    BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
+    BcMat = np.where(BsMat > np.mean(BsMat), 1, 0)
     # save the image to a file in the folder
     # get the folder link
-    # folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
-    # # save the image to a file in the folder
-    # cv2.imwrite(folder_link+"/jnc_"+name+".png", BMat*255)
+    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
+    # save the image to a file in the folder
+    cv2.imwrite(folder_link+"/LocalC_bs"+name+".png", BMat*255)
+    # cv2.imwrite(folder_link+"/LocalC_"+name+".png", BcMat*255)
 
     return np.mean(BsMat)
 
@@ -192,8 +195,8 @@ if __name__ == '__main__':
         name=os.path.basename(file)
         img = cv2.imread(file)
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        jnc_plus_level = jnc_plus(img[:, :, 2], filter=filter, name = name)
-        # jnc_level = jnc(img[:, :, 2], name = name)
+        # GlobalC_level = GlobalC(img[:, :, 2], filter=filter, name = name)
+        LocalC_level = LocalC(img[:, :, 2], name = name)
 
     # with open('test_artificial.csv', 'w') as f:
     #     writer = csv.writer(f, delimiter='\t')
