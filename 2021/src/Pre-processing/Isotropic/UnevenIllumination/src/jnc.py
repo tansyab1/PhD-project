@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import glob
 import os
+import seaborn as sns
 import csv
 from tqdm import tqdm
 from matplotlib import pyplot as plt
@@ -81,9 +82,62 @@ def gabor_filter(img, filters):
         gabor_img += np.abs(cv2.filter2D(img, cv2.CV_64F, kern, borderType=cv2.BORDER_REFLECT))
     return gabor_img/4
 
-def GlobalC(img, filter=None, name=None):
+def GlobalC_all(img, filter=None, name=None):
     plt.figure()
     illmask = cv2.medianBlur(img, 201)
+    # illmask = img.copy()
+    gabor_img=gabor_filter(illmask, filter)
+    
+    image_global = illmask.copy()
+    width, height = image_global.shape
+    BsMat = np.zeros((width-3, height-3))
+    
+    for i in range(3, width-3):
+        for j in range(3, height-3):
+            if image_global[i, j]:
+                g1,_ = localneighbors(image_global, i, j, d=2)
+                g2,_ = localneighbors(image_global, i, j, d=3)
+                Bs = (np.sum(g2)-np.sum(g1))/24
+                BsMat[i-3, j-3] = gabor_img[i, j]/Bs
+    
+    # normalize the image
+    BsMat_normalize = BsMat/np.max(BsMat)
+
+    ax = sns.heatmap(BsMat_normalize)
+    
+    # # save the image to a file in the folder
+    BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
+
+    # print(np.count_nonzero(BMat))
+    # get the folder link
+    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
+    # save the image to a file in the folder
+    plt.imsave(folder_link+"/GlobalC_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    
+    # save heatmap to a file in the folder
+    plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")
+    
+    # save gambor image to a file in the folder
+    cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
+    
+    # save the image to a file in the folder
+    # create new plt.figure()
+    # range 0.75 to 1.25 and from 0.9 to 1.1
+
+    plt.figure()
+    result = plt.hist(BsMat.ravel(), color='c', edgecolor='k', alpha=0.65, bins=256)
+    plt.axvline(BsMat.mean(), color='k', linestyle='dashed', linewidth=1)
+    min_ylim, max_ylim = plt.ylim()
+    # plt.text(BsMat.mean()*1.1, max_ylim*0.9, 'Mean: {:.4f}'.format(BsMat.mean()))
+    # plt.text(BsMat.mean()*1.1, max_ylim*1.1, 'Std: {:.4f}'.format(BsMat.std()))
+    plt.savefig(folder_link+"/fig_GlobalC_"+name+".png")
+
+    return np.mean(BsMat)
+
+def GlobalC(img, filter=None, name=None):
+    plt.figure()
+    illmask = cv2.medianBlur(img, 73)
     # illmask = img.copy()
     gabor_img=gabor_filter(illmask, filter)
     BsMat = np.zeros(img.shape)
@@ -100,19 +154,31 @@ def GlobalC(img, filter=None, name=None):
     
     # normalize the image
     BsMat_normalize = BsMat/np.max(BsMat)
+
+    n_min, n_max = BsMat_normalize.min(), BsMat_normalize.max()
+
+    ax = sns.heatmap(BsMat_normalize)
     
-    # save the image to a file in the folder
+    # # save the image to a file in the folder
     BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
+
     # print(np.count_nonzero(BMat))
     # get the folder link
-    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc"
+    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
     # save the image to a file in the folder
     plt.imsave(folder_link+"/GlobalC_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
-    plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    # plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    
+    # save heatmap to a file in the folder
+    plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")
+    
     # save gambor image to a file in the folder
     cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
     
-    result = plt.hist(BsMat_normalize.ravel(), color='c', edgecolor='k', alpha=0.65, bins=128)
+    # save the image to a file in the folder
+    # create new plt.figure()
+    plt.figure()
+    result = plt.hist(BsMat_normalize.ravel(), range=(n_min, n_max), color='c', edgecolor='k', alpha=0.65, bins=128)
     plt.axvline(BsMat_normalize.mean(), color='k', linestyle='dashed', linewidth=1)
     min_ylim, max_ylim = plt.ylim()
     plt.text(BsMat_normalize.mean()*1.1, max_ylim*0.9, 'Mean: {:.2f}'.format(BsMat_normalize.mean()))
@@ -137,7 +203,7 @@ def LocalC(img, d=1, name=None):
 
     """
 
-    illmask = cv2.medianBlur(img, 201)
+    illmask = cv2.medianBlur(img, 72)
     # illmask = img.copy()
     BsMat = np.zeros(img.shape)
     res = np.zeros(img.shape)
@@ -164,7 +230,7 @@ def LocalC(img, d=1, name=None):
     # normalize the image
     BMat = BsMat/np.max(BsMat)
 
-    print(BMat)
+    # print(BMat)
     # binarize the image with a threshold of 0.5
     BcMat = np.where(BsMat > np.mean(BsMat), 1, 0)
     # save the image to a file in the folder
@@ -195,8 +261,8 @@ if __name__ == '__main__':
         name=os.path.basename(file)
         img = cv2.imread(file)
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        # GlobalC_level = GlobalC(img[:, :, 2], filter=filter, name = name)
-        LocalC_level = LocalC(img[:, :, 2], name = name)
+        GlobalC_level = GlobalC_all(img[:, :, 2], filter=filter, name = name)
+        # LocalC_level = LocalC(img[:, :, 2], name = name)
 
     # with open('test_artificial.csv', 'w') as f:
     #     writer = csv.writer(f, delimiter='\t')
