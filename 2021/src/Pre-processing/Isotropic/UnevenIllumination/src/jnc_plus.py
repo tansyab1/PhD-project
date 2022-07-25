@@ -18,6 +18,7 @@ Original file is located at
 
 import numpy as np
 import cv2
+import time
 # import math
 import csv
 import os
@@ -48,6 +49,8 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
     # Check if camera opened successfully
     if (cap.isOpened() is False):
         print("Error opening video stream or file")
+    else:
+        print("Reading video file: ", file)
 
     stds = []
     
@@ -58,8 +61,12 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
         if ret is True:
             # Display the resulting frame
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            jnc_level = jnc_plus(img[:, :, 2], filter=filter)
-            # print(jnc_level)
+            start = time.time()
+            jnc_level = GlobalC_all(img[:, :, 2], filter=filter)
+            # get the processing frame and execution time of the processing frame
+            end = time.time()
+            print("Processing frame: %d, Execution time: %f sec" % (cap.get(cv2.CAP_PROP_POS_FRAMES), end - start))
+
             stds.append(jnc_level)
 
         # Break the loop
@@ -68,6 +75,6 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
     stdss.append(Average(stds))
     # print(file)
 
-with open('src/Pre-processing/Isotropic/UnevenIllumination/res/jnc_plus_v2.csv', 'w') as f:
+with open('src/Pre-processing/Isotropic/UnevenIllumination/res/ALC.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerows(zip(names, stdss))
