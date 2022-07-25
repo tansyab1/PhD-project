@@ -83,14 +83,14 @@ def gabor_filter(img, filters):
     return gabor_img/4
 
 def GlobalC_all(img, filter=None, name=None):
-    plt.figure()
+    # plt.figure()
     illmask = cv2.medianBlur(img, 201)
     # illmask = img.copy()
     gabor_img=gabor_filter(illmask, filter)
     
     image_global = illmask.copy()
     width, height = image_global.shape
-    BsMat = np.zeros((width-3, height-3))
+    BsMat = np.zeros((width-6, height-6))
     
     for i in range(3, width-3):
         for j in range(3, height-3):
@@ -101,39 +101,53 @@ def GlobalC_all(img, filter=None, name=None):
                 BsMat[i-3, j-3] = gabor_img[i, j]/Bs
     
     # normalize the image
-    BsMat_normalize = BsMat/np.max(BsMat)
+    # BsMat_normalize = BsMat/np.max(BsMat)
 
-    ax = sns.heatmap(BsMat_normalize)
+    # ax = sns.heatmap(BsMat_normalize)
     
     # # save the image to a file in the folder
-    BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
+    # BMat = np.where(BsMat > np.mean(BsMat), 1, 0)
 
     # print(np.count_nonzero(BMat))
     # get the folder link
-    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
+    # folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
     # save the image to a file in the folder
-    plt.imsave(folder_link+"/GlobalC_"+name+".png", BMat, cmap='gray', vmin=0, vmax=1)
-    plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    # plt.imsave(folder_link+"/GlobalC_"+name+".png", BsMat, cmap='gray')
+    # plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
     
     # save heatmap to a file in the folder
-    plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")
+    # plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")
     
     # save gambor image to a file in the folder
-    cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
+    # cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
     
     # save the image to a file in the folder
     # create new plt.figure()
     # range 0.75 to 1.25 and from 0.9 to 1.1
 
-    plt.figure()
-    result = plt.hist(BsMat.ravel(), color='c', edgecolor='k', alpha=0.65, bins=256)
-    plt.axvline(BsMat.mean(), color='k', linestyle='dashed', linewidth=1)
-    min_ylim, max_ylim = plt.ylim()
-    # plt.text(BsMat.mean()*1.1, max_ylim*0.9, 'Mean: {:.4f}'.format(BsMat.mean()))
-    # plt.text(BsMat.mean()*1.1, max_ylim*1.1, 'Std: {:.4f}'.format(BsMat.std()))
-    plt.savefig(folder_link+"/fig_GlobalC_"+name+".png")
+    # select the sub array from BsMat where the value is greater than 0.9 and less than 1.1
+    lim_down = BsMat.mean()- 4*BsMat.std()
+    lim_up = BsMat.mean()+ 4*BsMat.std()
+    BsMat_sub = np.array(BsMat[(BsMat < lim_up) & (BsMat > lim_down)])
+    # print(BsMat_sub.shape)
 
-    return np.mean(BsMat)
+    # plt.figure()
+    # result = plt.hist(BsMat_sub.ravel(), range=(0.940, 1.060), color='c', edgecolor='k', bins=256)
+    # plt.axvline(BsMat_sub.mean(), color='k', linestyle='dashed', linewidth=1)
+    # min_ylim, max_ylim = plt.ylim()
+
+    #set the ylim to 100
+    # plt.ylim(0, 100)
+    
+    # plt.text(BsMat_sub.mean()*1.05, max_ylim*0.8, 'Mean: {:.4f}'.format(BsMat_sub.mean()))
+    # plt.text(BsMat_sub.mean()*1.05, max_ylim*1.0, 'Std: {:.4f}'.format(BsMat_sub.std()))
+    # plt.savefig(folder_link+"/fig_GlobalC_"+name+".png")
+
+    # print(max(BsMat.ravel()))
+
+    return np.std(
+        
+    )
 
 def GlobalC(img, filter=None, name=None):
     plt.figure()
@@ -256,7 +270,7 @@ if __name__ == '__main__':
     names = []
     filter = create_gaborfilter()
 
-    for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/*.png")):
+    for file in tqdm(glob.glob("/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/input/case 1/*.png")):
         # print(file)
         name=os.path.basename(file)
         img = cv2.imread(file)
