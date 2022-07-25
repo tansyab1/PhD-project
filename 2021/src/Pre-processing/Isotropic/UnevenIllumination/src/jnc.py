@@ -82,6 +82,19 @@ def gabor_filter(img, filters):
         gabor_img += np.abs(cv2.filter2D(img, cv2.CV_64F, kern, borderType=cv2.BORDER_REFLECT))
     return gabor_img/4
 
+# Discret fourier transform of image
+def getDFT(img):
+    """get DFT of the image
+    Args:
+        img (numpy array): image
+    Returns:
+        numpy array: DFT of the image
+    """
+    dft=cv2.dft(np.float32(img), flags=cv2.DFT_COMPLEX_OUTPUT)
+    dft_shift = np.fft.fftshift(dft)
+    magnitude_spectrum = cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, :, 1])
+    return magnitude_spectrum
+
 def GlobalC_all(img, filter=None, name=None):
     # plt.figure()
     illmask = cv2.medianBlur(img, 201)
@@ -100,6 +113,7 @@ def GlobalC_all(img, filter=None, name=None):
                 Bs = (np.sum(g2)-np.sum(g1))/24
                 BsMat[i-3, j-3] = gabor_img[i, j]/Bs
     
+    spectrum = getDFT(BsMat)
     # normalize the image
     # BsMat_normalize = BsMat/np.max(BsMat)
 
@@ -110,16 +124,13 @@ def GlobalC_all(img, filter=None, name=None):
 
     # print(np.count_nonzero(BMat))
     # get the folder link
-    # folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
+    folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
     # save the image to a file in the folder
     # plt.imsave(folder_link+"/GlobalC_"+name+".png", BsMat, cmap='gray')
     # plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
     
     # save heatmap to a file in the folder
     # plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")
-    
-    # save gambor image to a file in the folder
-    # cv2.imwrite(folder_link+"/gabor_"+name+".png", gabor_img)
     
     # save the image to a file in the folder
     # create new plt.figure()
@@ -144,10 +155,13 @@ def GlobalC_all(img, filter=None, name=None):
     # plt.savefig(folder_link+"/fig_GlobalC_"+name+".png")
 
     # print(max(BsMat.ravel()))
+    
 
-    return np.std(
-        
-    )
+    # save gambor image to a file in the folder
+    # cv2.imwrite(folder_link+"/spectrum_"+name+".png", spectrum)
+    
+
+    return np.std(BsMat_sub)
 
 def GlobalC(img, filter=None, name=None):
     plt.figure()
