@@ -126,8 +126,9 @@ def GlobalC_all(img, filter=None, name=None):
     # get the folder link
     folder_link = "/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/alc/test"
     # save the image to a file in the folder
-    # plt.imsave(folder_link+"/GlobalC_"+name+".png", BsMat, cmap='gray')
-    # plt.imsave(folder_link+"/GlobalC_bs"+name+".png", BsMat_normalize, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(folder_link+"/contrast_"+name+".png", BsMat, cmap='gray')
+    plt.imsave(folder_link+"/gabor_"+name+".png", gabor_img, cmap='gray')
+    plt.imsave(folder_link+"/background_"+name+".png", illmask, cmap='gray')
     
     # save heatmap to a file in the folder
     # plt.savefig(folder_link+"/GlobalC_heatmap_"+name+".png")

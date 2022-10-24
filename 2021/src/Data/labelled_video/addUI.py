@@ -1,3 +1,4 @@
+from concurrent.futures import process
 import glob
 # import csv
 import os
@@ -8,78 +9,45 @@ import numpy as np
 from tqdm import tqdm
 from mask import create_mask
 
-mask = create_mask()
+mask_dir = "src/Data/mask/"
+process_mask = cv2.imread("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
 
-def apply_motion_blur(image, size, angle):
-    k = np.zeros((size, size), dtype=np.float32)
-    k[(size - 1) // 2, :] = np.ones(size, dtype=np.float32)
-    k = cv2.warpAffine(k, cv2.getRotationMatrix2D(
-        (size / 2 - 0.5, size / 2 - 0.5), angle, 1.0), (size, size))
-    k = k * (1.0 / np.sum(k))
-    dst = cv2.filter2D(image, -1, k)
-    out = np.where(mask == np.array([0, 0, 0]), image, dst)
-    return out
+def applyui(image, mask):
+    hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+    hsv[:,:,2] = np.where(hsv[:,:,2]>20, mask/255*hsv[:,:,2],hsv[:,:,2])
+    res = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+    return np.array(res,dtype=np.uint8)
 
+def addUI():
+    sizes = [250,150,200,100]
+    angles = [112,168,224]
+    datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/ref/*.mp4"
 
-def apply_defocus_blur(image, sigma):
-    dst = cv2.GaussianBlur(image, (int(6 * sigma) + 1, int(6 * sigma) + 1), sigma)
-    out = np.where(mask == np.array([0, 0, 0]), image, dst)
-    return out
+    ui_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/UI/'
+    for size in tqdm(sizes):
+        for angle in angles:
+            mask=cv2.imread(mask_dir+str(size)+"_"+str(angle)+".png",cv2.IMREAD_GRAYSCALE)
+            if not os.path.exists(ui_save_folder + str(size) + '/' + str(angle) + '/'):
+                os.makedirs(ui_save_folder + str(size) + '/' + str(angle) + '/')
+            for file in tqdm(glob.glob(datapath)):
+                output_video = cv2.VideoWriter(
+                    ui_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
+                cap = cv2.VideoCapture(file)
+                # Check if camera opened successfully
+                if (cap.isOpened() is False):
+                    print("Error opening video stream or file")
 
+                # Read until video is completed
+                while (cap.isOpened()):
+                    ret, frame = cap.read()
+                    if ret is True:
+                        noise_img = applyui(frame, mask=mask)
+                        finalnoise= np.where(process_mask <10, frame, noise_img)
+                        # Display the resulting frame
+                        output_video.write(finalnoise)
 
-sigmas = [2, 3, 5, 7, 9]
-angles = [0, 45, 90, 135]
-sizes = [3,5,7,9]
-
-datapath= "D:/Datasets/kvasircapsule/labelled_videos/ref/*.mp4"
-defocus_save_folder = 'D:/Datasets/kvasircapsule/labelled_videos/Blur/Defocus/'
-for sigma in sigmas:
-    if not os.path.exists(defocus_save_folder + str(sigma) + '/'):
-        os.makedirs(defocus_save_folder + str(sigma) + '/')
-    for file in tqdm(glob.glob(datapath)):
-        output_video = cv2.VideoWriter(
-            defocus_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'mp4v'), 30, (336, 336))
-        cap = cv2.VideoCapture(file)
-        # Check if camera opened successfully
-        if (cap.isOpened() is False):
-            print("Error opening video stream or file")
-
-        # Read until video is completed
-        while (cap.isOpened()):
-            ret, frame = cap.read()
-            if ret is True:
-                noise_img = apply_defocus_blur(frame, sigma=sigma)
-                # Display the resulting frame
-                output_video.write(noise_img)
-
-            # Break the loop
-            else:
-                cap.release()
-                break
-
-
-motion_save_folder = 'D:/Datasets/kvasircapsule/labelled_videos/Blur/Motion/'
-for size in sizes:
-    for angle in angles:
-        if not os.path.exists(defocus_save_folder + str(size) + '/' + str(angle) + '/'):
-            os.makedirs(defocus_save_folder + str(size) + '/' + str(angle) + '/')
-        for file in tqdm(glob.glob(datapath)):
-            output_video = cv2.VideoWriter(
-                motion_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'mp4v'), 30, (336, 336))
-            cap = cv2.VideoCapture(file)
-            # Check if camera opened successfully
-            if (cap.isOpened() is False):
-                print("Error opening video stream or file")
-
-            # Read until video is completed
-            while (cap.isOpened()):
-                ret, frame = cap.read()
-                if ret is True:
-                    noise_img = apply_motion_blur(frame, size=size, angle=angle)
-                    # Display the resulting frame
-                    output_video.write(noise_img)
-
-                # Break the loop
-                else:
-                    cap.release()
-                    break
+                    # Break the loop
+                    else:
+                        cap.release()
+                        break
+    print("UI- Done")
