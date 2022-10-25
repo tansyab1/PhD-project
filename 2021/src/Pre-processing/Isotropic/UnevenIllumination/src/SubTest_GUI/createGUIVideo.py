@@ -8,8 +8,8 @@ import random
 from tqdm import tqdm
 
 # save link to variable
-ref_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/videoReadGUI/ref'
-selected_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/videoReadGUI/select20'
+ref_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/ref'
+selected_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20'
 Defocus_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/Blur/Defocus'
 Noise_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/Noise'
 Motion_Blur_dir = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/Blur/Motion_bs'
@@ -40,7 +40,7 @@ def select20Video(ref_dir):
                 video_path = os.path.join(root, file)
                 print(video_path)
                 # change the video paths inside the video_path to save_path
-                save_path = video_path.replace('videoReadGUI/ref', 'videoReadGUI/select20')
+                save_path = video_path.replace('forSubTest/ref', 'forSubTest/videoReadGUI/select20')
                 # create the directory to save the video
                 if not os.path.exists(os.path.dirname(save_path)):
                     os.makedirs(os.path.dirname(save_path))
@@ -89,7 +89,7 @@ def readVideo(selected_dir, distorted_dir, dest_dir):
                     #  save the video to the dest_dir
                     for video_path in list[:1]:
                         # change the video paths inside the video_path to save_path
-                        save_path = video_path.replace('forSubTest', 'videoReadGUI')
+                        save_path = video_path.replace('forSubTest', 'forSubTest/videoReadGUI')
                         # create the directory to save the video
                         if not os.path.exists(os.path.dirname(save_path)):
                             os.makedirs(os.path.dirname(save_path))
