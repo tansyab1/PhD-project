@@ -18,6 +18,6 @@ from addBlur import addBlur
 
 # run the main function
 if __name__ == "__main__":
-    # addNoise()
+    addNoise()
     addUI()
     addBlur()
