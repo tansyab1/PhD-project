@@ -113,7 +113,7 @@ parser.add_argument("--val_fold", type=str, default="0",
 parser.add_argument(
     "--all_folds", default=["0", "1"], help="list of all folds available in data folder")
 
-parser.add_argument("--best_resnet", default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt", help="Resnet best weight file")
+parser.add_argument("--best_resnet", default="/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt", help="Resnet best weight file")
 opt = parser.parse_args()
 
 # ==========================================
