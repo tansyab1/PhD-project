@@ -183,7 +183,8 @@ def prepare_data():
     validation_fold = opt.val_fold
 
     # Train datasets
-    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x), opt.pkl_root,
+    image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x),
+                                           opt.pkl_root,
                                            transform=data_transforms["train"])
                                 for x in train_folds}
 
@@ -192,14 +193,18 @@ def prepare_data():
         [image_datasets_train_all[i] for i in train_folds])
 
     # Validation datasets
-    dataset_val = dataset(os.path.join(opt.data_root, validation_fold),opt.pkl_root,
+    dataset_val = dataset(os.path.join(opt.data_root, validation_fold), opt.pkl_root,
                           transform=data_transforms["validation"])
 
-    dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=opt.bs,
-                                                   shuffle=True, num_workers=opt.num_workers)
+    dataloader_train = torch.utils.data.DataLoader(dataset_train,
+                                                   batch_size=opt.bs,
+                                                   shuffle=True,
+                                                   num_workers=opt.num_workers)
 
-    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size=opt.bs,
-                                                 shuffle=False, num_workers=opt.num_workers)
+    dataloader_val = torch.utils.data.DataLoader(dataset_val,
+                                                 batch_size=opt.bs,
+                                                 shuffle=False,
+                                                 num_workers=opt.num_workers)
 
     train_size = len(dataset_train)
     val_size = len(dataset_val)
@@ -207,7 +212,10 @@ def prepare_data():
     print("train dataset size =", train_size)
     print("validation dataset size=", val_size)
 
-    return {"train": dataloader_train, "val": dataloader_val, "dataset_size": {"train": train_size, "val": val_size}}
+    return {"train": dataloader_train,
+            "val": dataloader_val,
+            "dataset_size": {"train": train_size,
+                             "val": val_size}}
 
 
 # ==========================================================
@@ -403,7 +411,7 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x,x_view, positive, negative, shape):
+    def forward(self, x, x_view, positive, negative, shape):
         encoded_image = self.encoder(x)
         encoded_noise = self.encoder_mlp(x_view)
         encoded_positive = self.encoder_mlp(positive)
@@ -414,7 +422,6 @@ class MyNet(nn.Module):
         noise = noise.view(shape, 3, 224, 224)
 
         decoded_image = self.decoder(encoded_image)
-
 
         # cacade the noise to the decoded image
         decoded_image = decoded_image + noise
@@ -549,7 +556,7 @@ def test_model():
             noise_level = noise_level.to(device)
 
             resnet_out, _, _, _, _, _, _ = model(
-                        inputs, positive, negative)
+                inputs, positive, negative)
             outputs = F.softmax(resnet_out, 1)
             predicted_probability, predicted = torch.max(outputs.data, 1)
 
@@ -793,9 +800,20 @@ def plot_confusion_matrix(cm, classes,
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     LABEL_TO_LETTER = {
-        "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
-        "Erythema": "F", "Foreign body": "G", "Ileocecal valve": "H", "Lymphangiectasia": "I", "Normal clean mucosa": "J",
-        "Polyp": "K", "Pylorus": "L", "Reduced mucosal view": "M", "Ulcer": "N"
+        "Ampulla of vater": "A",
+        "Angiectasia": "B",
+        "Blood - fresh": "C",
+        "Blood - hematin": "D",
+        "Erosion": "E",
+        "Erythema": "F",
+        "Foreign body": "G",
+        "Ileocecal valve": "H",
+        "Lymphangiectasia": "I",
+        "Normal clean mucosa": "J",
+        "Polyp": "K",
+        "Pylorus": "L",
+        "Reduced mucosal view": "M",
+        "Ulcer": "N"
     }
     class_str = [LABEL_TO_LETTER[i] for i in classes]
     plt.xticks(tick_marks, class_str, rotation=90)
@@ -844,8 +862,10 @@ def inference():
     ])
 
     dataset_new = dataset(opt.data_to_inference, trnsfm)
-    dataloader_new = torch.utils.data.DataLoader(dataset_new, batch_size=opt.bs,
-                                                 shuffle=False, num_workers=opt.num_workers)
+    dataloader_new = torch.utils.data.DataLoader(dataset_new,
+                                                 batch_size=opt.bs,
+                                                 shuffle=False,
+                                                 num_workers=opt.num_workers)
 
     class_names = list(string.ascii_uppercase)[:14]
     print(class_names)
