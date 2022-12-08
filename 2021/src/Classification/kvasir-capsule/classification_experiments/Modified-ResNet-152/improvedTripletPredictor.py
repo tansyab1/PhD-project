@@ -987,3 +987,8 @@ if __name__ == '__main__':
 
     # Finish tensorboard writer
     writer.close()
+    
+    # show the user that the script has finished running
+    
+    print("Finished running script")
+    
