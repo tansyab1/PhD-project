@@ -86,34 +86,53 @@ parser.add_argument("--tensorboard_dir",
 
 # Hyper parameters
 parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
+
 parser.add_argument("--lr", type=float, default=0.001,
                     help="Learning rate for training")
+
 parser.add_argument("--num_workers", type=int, default=32,
                     help="Number of workers in dataloader")
+
 parser.add_argument("--weight_decay", type=float,
                     default=1e-5, help="weight decay of the optimizer")
+
 parser.add_argument("--momentum", type=float, default=0.9,
                     help="Momentum of SGD function")
+
 parser.add_argument("--lr_sch_factor", type=float, default=0.1,
                     help="Factor to reduce lr in the scheduler")
+
 parser.add_argument("--lr_sch_patience", type=int, default=10,
                     help="Num of epochs to be patience for updating lr")
 
-
 # Action handling
-parser.add_argument("--num_epochs", type=int, default=0,
+parser.add_argument("--num_epochs",
+                    type=int,
+                    default=0,
                     help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
-parser.add_argument("action", type=str, help="Select an action to run", choices=[
-                    "train", "retrain", "test", "check", "prepare", "inference"])
-parser.add_argument("--checkpoint_interval", type=int,
-                    default=25, help="Interval to save checkpoint models")
-parser.add_argument("--val_fold", type=str, default="0",
-                    help="Select the validation fold", choices=["0", "1"])
-parser.add_argument(
-    "--all_folds", default=["0", "1"], help="list of all folds available in data folder")
+parser.add_argument("action",
+                    type=str,
+                    help="Select an action to run",
+                    choices=["train", "retrain", "test", "check", "prepare", "inference"])
 
-parser.add_argument("--best_resnet", default="home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt", help="Resnet best weight file")
+parser.add_argument("--checkpoint_interval",
+                    type=int,
+                    default=25,
+                    help="Interval to save checkpoint models")
+
+parser.add_argument("--val_fold",
+                    type=str,
+                    default="0",
+                    help="Select the validation fold", choices=["0", "1"])
+
+parser.add_argument("--all_folds",
+                    default=["0", "1"],
+                    help="list of all folds available in data folder")
+
+parser.add_argument("--best_resnet",
+                    default="home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt",
+                    help="Resnet best weight file")
 opt = parser.parse_args()
 
 # ==========================================
@@ -193,7 +212,8 @@ def prepare_data():
         [image_datasets_train_all[i] for i in train_folds])
 
     # Validation datasets
-    dataset_val = dataset(os.path.join(opt.data_root, validation_fold), opt.pkl_root,
+    dataset_val = dataset(os.path.join(opt.data_root, validation_fold),
+                          opt.pkl_root,
                           transform=data_transforms["validation"])
 
     dataloader_train = torch.utils.data.DataLoader(dataset_train,
@@ -315,8 +335,6 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 # ================================================
 # New architecture
 # ================================================
-
-
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
