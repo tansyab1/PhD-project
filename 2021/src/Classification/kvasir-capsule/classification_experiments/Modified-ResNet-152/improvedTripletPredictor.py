@@ -167,11 +167,6 @@ os.makedirs(tensorboard_exp_dir, exist_ok=True)
 writer = SummaryWriter(tensorboard_exp_dir)
 
 
-###########################################################
-###########################################################
-###########################################
-
-
 # ==========================================
 # Prepare Data
 # ==========================================
@@ -240,7 +235,7 @@ def prepare_data():
 
 # ==========================================================
 # Train model
-# ===========================================================
+# ==========================================================
 
 def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
 
@@ -524,18 +519,10 @@ def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_acc):
 # =====================================
 def check_model_graph():
     model = prepare_model()
-
     summary(model, (3, 224, 224))  # this run on GPU
     model = model.to('cpu')
-    #dataloaders = prepare_data()
-    #sample = next(iter(dataloaders["train"]))
-
-    #inputs = sample["features"]
-   # inputs = inputs.to(device, torch.float)
-    # print(inputs.shape)
     print(model)
     dummy_input = Variable(torch.rand(13, 3, 224, 224))
-
     writer.add_graph(model, dummy_input)  # this need the model on CPU
 
 # ===============================================
@@ -681,8 +668,6 @@ def test_model():
     f.close()
     print("Report generated")
 
-    # ==========================================================================
-
 
 # ==============================================
 # Prepare submission file with probabilities
@@ -760,9 +745,9 @@ def prepare_prediction_file():
         df.to_csv(prob_file_name, index=False)
 
 
-##########################################################
+# ==============================================
 # Prepare submission file:
-##########################################################
+# ===============================================
 
 def prepare_submission_file(image_names, predicted_labels, max_probability, time_per_image, submit_dir, data_classes):
 
@@ -785,16 +770,16 @@ def prepare_submission_file(image_names, predicted_labels, max_probability, time
 
     print(submission_dataframe)
     print("successfully created submission file")
-###########################################################
 
-###########################################################
+
+# ==============================================
 #  Ploting history and save plots to plots directory
-###########################################################
+# ==============================================
 
 
-############################################################
+# ==============================================
 # Plot confusion matrix - method
-############################################################
+# ==============================================
 def plot_confusion_matrix(cm, classes,
                           normalize=True,
                           title='Confusion matrix',
@@ -954,6 +939,8 @@ def inference():
     prob_file_name = "%s/%s_inference.csv" % (opt.out_dir, py_file_name)
     df.to_csv(prob_file_name, index=False)
 
+# ======================================
+# Main function to run the code
 # ======================================
 
 
