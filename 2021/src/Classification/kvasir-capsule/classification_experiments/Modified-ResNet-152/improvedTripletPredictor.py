@@ -11,8 +11,6 @@
 from __future__ import print_function, division
 
 import datetime
-
-# #start = datetime.datetime.now()
 import argparse
 from email.mime import base
 import torch
@@ -571,8 +569,6 @@ def test_model():
             all_predictions_d = torch.cat((all_predictions_d, predicted), 0)
             all_predictions_probabilities_d = torch.cat(
                 (all_predictions_probabilities_d, predicted_probability), 0)
-            #all_timePerFrame_host = all_timePerFrame_host + [time_per_image]
-            # print("testing")
 
     print('copying some data back to cpu for generating confusion matrix...')
     y_true = all_labels_d.cpu()
@@ -720,10 +716,6 @@ def prepare_prediction_file():
             df_temp["predicted-label"] = class_names[predicted.item()]
             df_temp["actual-label"] = class_names[labels.item()]
 
-            # print("actual label:", labels.item())
-            #print("predicted label:", predicted.item())
-            # print("probabilities :", outputs.cpu())
-
             probabilities = outputs.cpu().squeeze()
             probabilities = probabilities.tolist()
             probabilities = np.around(probabilities, decimals=3)
@@ -844,11 +836,6 @@ def plot_confusion_matrix(cm, classes,
 
 
 def inference():
-
-    # if opt.bs != 1:
-    #    print("Please run with bs = 1")
-    #   exit()
-
     test_model_checkpoint = input("Please enter the path of test model:")
     checkpoint = torch.load(test_model_checkpoint)
 
@@ -886,14 +873,8 @@ def inference():
             #print("paths:", paths)
             filenames = []
             for p in paths:
-                # print(p)
-                # print([list(p.split("/"))[-1]])
                 filenames = filenames + [list(p.split("/"))[-1]]
-            #print("filenames:", filename)
 
-            #df_temp["filename"] = filename
-
-            #print("file names:", filenames)
             inputs = inputs.to(device)
             labels = labels.to(device)
 
@@ -903,26 +884,13 @@ def inference():
 
             predicted = predicted.data.cpu().numpy()
 
-            #print("predicted items=", predicted)
-            #print("paths:", paths)
-
             df_temp["predicted-label"] = predicted
             df_temp["filename"] = filenames
-            # df_temp[2:-1] =
-
-            # print(df_temp)
-            #df_temp["actual-label"] = class_names[labels.item()]
-
-            # print("actual label:", labels.item())
-            #print("predicted label:", predicted.item())
-            # print("probabilities :", outputs.cpu())
 
             probabilities = outputs.cpu().squeeze()
             probabilities = probabilities.tolist()
             probabilities = np.around(probabilities, decimals=3)
-            # print(probabilities)
 
-            # print(probabilities)
             df_temp[class_names] = probabilities
 
             # print(df_temp)
