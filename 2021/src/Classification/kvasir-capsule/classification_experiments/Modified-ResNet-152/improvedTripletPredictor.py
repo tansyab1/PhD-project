@@ -365,7 +365,7 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc_mu = nn.Linear(256, 128)
+        self.fc_mu = nn.Linear(256, 128) 
         self.fc_var = nn.Linear(256, 128)
         # self.fc3 = nn.Linear(256, 336*336*3)
 
