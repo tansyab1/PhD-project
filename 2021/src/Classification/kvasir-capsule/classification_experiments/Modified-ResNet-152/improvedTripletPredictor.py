@@ -42,7 +42,7 @@ from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
 
-from Dataloader_with_path_2labels import ImageFolderWithPaths as dataset
+from Dataloader_with_path_2labels_ref import ImageFolderWithPaths as dataset
 
 import string
 
@@ -257,12 +257,13 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
-                inputs, labels, positive, negative = data
+                inputs, labels, positive, negative, reference = data
                 input_view = inputs.view(inputs.size(0), -1)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 positive = positive.view(positive.size(0), -1).to(device)
                 negative = negative.view(negative.size(0), -1).to(device)
+                reference = reference.view(positive.size(0), -1).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -270,18 +271,18 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    resnet_out, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, input_view, positive, negative, positive.size(0))
-                    _, preds = torch.max(resnet_out, 1)
-                    loss_resnet = criterion(resnet_out, labels)
-                    loss_ae = criterion_ae(decoded_image, inputs)
+                    resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
+                        inputs, input_view, positive, negative, reference, positive.size(0))
+                    # _, preds = torch.max(resnet_out, 1)
+                    # loss_resnet = criterion(resnet_out, labels)
+                    loss_ae = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_triplet = triplet_loss(
                         encoded_positive, encoded_negative, encoded_noise)
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
                     # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
-                    loss = loss_resnet + loss_ae + loss_triplet + loss_KL
+                    loss = loss_ae + loss_triplet + loss_KL
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -290,26 +291,31 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+                # running_corrects += torch.sum(preds == labels.data)
+                # calculate the PSNR between the original and the decoded image using the MSE of pytorch
+
+                mse: torch.Tensor = F.mse_loss(decoded_image, inputs)
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
-            epoch_acc = running_corrects.double(
-            ) / dataloaders["dataset_size"][phase]
+            epoch_mse = mse / dataloaders["dataset_size"][phase]
+            epoch_psnr = 10 * torch.log10(1 / epoch_mse)
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
-            writer.add_scalars("Accuracy", {phase: epoch_acc}, epoch)
+            writer.add_scalars("PSNR", {phase: epoch_psnr}, epoch)
+            writer.add_scalars("mse", {phase: epoch_mse}, epoch)
 
             # update the lr based on the epoch loss
             if phase == "val":
 
                 # keep best model weights
-                if epoch_acc > best_acc:
-                    best_acc = epoch_acc
+                if epoch_psnr > best_acc:
+                    best_acc = epoch_psnr
                     best_model_wts = copy.deepcopy(model.state_dict())
                     best_epoch = epoch
                     best_epoch_loss = epoch_loss
-                    best_epoch_acc = epoch_acc
+                    best_epoch_psnr = epoch_psnr
+                    best_epoch_mse = epoch_mse
                     print("Found a better model")
 
                 # Get current lr
@@ -319,10 +325,11 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 scheduler.step(epoch_loss)
 
             # Print output
-            print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | Acc:\t %.4f '
-                  % (epoch, phase, epoch_loss, epoch_acc))
+            print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | PSNR:\t %.4f | MSE:\t %.4f'
+                  % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse))
 
-    save_model(best_model_wts, best_epoch, best_epoch_loss, best_epoch_acc)
+    save_model(best_model_wts, best_epoch, best_epoch_loss,
+               best_epoch_psnr, best_epoch_mse)
 
 
 # ================================================
@@ -331,12 +338,13 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
-        self.resnet_model = models.resnet152()
-        self.resnet_num_ftrs = self.resnet_model.fc.in_features
-        self.resnet_model.fc = nn.Linear(self.resnet_num_ftrs, num_out)
+        self.resnet_model = models.resnet152(pretrained=True)
+        # self.resnet_num_ftrs = self.resnet_model.fc.in_features
+        # self.resnet_model.fc = nn.Linear(self.resnet_num_ftrs, num_out)
+        self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
-        x = self.resnet_model(x)
+        x = self.module(x)
         return x
 
 
@@ -365,7 +373,7 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc_mu = nn.Linear(256, 128) 
+        self.fc_mu = nn.Linear(256, 128)
         self.fc_var = nn.Linear(256, 128)
         # self.fc3 = nn.Linear(256, 336*336*3)
 
@@ -422,7 +430,7 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x, x_view, positive, negative, shape):
+    def forward(self, x, x_view, positive, negative, reference, shape):
         encoded_image = self.encoder(x)
         encoded_noise = self.encoder_mlp(x_view)
         encoded_positive = self.encoder_mlp(positive)
@@ -438,7 +446,8 @@ class MyNet(nn.Module):
         decoded_image = decoded_image + noise
 
         resnet_out = self.base_model(decoded_image)
-        return resnet_out, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
+        resnet_out_encoded = self.base_model(reference)
+        return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
 # ===============================================
@@ -484,7 +493,7 @@ def run_train(retrain=False):
         model.load_state_dict(checkpoint["model_state_dict"])
         start_epoch = checkpoint["epoch"]
         loss = checkpoint["loss"]
-        acc = checkpoint["acc"]
+        acc = checkpoint["psnr"]
         train_model(model, optimizer, criterion, criterion_ae, dataloaders,
                     scheduler, best_acc=acc, start_epoch=start_epoch)
 
@@ -496,7 +505,7 @@ def run_train(retrain=False):
 # =====================================
 # Save models
 # =====================================
-def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_acc):
+def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_psnr, best_epoch_mse):
 
     # get code file name and make a name
     check_point_name = py_file_name + "_epoch:{}.pt".format(best_epoch)
@@ -508,7 +517,8 @@ def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_acc):
         # "optimizer_state_dict": optimizer.state_dict(),
         # "train_loss": train_loss,
         "loss": best_epoch_loss,
-        "acc": best_epoch_acc,
+        "psnr": best_epoch_psnr,
+        "mse": best_epoch_mse,
     }, check_point_path)
 
 
@@ -540,94 +550,41 @@ def test_model():
     dataloaders = prepare_data()
     test_dataloader = dataloaders["val"]
 
-    # TO collect data
-    correct = 0
-    total = 0
-    all_labels_d = torch.tensor([], dtype=torch.long).to(device)
-    all_predictions_d = torch.tensor([], dtype=torch.long).to(device)
-    all_predictions_probabilities_d = torch.tensor(
-        [], dtype=torch.float).to(device)
-
     with torch.no_grad():
         for i, data in tqdm(enumerate(test_dataloader, 0)):
 
-            inputs, labels, positive, negative, noise_level = data
+            inputs, labels, positive, negative, reference, noise_level = data
             inputs = inputs.to(device)
             labels = labels.to(device)
             positive = positive.to(device)
             negative = negative.to(device)
+            reference = reference.to(device)
             noise_level = noise_level.to(device)
-
-            resnet_out, _, _, _, _, _, _ = model(
-                inputs, positive, negative)
-            outputs = F.softmax(resnet_out, 1)
-            predicted_probability, predicted = torch.max(outputs.data, 1)
-
             total += labels.size(0)
-            correct += (predicted == labels).sum()
-            all_labels_d = torch.cat((all_labels_d, labels), 0)
-            all_predictions_d = torch.cat((all_predictions_d, predicted), 0)
-            all_predictions_probabilities_d = torch.cat(
-                (all_predictions_probabilities_d, predicted_probability), 0)
+
+            _, _, decoded_image, _, _, _, _, _ = model(
+                inputs, positive, negative)
+            mse: torch.Tensor = F.mse_loss(decoded_image, reference)
+            # calculate the mse of the decoded image regarding to each noise level
+            mse_list = []
+            
+            # TODO: check this part
+
+            for noise_level_i in np.unique(noise_level):
+                noise_level_i = noise_level_i.to(device)
+                mse_i = F.mse_loss(
+                    decoded_image[noise_level == noise_level_i], reference[noise_level == noise_level_i])
+                print("MSE of noise level %d is %f" % (noise_level_i, mse_i))
+                mse_list.append(mse_i)
 
     print('copying some data back to cpu for generating confusion matrix...')
-    y_true = all_labels_d.cpu()
-    y_predicted = all_predictions_d.cpu()  # to('cpu')
-    testset_predicted_probabilites = all_predictions_probabilities_d.cpu()  # to('cpu')
+    mse = mse.cpu()
 
-    # return y_predicted, testset_predicted_probabilites, all_timePerFrame_host
+    print('Accuracy of the network on the %d test images: %f %%' %
+          (total, (mse / total)))
 
-    cm = confusion_matrix(y_true, y_predicted)  # confusion matrix
-
-    print('Accuracy of the network on the %d test images: %f %%' % (total, (
-        100.0 * correct / total)))
-
-    print(cm)
-
-    print("taking class names to plot CM")
-
-    # test_datasets.classes  # taking class names for plotting confusion matrix
-    class_names = test_dataloader.dataset.classes
-
-    print("Generating confution matrix")
-
-    plot_confusion_matrix(cm, classes=class_names, title='my confusion matrix')
-
-    ##################################################################
-    # classification report
-    #################################################################
-    print(classification_report(y_true, y_predicted, target_names=class_names))
-
-    ##################################################################
-    # Standard metrics for medico Task
-    #################################################################
-    print("Printing standard metric for medico task")
-
-    print("Accuracy =", mtc.accuracy_score(y_true, y_predicted))
-    print("Precision score =", mtc.precision_score(
-        y_true, y_predicted, average="weighted"))
-    print("Recall score =", mtc.recall_score(
-        y_true, y_predicted, average="weighted"))
-    print("F1 score =", mtc.f1_score(y_true, y_predicted, average="weighted"))
-    print("Specificity =")
-    print("MCC =", mtc.matthews_corrcoef(y_true, y_predicted))
-
-    ##################################################################
-    # Standard metrics for medico Task
-    #################################################################
-    print("Printing standard metric for medico task")
-
-    print("1. Recall score (REC) =", mtc.recall_score(
-        y_true, y_predicted, average="weighted"))
-    print("2. Precision score (PREC) =",
-          mtc.precision_score(y_true, y_predicted, average="weighted"))
-    print("3. Specificity (SPEC) =")
-    # print("4. Accuracy (ACC) =", mtc.accuracy_score(y_true, y_predicted, weights))
-    print("5. Matthews correlation coefficient(MCC) =",
-          mtc.matthews_corrcoef(y_true, y_predicted))
-
-    print("6. F1 score (F1) =", mtc.f1_score(
-        y_true, y_predicted, average="weighted"))
+    psnr = 10 * torch.log10(1 / mse)
+    psnr = psnr.cpu()  # to('cpu')
 
     print('Finished.. ')
 
@@ -638,28 +595,9 @@ def test_model():
     np.set_printoptions(linewidth=np.inf)
     with open("%s/%s_evaluation.csv" % (opt.out_dir, py_file_name), "w") as f:
 
-        f.write(np.array2string(mtc.confusion_matrix(
-            y_true, y_predicted), separator=", "))
-
-        f.write("\n\n\n\n")
-        f.write("--- Macro Averaged Resutls ---\n")
-        f.write("Precision: %s\n" % mtc.precision_score(
-            y_true, y_predicted, average="macro"))
-        f.write("Recall: %s\n" % mtc.recall_score(
-            y_true, y_predicted, average="macro"))
-        f.write("F1-Score: %s\n\n" %
-                mtc.f1_score(y_true, y_predicted, average="macro"))
-
-        f.write("--- Micro Averaged Resutls ---\n")
-        f.write("Precision: %s\n" % mtc.precision_score(
-            y_true, y_predicted, average="micro"))
-        f.write("Recall: %s\n" % mtc.recall_score(
-            y_true, y_predicted, average="micro"))
-        f.write("F1-Score: %s\n\n" %
-                mtc.f1_score(y_true, y_predicted, average="micro"))
-
-        f.write("--- Other Resutls ---\n")
-        f.write("MCC: %s\n" % mtc.matthews_corrcoef(y_true, y_predicted))
+        # write the psnr and mse of each noise level and the average of them
+        
+        f.write("MSE of noise level 0 is %f\n" % (mse_list[0]))
 
     f.close()
     print("Report generated")
