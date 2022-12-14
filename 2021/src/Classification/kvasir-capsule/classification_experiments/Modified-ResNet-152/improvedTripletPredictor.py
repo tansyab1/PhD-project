@@ -294,7 +294,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # running_corrects += torch.sum(preds == labels.data)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
-                mse: torch.Tensor = F.mse_loss(decoded_image, inputs)
+                mse += F.mse_loss(decoded_image, inputs)
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
@@ -564,26 +564,26 @@ def test_model():
 
             _, _, decoded_image, _, _, _, _, _ = model(
                 inputs, positive, negative)
-            mse: torch.Tensor = F.mse_loss(decoded_image, reference)
+            mse = F.mse_loss(decoded_image, reference)
             # calculate the mse of the decoded image regarding to each noise level
             mse_list = []
-            
-            # TODO: check this part
 
             for noise_level_i in np.unique(noise_level):
                 noise_level_i = noise_level_i.to(device)
                 mse_i = F.mse_loss(
                     decoded_image[noise_level == noise_level_i], reference[noise_level == noise_level_i])
                 print("MSE of noise level %d is %f" % (noise_level_i, mse_i))
-                mse_list.append(mse_i)
+                mse_list.append(zip(noise_level_i, mse_i))
+
+            running_mse += mse.item()
 
     print('copying some data back to cpu for generating confusion matrix...')
-    mse = mse.cpu()
+    running_mse = running_mse.cpu()
 
     print('Accuracy of the network on the %d test images: %f %%' %
-          (total, (mse / total)))
+          (total, (running_mse / total)))
 
-    psnr = 10 * torch.log10(1 / mse)
+    psnr = 10 * torch.log10(total / running_mse)
     psnr = psnr.cpu()  # to('cpu')
 
     print('Finished.. ')
@@ -595,9 +595,10 @@ def test_model():
     np.set_printoptions(linewidth=np.inf)
     with open("%s/%s_evaluation.csv" % (opt.out_dir, py_file_name), "w") as f:
 
-        # write the psnr and mse of each noise level and the average of them
-        
-        f.write("MSE of noise level 0 is %f\n" % (mse_list[0]))
+        # write the psnr and mse of each noise level in the mse_list
+        f.write("PSNR: %f\n" % psnr)
+        for noise_level_i, mse_i in mse_list:
+            f.write("MSE of noise level %d is %f\n" % (noise_level_i, mse_i))
 
     f.close()
     print("Report generated")
