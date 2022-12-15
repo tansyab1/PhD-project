@@ -1,10 +1,7 @@
-import torch
 from torchvision import datasets
 import pickle
 import os
 import random
-import numpy as np
-import torchvision.transforms as transforms
 # from dataset.Dataloader_with_path import ImageFolderWithPaths
 
 
@@ -17,7 +14,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
     def read_pickle(self, pickle_file):
         with open(pickle_file, 'rb') as f:
             return pickle.load(f)
-        
+
     # get the reference image using datasets.ImageFolder class
     def get_reference_image(self, path, ref_paths):
         # get the reference image path
@@ -26,10 +23,9 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         ref_path_index = self.ref_images_loader.imgs.index(
             (ref_path, self.ref_images_loader.class_to_idx[os.path.basename(ref_path)]))
         return ref_path_index
-    
-        
 
     # create triplet of anchor, positive and negative images
+
     def create_triplet(self, index):
 
         # read pickle file
@@ -40,7 +36,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         # get the noise level from the dictionary
         anchor_label = self.read_pickle(self.pickle_file)[
             os.path.basename(path)]
-        
+
         # get the reference image path
         ref_index = self.get_reference_image(path, self.ref_paths)
 
@@ -71,10 +67,9 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         self.pickle_file = pickle_file
         # object of the datasets.ImageFolder class to get the reference image
         self.ref_images_loader = datasets.ImageFolder(ref_paths, transform)
-        
-        
 
     # override the __getitem__ method. this is the method that dataloader calls
+
     def __getitem__(self, index):
         # this is what ImageFolder normally returns
         original_tuple = super(ImageFolderWithPaths, self).__getitem__(index)
@@ -87,12 +82,13 @@ class ImageFolderWithPaths(datasets.ImageFolder):
                          self).__getitem__(positive_index)
         negative = super(ImageFolderWithPaths,
                          self).__getitem__(negative_index)
-        
+
         # get the reference image
         ref = self.ref_images_loader.__getitem__(ref_index)
 
         # make a new tuple that includes original and the path
-        tuple_with_path = (original_tuple + (positive[0],) + (negative[0],) + (ref[0],))
+        tuple_with_path = (
+            original_tuple + (positive[0],) + (negative[0],) + (ref[0],))
 
         return tuple_with_path
 
@@ -102,6 +98,7 @@ if __name__ == "__main__":
     root_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Noise/5/0"
     pickle_file = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/Noise_var/noise_dict.pkl"
     ref_paths = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Noise/5/0"
-    
-    test = ImageFolderWithPaths(root_path, ref_paths, pickle_file, transform=None)
+
+    test = ImageFolderWithPaths(
+        root_path, ref_paths, pickle_file, transform=None)
     print(test[0][2])

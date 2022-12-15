@@ -10,26 +10,20 @@
 
 from __future__ import print_function, division
 
-import datetime
 
 # #start = datetime.datetime.now()
 import argparse
-from email.mime import base
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim import lr_scheduler
-from torchvision import datasets, models, transforms, utils
-import pickle
+from torchvision import models, transforms
 import TripletLoss as TripletLoss
 # from pandas_ml import ConfusionMatrix
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import time
 import os
 import copy
-import sys
 import pandas as pd
 import numpy as np
 
@@ -37,7 +31,6 @@ import sklearn.metrics as mtc
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 import itertools
-from multiprocessing import Process, freeze_support
 from torch.utils.tensorboard import SummaryWriter
 
 from tqdm import tqdm
