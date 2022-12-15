@@ -757,6 +757,42 @@ def plot_confusion_matrix(cm, classes,
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")
 
+
+# ==============================================
+# function to windown partitioning
+# ==============================================
+
+def window_partition(x, win_size, dilation_rate=1):
+    B, H, W, C = x.shape
+    if dilation_rate != 1:
+        x = x.permute(0, 3, 1, 2)  # B, C, H, W
+        assert type(dilation_rate) is int, 'dilation_rate should be a int'
+        x = F.unfold(x, kernel_size=win_size, dilation=dilation_rate, padding=4 *
+                     (dilation_rate-1), stride=win_size)  # B, C*Wh*Ww, H/Wh*W/Ww
+        windows = x.permute(0, 2, 1).contiguous().view(-1,
+                                                       C, win_size, win_size)  # B' ,C ,Wh ,Ww
+        windows = windows.permute(0, 2, 3, 1).contiguous()  # B' ,Wh ,Ww ,C
+    else:
+        x = x.view(B, H // win_size, win_size, W // win_size, win_size, C)
+        windows = x.permute(0, 1, 3, 2, 4, 5).contiguous(
+        ).view(-1, win_size, win_size, C)  # B' ,Wh ,Ww ,C
+    return windows
+
+
+def window_reverse(windows, win_size, H, W, dilation_rate=1):
+    # B' ,Wh ,Ww ,C
+    B = int(windows.shape[0] / (H * W / win_size / win_size))
+    x = windows.view(B, H // win_size, W // win_size, win_size, win_size, -1)
+    if dilation_rate != 1:
+        # B, C*Wh*Ww, H/Wh*W/Ww
+        x = windows.permute(0, 5, 3, 4, 1, 2).contiguous()
+        x = F.fold(x, (H, W), kernel_size=win_size, dilation=dilation_rate,
+                   padding=4*(dilation_rate-1), stride=win_size)
+    else:
+        x = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(B, H, W, -1)
+    return x
+
+
 # ========================================
 # Doing Inference for new data
 # =========================================
@@ -807,8 +843,8 @@ def inference():
 
             outputs = model(inputs)
             outputs = F.softmax(outputs, 1)
-            predicted_probability, predicted = torch.max(outputs.data, 1)
 
+            predicted_probability, predicted = torch.max(outputs.data, 1)
             predicted = predicted.data.cpu().numpy()
 
             df_temp["predicted-label"] = predicted
@@ -819,13 +855,6 @@ def inference():
             probabilities = np.around(probabilities, decimals=3)
 
             df_temp[class_names] = probabilities
-
-            # print(df_temp)
-
-            #record = record + [class_names[labels.item()]] + [class_names[predicted.item()]]
-
-            # print(record)
-            # print(df_temp.head())
             df = df.append(df_temp)
             # break
 
