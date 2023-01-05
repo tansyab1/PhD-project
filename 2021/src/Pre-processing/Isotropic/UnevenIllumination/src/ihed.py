@@ -41,7 +41,7 @@ def Average(lst):
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
 clahe = cv2.createCLAHE(tileGridSize=(8, 8), clipLimit=2.0)
-for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video*.avi")):
+for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video2*.avi")):
     cap = cv2.VideoCapture(file)
     names.append(os.path.basename(file))
     # Check if camera opened successfully
@@ -77,6 +77,6 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
             break
     stdss.append(Average(stds))
 
-with open('./ihed_corected.csv', 'w') as f:
+with open('./ihed_test.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerows(zip(names, stdss))

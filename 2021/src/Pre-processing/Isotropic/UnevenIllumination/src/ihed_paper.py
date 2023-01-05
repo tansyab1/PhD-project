@@ -72,7 +72,7 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
             for j in range(0, res.shape[1]):
                 diff[i][j] = max(equ[i][j], ori[i][j])-min(equ[i][j], ori[i][j])
         # diff = res
-        mean = np.mean(diff)
+        mean = np.std(diff)
         print(os.path.basename(file))
         print(mean)
 
@@ -81,17 +81,17 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
         # Press Q on keyboard to  exit
         # if cv2.waitKey(25) & 0xFF == ord('q'):
         #     break
-        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
-                    "diff"+os.path.basename(file)+".png", diff)
-        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
-                    "ori"+os.path.basename(file)+".png", frame)
-        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
-                    "hsv"+os.path.basename(file)+".png", img[:, :, 2])
+        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+        #             "diff"+os.path.basename(file)+".png", diff)
+        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+        #             "ori"+os.path.basename(file)+".png", frame)
+        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+        #             "hsv"+os.path.basename(file)+".png", img[:, :, 2])
 
-        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
-                    "equal"+os.path.basename(file)+".png", equ)
-        cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
-                    "median"+os.path.basename(file)+".png", ori)
+        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+        #             "equal"+os.path.basename(file)+".png", equ)
+        # cv2.imwrite('/home/nguyentansy/DATA/PhD-work/PhD-project/2021/src/Pre-processing/Isotropic/UnevenIllumination/src/img_ppt/ihed/test_paper/' +
+        #             "median"+os.path.basename(file)+".png", ori)
 
         # Break the loop
     #     else:
