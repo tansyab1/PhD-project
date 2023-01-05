@@ -534,6 +534,8 @@ def test_model():
     model = prepare_model()
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
+    total = 0
+    running_mse = 0.0
 
     dataloaders = prepare_data()
     test_dataloader = dataloaders["val"]
@@ -617,7 +619,6 @@ def prepare_prediction_file():
         columns=["filename", "predicted-label", "actual-label"] + class_names)
 
     print(df.head())
-   #  exit()
 
     with torch.no_grad():
         for i, data in tqdm(enumerate(test_dataloader, 0)):
@@ -627,9 +628,9 @@ def prepare_prediction_file():
             df_temp = pd.DataFrame(
                 columns=["filename", "predicted-label", "actual-label"] + class_names)
 
-            #print("paths:", paths)
+            # print("paths:", paths)
             filename = [list(paths)[0].split("/")[-1]]
-            #print("filenames:", filename)
+            # print("filenames:", filename)
 
             df_temp["filename"] = filename
 
@@ -649,13 +650,7 @@ def prepare_prediction_file():
             # print(probabilities)
 
             df_temp[class_names] = probabilities
-
-            #record = record + [class_names[labels.item()]] + [class_names[predicted.item()]]
-
-            # print(record)
-            # print(df_temp.head())
             df = df.append(df_temp)
-           # break
 
         print(df.head())
         print("length of DF:", len(df))
@@ -682,7 +677,7 @@ def prepare_submission_file(image_names, predicted_labels, max_probability, time
                                                          max_probability,
                                                          time_per_image]),
                                         columns=['images', 'labels', 'PROB', 'time'])
-    #print("image names:{0}".format(image_names))
+    # print("image names:{0}".format(image_names))
 
     submission_dataframe.to_csv(os.path.join(
         submit_dir, "method_3_test_output"), index=False)
@@ -810,7 +805,7 @@ def inference():
             df_temp = pd.DataFrame(
                 columns=["filename", "predicted-label"] + class_names)
 
-            #print("paths:", paths)
+            # print("paths:", paths)
             filenames = []
             for p in paths:
                 filenames = filenames + [list(p.split("/"))[-1]]
@@ -855,11 +850,11 @@ if __name__ == '__main__':
     if opt.action == "train":
         print("Training process is strted..!")
         run_train()
-       # pass
+        # pass
     elif opt.action == "retrain":
         print("Retrainning process is strted..!")
         run_train(retrain=True)
-       # pass
+        # pass
     elif opt.action == "test":
         print("Inference process is strted..!")
         test_model()
