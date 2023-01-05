@@ -757,6 +757,19 @@ def plot_confusion_matrix(cm, classes,
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")
 
+
+# ==============================================
+# function to windown partitioning the features map in to different patches
+# ==============================================
+
+def window_partition(x, window_size):
+    # divide the image into patches with size of window_size * window_size
+
+    B, C, H, W = x.size()
+    x = x.view(B, C, H // window_size, window_size,
+               W // window_size, window_size)
+
+
 # ========================================
 # Doing Inference for new data
 # =========================================
@@ -807,8 +820,8 @@ def inference():
 
             outputs = model(inputs)
             outputs = F.softmax(outputs, 1)
-            predicted_probability, predicted = torch.max(outputs.data, 1)
 
+            predicted_probability, predicted = torch.max(outputs.data, 1)
             predicted = predicted.data.cpu().numpy()
 
             df_temp["predicted-label"] = predicted
@@ -819,13 +832,6 @@ def inference():
             probabilities = np.around(probabilities, decimals=3)
 
             df_temp[class_names] = probabilities
-
-            # print(df_temp)
-
-            #record = record + [class_names[labels.item()]] + [class_names[predicted.item()]]
-
-            # print(record)
-            # print(df_temp.head())
             df = df.append(df_temp)
             # break
 
