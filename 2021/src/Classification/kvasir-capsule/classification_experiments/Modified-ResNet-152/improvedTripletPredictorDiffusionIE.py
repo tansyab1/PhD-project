@@ -24,6 +24,8 @@ import copy
 import pandas as pd
 import numpy as np
 import itertools
+from einops import rearrange, repeat
+from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
 from tqdm import tqdm
@@ -334,7 +336,56 @@ class BaseNet(nn.Module):
     def forward(self, x):
         x = self.module(x)
         return x
+    
+class CrossAttention(nn.Module):
+    def __init__(self, dim = 128, heads = 4, dim_head = 32, dropout = 0.):
+        super().__init__()
+        inner_dim = dim_head *  heads
+        project_out = not (heads == 1 and dim_head == dim)
 
+        self.heads = heads
+        self.scale = dim_head ** -0.5
+
+        self.to_k = nn.Linear(dim, inner_dim , bias=False)
+        self.to_v = nn.Linear(dim, inner_dim , bias = False)
+        self.to_q = nn.Linear(dim, inner_dim, bias = False)
+
+        self.to_out = nn.Sequential(
+            nn.Linear(inner_dim, dim),
+            nn.Dropout(dropout)
+        ) if project_out else nn.Identity()
+
+    def forward(self, x_qk, x_v):
+        b, n, _, h = *x_qk.shape, self.heads
+
+        k = self.to_k(x_qk)
+        k = rearrange(k, 'b n (h d) -> b h n d', h = h)
+
+        v = self.to_v(x_v)
+        v = rearrange(v, 'b n (h d) -> b h n d', h = h)
+
+        q = self.to_q(x_qk[:, 0].unsqueeze(1))
+        q = rearrange(q, 'b n (h d) -> b h n d', h = h)
+
+
+
+        dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
+
+        attn = dots.softmax(dim=-1)
+
+        out = einsum('b h i j, b h j d -> b h i d', attn, v)
+        out = rearrange(out, 'b h n d -> b n (h d)')
+        out =  self.to_out(out)
+        return out
+
+class PreNorm(nn.Module):
+    def __init__(self, dim, fn):
+        super().__init__()
+        self.norm = nn.LayerNorm(dim)
+        self.fn = fn
+    def forward(self, x, **kwargs):
+        return self.fn(self.norm(x), **kwargs)
+    
 
 class MyNet(nn.Module):
     def __init__(self, num_out=14):
@@ -356,8 +407,8 @@ class MyNet(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
         )
 
@@ -394,7 +445,7 @@ class MyNet(nn.Module):
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.ConvTranspose2d(64, 64, kernel_size=3, stride=1, padding=1),
@@ -425,13 +476,13 @@ class MyNet(nn.Module):
         encoded_negative = self.encoder_mlp(negative)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
-        noise = self.decoder_mlp(z)
-        noise = noise.view(shape, 3, 224, 224)
+        # noise = self.decoder_mlp(z)
+        # noise = noise.view(shape, 3, 224, 224)
 
         decoded_image = self.decoder(encoded_image)
 
         # cacade the noise to the decoded image
-        decoded_image = decoded_image + noise
+        # decoded_image = decoded_image + noise
 
         resnet_out = self.base_model(decoded_image)
         resnet_out_encoded = self.base_model(reference)
