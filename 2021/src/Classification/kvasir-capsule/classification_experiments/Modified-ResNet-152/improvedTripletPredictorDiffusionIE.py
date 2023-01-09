@@ -336,19 +336,20 @@ class BaseNet(nn.Module):
     def forward(self, x):
         x = self.module(x)
         return x
-    
+
+
 class CrossAttention(nn.Module):
-    def __init__(self, dim = 128, heads = 4, dim_head = 32, dropout = 0.):
+    def __init__(self, dim=128, heads=4, dim_head=32, dropout=0.):
         super().__init__()
-        inner_dim = dim_head *  heads
+        inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
 
         self.heads = heads
         self.scale = dim_head ** -0.5
 
-        self.to_k = nn.Linear(dim, inner_dim , bias=False)
-        self.to_v = nn.Linear(dim, inner_dim , bias = False)
-        self.to_q = nn.Linear(dim, inner_dim, bias = False)
+        self.to_k = nn.Linear(dim, inner_dim, bias=False)
+        self.to_v = nn.Linear(dim, inner_dim, bias=False)
+        self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
         self.to_out = nn.Sequential(
             nn.Linear(inner_dim, dim),
@@ -359,15 +360,13 @@ class CrossAttention(nn.Module):
         b, n, _, h = *x_qk.shape, self.heads
 
         k = self.to_k(x_qk)
-        k = rearrange(k, 'b n (h d) -> b h n d', h = h)
+        k = rearrange(k, 'b n (h d) -> b h n d', h=h)
 
         v = self.to_v(x_v)
-        v = rearrange(v, 'b n (h d) -> b h n d', h = h)
+        v = rearrange(v, 'b n (h d) -> b h n d', h=h)
 
         q = self.to_q(x_qk[:, 0].unsqueeze(1))
-        q = rearrange(q, 'b n (h d) -> b h n d', h = h)
-
-
+        q = rearrange(q, 'b n (h d) -> b h n d', h=h)
 
         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
 
@@ -375,17 +374,19 @@ class CrossAttention(nn.Module):
 
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
-        out =  self.to_out(out)
+        out = self.to_out(out)
         return out
+
 
 class PreNorm(nn.Module):
     def __init__(self, dim, fn):
         super().__init__()
         self.norm = nn.LayerNorm(dim)
         self.fn = fn
+
     def forward(self, x, **kwargs):
         return self.fn(self.norm(x), **kwargs)
-    
+
 
 class MyNet(nn.Module):
     def __init__(self, num_out=14):
@@ -429,21 +430,6 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        # MLP to decode the image
-        self.decoder_mlp = nn.Sequential(
-            nn.Linear(128, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Linear(512, 1024),
-            nn.BatchNorm1d(1024),
-            nn.ReLU(),
-            nn.Linear(1024, 224*224*3),
-            nn.Tanh(),
-        )
-
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
@@ -476,13 +462,10 @@ class MyNet(nn.Module):
         encoded_negative = self.encoder_mlp(negative)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
-        # noise = self.decoder_mlp(z)
-        # noise = noise.view(shape, 3, 224, 224)
+        
+        # TODO create the cross attention block here
 
         decoded_image = self.decoder(encoded_image)
-
-        # cacade the noise to the decoded image
-        # decoded_image = decoded_image + noise
 
         resnet_out = self.base_model(decoded_image)
         resnet_out_encoded = self.base_model(reference)
