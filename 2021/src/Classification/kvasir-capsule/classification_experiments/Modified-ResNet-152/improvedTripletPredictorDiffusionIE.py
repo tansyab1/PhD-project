@@ -17,14 +17,14 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import models, transforms
-import TripletLoss as TripletLoss
+# import TripletLoss as TripletLoss
 import matplotlib.pyplot as plt
 import os
 import copy
 import pandas as pd
 import numpy as np
 import itertools
-from einops import rearrange, repeat
+from einops import rearrange
 from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
@@ -243,7 +243,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 dataloader = dataloaders["val"]
 
             running_loss = 0.0
-            running_corrects = 0
+            mse = 0.0
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
@@ -310,7 +310,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 
                 # Get current lr
                 lr = optimizer.param_groups[0]['lr']
-                #print("lr=", lr)
+                # print("lr=", lr)
                 writer.add_scalar("LR", lr, epoch)
                 scheduler.step(epoch_loss)
 
@@ -383,13 +383,13 @@ class CrossAttention(nn.Module):
         b, n, _, h = *x_q.shape, self.heads
 
         k = self.to_k(x_kv)
-        k = rearrange(k, 'b n (h d) -> b h n d', h=h)
+        k = rearrange(k, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
         v = self.to_v(x_kv)
-        v = rearrange(v, 'b n (h d) -> b h n d', h=h)
+        v = rearrange(v, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
         q = self.to_q(x_q[:, 0].unsqueeze(1))
-        q = rearrange(q, 'b n (h d) -> b h n d', h=h)
+        q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
 
@@ -551,7 +551,7 @@ def run_train(retrain=False):
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint["model_state_dict"])
         start_epoch = checkpoint["epoch"]
-        loss = checkpoint["loss"]
+        # loss = checkpoint["loss"]
         acc = checkpoint["psnr"]
         train_model(model, optimizer, criterion, criterion_ae, dataloaders,
                     scheduler, best_acc=acc, start_epoch=start_epoch)
