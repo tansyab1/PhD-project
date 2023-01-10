@@ -266,7 +266,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                     # _, preds = torch.max(resnet_out, 1)
                     # loss_resnet = criterion(resnet_out, labels)
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
-                    loss_ae = crterion_ae(decoded_image, reference)
+                    loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
                         encoded_positive, encoded_negative, encoded_noise)
                     loss_KL = 0.5 * \
