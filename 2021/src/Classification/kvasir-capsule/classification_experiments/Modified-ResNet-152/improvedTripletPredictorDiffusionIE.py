@@ -339,7 +339,7 @@ class BaseNet(nn.Module):
 
 
 class CrossAttention(nn.Module):
-    def __init__(self, dim=128, heads=4, dim_head=32, dropout=0.):
+    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0.):
         super().__init__()
         inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
@@ -350,22 +350,30 @@ class CrossAttention(nn.Module):
         self.to_k = nn.Linear(dim, inner_dim, bias=False)
         self.to_v = nn.Linear(dim, inner_dim, bias=False)
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
+        
+        self.to_patch_embedding_large = nn.Sequential(
+            rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=14, p2=14), # 14x14 patches with c = 128
+            nn.Linear(128*14*14, dim),
+        )
 
         self.to_out = nn.Sequential(
             nn.Linear(inner_dim, dim),
             nn.Dropout(dropout)
         ) if project_out else nn.Identity()
 
-    def forward(self, x_qk, x_v):
-        b, n, _, h = *x_qk.shape, self.heads
+    def forward(self, x_q, x_kv):
+        x_q = self.to_patch_embedding_large(x_q)
+        x_kv = self.to_patch_embedding_large(x_kv)
+        
+        b, n, _, h = *x_q.shape, self.heads
 
-        k = self.to_k(x_qk)
+        k = self.to_k(x_kv)
         k = rearrange(k, 'b n (h d) -> b h n d', h=h)
 
-        v = self.to_v(x_v)
+        v = self.to_v(x_kv)
         v = rearrange(v, 'b n (h d) -> b h n d', h=h)
 
-        q = self.to_q(x_qk[:, 0].unsqueeze(1))
+        q = self.to_q(x_q[:, 0].unsqueeze(1))
         q = rearrange(q, 'b n (h d) -> b h n d', h=h)
 
         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
@@ -392,16 +400,16 @@ class MyNet(nn.Module):
     def __init__(self, num_out=14):
         super(MyNet, self).__init__()
 
-        self.base_model = BaseNet(num_out)
-        self.base_model = nn.DataParallel(
-            self.base_model, device_ids=[opt.device_id])
+        self.base_model = BaseNet(num_out).to("cuda:1")
         checkpoint_resnet = torch.load(opt.best_resnet)
         self.base_model.load_state_dict(
             checkpoint_resnet["model_state_dict"])  # Load best weight
-        self.base_model.to(device)
         # freeze all layers
         for param in self.base_model.parameters():
             param.requires_grad = False
+            
+        self.cross_attention_layer = PreNorm(128, CrossAttention(dim=128, heads=4, dim_head=32, dropout=0.))
+        
 
         # create an autoencoder block for input size 224*224*3 containing 2 conv layers
         self.encoder = nn.Sequential(
@@ -413,28 +421,36 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc_mu = nn.Linear(256, 128)
-        self.fc_var = nn.Linear(256, 128)
+        self.fc_mu = nn.Linear(56*56*128, 256)
+        self.fc_var = nn.Linear(56*56*128, 256)
         # self.fc3 = nn.Linear(256, 336*336*3)
 
         # MLP to encode the image to extract the noise level
-        self.encoder_mlp = nn.Sequential(
-            nn.Linear(224*224*3, 1024),
-            nn.BatchNorm1d(1024),
+        self.encoder = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Linear(1024, 512),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+        )
+        
+        self.decoder_mlp = nn.Sequential(
+            nn.Linear(256, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
+            nn.Linear(512, 1024),
+            nn.BatchNorm1d(1024),
             nn.ReLU(),
+            nn.Linear(1024, 56*56*128),
+            nn.Tanh(),
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.ConvTranspose2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
@@ -457,18 +473,22 @@ class MyNet(nn.Module):
 
     def forward(self, x, x_view, positive, negative, reference, shape):
         encoded_image = self.encoder(x)
-        encoded_noise = self.encoder_mlp(x_view)
+        encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
         
-        # TODO create the cross attention block here
+        noise_feature = self.decoder_mlp(z)
+        
+        cross_attention_feature = self.cross_attention_layer(encoded_image, noise_feature)
+        # cat the cross attention feature and the encoded image 
+        encoded_image = torch.cat((cross_attention_feature, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
 
-        resnet_out = self.base_model(decoded_image)
-        resnet_out_encoded = self.base_model(reference)
+        resnet_out = self.base_model(decoded_image.to("cuda:1"))
+        resnet_out_encoded = self.base_model(reference.to("cuda:1"))
         return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
@@ -479,7 +499,7 @@ class MyNet(nn.Module):
 def prepare_model():
 
     model = MyNet()
-    model = nn.DataParallel(model, device_ids=[opt.device_id])
+    # model = nn.DataParallel(model, device_ids=[opt.device_id])
     model = model.to(device)
 
     return model
