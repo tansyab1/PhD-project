@@ -265,14 +265,15 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                         inputs, input_view, positive, negative, reference, positive.size(0))
                     # _, preds = torch.max(resnet_out, 1)
                     # loss_resnet = criterion(resnet_out, labels)
-                    loss_ae = criterion_ae(resnet_out, resnet_out_encoded)
+                    loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
+                    loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
                         encoded_positive, encoded_negative, encoded_noise)
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
                     # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
-                    loss = loss_ae + loss_triplet + loss_KL
+                    loss = loss_ae + loss_triplet + loss_KL + loss_feature
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -822,18 +823,6 @@ def plot_confusion_matrix(cm, classes,
     figure = plt.gcf()
     writer.add_figure("Confusion Matrix", figure)
     print("Finished confusion matrix drawing...")
-
-
-# ==============================================
-# function to windown partitioning the features map in to different patches
-# ==============================================
-
-def window_partition(x, window_size):
-    # divide the image into patches with size of window_size * window_size
-
-    B, C, H, W = x.size()
-    x = x.view(B, C, H // window_size, window_size,
-               W // window_size, window_size)
 
 
 # ========================================
