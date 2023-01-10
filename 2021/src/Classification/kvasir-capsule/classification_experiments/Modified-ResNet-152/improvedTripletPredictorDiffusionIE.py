@@ -339,21 +339,29 @@ class BaseNet(nn.Module):
 
 
 class CrossAttention(nn.Module):
-    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0.):
+    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=14, input_size=56, channels=128):
         super().__init__()
         inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
-
         self.heads = heads
         self.scale = dim_head ** -0.5
 
         self.to_k = nn.Linear(dim, inner_dim, bias=False)
         self.to_v = nn.Linear(dim, inner_dim, bias=False)
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
-        
-        self.to_patch_embedding_large = nn.Sequential(
-            rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=14, p2=14), # 14x14 patches with c = 128
-            nn.Linear(128*14*14, dim),
+
+        num_patches_large = (input_size // patch_size_large)  # 4
+
+        self.to_patch_embedding_x = nn.Sequential(
+            rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
+                      p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
+            nn.Linear(channels*patch_size_large*patch_size_large, dim),
+        )
+
+        self.to_patch_embedding_noise = nn.Sequential(
+            rearrange('b (c (h p1) (w p2)) -> b (h w) (p1 p2 c)',
+                      p1=patch_size_large, p2=patch_size_large, c=channels),  # 14x14 patches with c = 128
+            nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
 
         self.to_out = nn.Sequential(
@@ -361,10 +369,17 @@ class CrossAttention(nn.Module):
             nn.Dropout(dropout)
         ) if project_out else nn.Identity()
 
+        self.mlp_head = nn.Sequential(
+            nn.LayerNorm(dim),
+            nn.Linear(dim, channels*patch_size_large*patch_size_large),
+            rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
+                      p1=patch_size_large, p2=patch_size_large, c=channels, h=num_patches_large),  # 14x14 patches with c = 128
+        )
+
     def forward(self, x_q, x_kv):
-        x_q = self.to_patch_embedding_large(x_q)
-        x_kv = self.to_patch_embedding_large(x_kv)
-        
+        x_q = self.to_patch_embedding_x(x_q)
+        x_kv = self.to_patch_embedding_noise(x_kv)
+
         b, n, _, h = *x_q.shape, self.heads
 
         k = self.to_k(x_kv)
@@ -407,9 +422,9 @@ class MyNet(nn.Module):
         # freeze all layers
         for param in self.base_model.parameters():
             param.requires_grad = False
-            
-        self.cross_attention_layer = PreNorm(128, CrossAttention(dim=128, heads=4, dim_head=32, dropout=0.))
-        
+
+        self.cross_attention_layer = PreNorm(
+            128, CrossAttention(dim=128, heads=4, dim_head=32, dropout=0.))
 
         # create an autoencoder block for input size 224*224*3 containing 2 conv layers
         self.encoder = nn.Sequential(
@@ -434,7 +449,7 @@ class MyNet(nn.Module):
             nn.BatchNorm2d(128),
             nn.ReLU(),
         )
-        
+
         self.decoder_mlp = nn.Sequential(
             nn.Linear(256, 512),
             nn.BatchNorm1d(512),
@@ -478,12 +493,14 @@ class MyNet(nn.Module):
         encoded_negative = self.encoder_mlp(negative)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
-        
+
         noise_feature = self.decoder_mlp(z)
-        
-        cross_attention_feature = self.cross_attention_layer(encoded_image, noise_feature)
-        # cat the cross attention feature and the encoded image 
-        encoded_image = torch.cat((cross_attention_feature, encoded_image), dim=1)
+
+        cross_attention_feature = self.cross_attention_layer(
+            encoded_image, noise_feature)
+        # cat the cross attention feature and the encoded image
+        encoded_image = torch.cat(
+            (cross_attention_feature, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
 
