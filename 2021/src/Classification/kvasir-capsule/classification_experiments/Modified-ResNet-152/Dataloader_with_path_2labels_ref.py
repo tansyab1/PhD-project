@@ -18,11 +18,12 @@ class ImageFolderWithPaths(datasets.ImageFolder):
     # get the reference image using datasets.ImageFolder class
     def get_reference_image(self, path, ref_paths):
         # get the reference image path
-        ref_path = os.path.join(ref_paths, os.path.basename(path))
+        # find the file path of the ref_paths with the same basename as the path
+        ref_path = [x for x in self.ref_images_loader.imgs if os.path.basename(x[0]) == os.path.basename(path)]
         # get the reference image index
-        ref_path_index = self.ref_images_loader.imgs.index((ref_path, self.ref_images_loader.class_to_idx[os.path.basename(ref_path)]))
+        ref_path_index = self.ref_images_loader.imgs.index(ref_path[0])
         return ref_path_index
-
+        
     # create triplet of anchor, positive and negative images
 
     def create_triplet(self, index):
@@ -101,4 +102,4 @@ if __name__ == "__main__":
 
     test = ImageFolderWithPaths(
         root_path, ref_paths, pickle_file, transform=None)
-    print(test[0][2])
+    print(test[0][3])
