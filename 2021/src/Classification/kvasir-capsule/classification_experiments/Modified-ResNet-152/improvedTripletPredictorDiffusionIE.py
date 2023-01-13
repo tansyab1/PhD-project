@@ -25,6 +25,7 @@ import pandas as pd
 import numpy as np
 import itertools
 from einops import rearrange
+from einops.layers.torch import Rearrange
 from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
@@ -358,13 +359,13 @@ class CrossAttention(nn.Module):
         num_patches_large = (input_size // patch_size_large)  # 4
 
         self.to_patch_embedding_x = nn.Sequential(
-            rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
+            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
                       p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
             nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
 
         self.to_patch_embedding_noise = nn.Sequential(
-            rearrange('b (c (h p1) (w p2)) -> b (h w) (p1 p2 c)',
+            Rearrange('b (c (h p1) (w p2)) -> b (h w) (p1 p2 c)',
                       p1=patch_size_large, p2=patch_size_large, c=channels),  # 14x14 patches with c = 128
             nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
@@ -377,7 +378,7 @@ class CrossAttention(nn.Module):
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(dim),
             nn.Linear(dim, channels*patch_size_large*patch_size_large),
-            rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
+            Rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
                       p1=patch_size_large, p2=patch_size_large, c=channels, h=num_patches_large),  # 14x14 patches with c = 128
         )
 
@@ -421,9 +422,9 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         self.base_model = BaseNet(num_out).to("cuda:1")
-        checkpoint_resnet = torch.load(opt.best_resnet)
-        self.base_model.load_state_dict(
-            checkpoint_resnet["model_state_dict"])  # Load best weight
+        # checkpoint_resnet = torch.load(opt.best_resnet)
+        # self.base_model.load_state_dict(
+        #     checkpoint_resnet["model_state_dict"])  # Load best weight
         # freeze all layers
         for param in self.base_model.parameters():
             param.requires_grad = False
