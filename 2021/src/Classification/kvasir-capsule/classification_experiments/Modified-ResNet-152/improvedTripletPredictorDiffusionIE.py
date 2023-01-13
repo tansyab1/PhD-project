@@ -55,6 +55,10 @@ parser.add_argument("--data_root",
                     default="dataport/ExperimentalDATA/Noise_var/",
                     help="data root directory")
 
+parser.add_argument("--ref_root",
+                    default="dataport/ExperimentalDATA/ref/",
+                    help="data root directory")
+
 parser.add_argument("--pkl_root",
                     default="src-update/classification_experiments/Modified-ResNet-152/noise_dict.pkl",
                     help="pkl root directory")
@@ -186,6 +190,7 @@ def prepare_data():
 
     # Train datasets
     image_datasets_train_all = {x: dataset(os.path.join(opt.data_root, x),
+                                           os.path.join(opt.ref_root, x),
                                            opt.pkl_root,
                                            transform=data_transforms["train"])
                                 for x in train_folds}
@@ -196,6 +201,7 @@ def prepare_data():
 
     # Validation datasets
     dataset_val = dataset(os.path.join(opt.data_root, validation_fold),
+                          os.path.join(opt.ref_root, validation_fold),
                           opt.pkl_root,
                           transform=data_transforms["validation"])
 
