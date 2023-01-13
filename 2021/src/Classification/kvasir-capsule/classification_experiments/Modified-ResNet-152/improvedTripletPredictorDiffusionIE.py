@@ -258,9 +258,9 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # input_view = inputs.view(inputs.size(0), -1)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                positive = positive.view(positive.size(0), -1).to(device)
-                negative = negative.view(negative.size(0), -1).to(device)
-                reference = reference.view(positive.size(0), -1).to(device)
+                positive = positive.to(device)
+                negative = negative.to(device)
+                reference = reference.to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -421,7 +421,7 @@ class MyNet(nn.Module):
     def __init__(self, num_out=14):
         super(MyNet, self).__init__()
 
-        self.base_model = BaseNet(num_out).to("cuda:1")
+        self.base_model = BaseNet(num_out).to("cuda:2")
         # checkpoint_resnet = torch.load(opt.best_resnet)
         # self.base_model.load_state_dict(
         #     checkpoint_resnet["model_state_dict"])  # Load best weight
@@ -447,7 +447,7 @@ class MyNet(nn.Module):
         # self.fc3 = nn.Linear(256, 336*336*3)
 
         # MLP to encode the image to extract the noise level
-        self.encoder = nn.Sequential(
+        self.encoder_mlp = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -510,8 +510,8 @@ class MyNet(nn.Module):
 
         decoded_image = self.decoder(encoded_image)
 
-        resnet_out = self.base_model(decoded_image.to("cuda:1"))
-        resnet_out_encoded = self.base_model(reference.to("cuda:1"))
+        resnet_out = self.base_model(decoded_image.to("cuda:2"))
+        resnet_out_encoded = self.base_model(reference.to("cuda:2"))
         return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
