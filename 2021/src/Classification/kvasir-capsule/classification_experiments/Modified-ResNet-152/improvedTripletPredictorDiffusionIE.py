@@ -366,7 +366,7 @@ class CrossAttention(nn.Module):
 
         self.to_patch_embedding_noise = nn.Sequential(
             Rearrange('b (c h p1 w p2) -> b (h w) (p1 p2 c)',
-                      p1=patch_size_large, p2=patch_size_large, c=channels),  # 14x14 patches with c = 128
+                      p1=patch_size_large, p2=patch_size_large, c=channels, h=input_size),  # 14x14 patches with c = 128
             nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
 
