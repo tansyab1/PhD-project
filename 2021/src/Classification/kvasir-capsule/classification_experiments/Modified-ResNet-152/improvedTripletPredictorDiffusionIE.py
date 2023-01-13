@@ -52,11 +52,11 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 
 # Directories
 parser.add_argument("--data_root",
-                    default="dataport/ExperimentalDATA/ui/",
+                    default="dataport/ExperimentalDATA/Noise_var/",
                     help="data root directory")
 
 parser.add_argument("--pkl_root",
-                    default="dataport/ExperimentalDATA/ui/",
+                    default="src-update/classification_experiments/Modified-ResNet-152/noise_dict.pkl",
                     help="pkl root directory")
 
 
@@ -65,11 +65,11 @@ parser.add_argument("--data_to_inference",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
-                    default="dataport/output/clean-ui/",
+                    default="dataport/output/Dif-level/diffusion/",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="dataport/tensorboard/clean-ui/",
+                    default="dataport/output/tensorboard/Dif-level/diffusion/",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -96,7 +96,7 @@ parser.add_argument("--lr_sch_patience", type=int, default=10,
 # Action handling
 parser.add_argument("--num_epochs",
                     type=int,
-                    default=0,
+                    default=50,
                     help="Numbe of epochs to train")
 # parser.add_argument("--start_epoch", type=int, default=0, help="Start epoch in retraining")
 parser.add_argument("action",
@@ -111,7 +111,7 @@ parser.add_argument("--checkpoint_interval",
 
 parser.add_argument("--val_fold",
                     type=str,
-                    default="0",
+                    default="1",
                     help="Select the validation fold", choices=["0", "1"])
 
 parser.add_argument("--all_folds",
@@ -119,7 +119,7 @@ parser.add_argument("--all_folds",
                     help="list of all folds available in data folder")
 
 parser.add_argument("--best_resnet",
-                    default="home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt",
+                    default="dataport/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt",
                     help="Resnet best weight file")
 opt = parser.parse_args()
 
@@ -248,7 +248,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
             for i, data in tqdm(enumerate(dataloader, 0)):
 
                 inputs, labels, positive, negative, reference = data
-                input_view = inputs.view(inputs.size(0), -1)
+                # input_view = inputs.view(inputs.size(0), -1)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 positive = positive.view(positive.size(0), -1).to(device)
@@ -262,7 +262,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, input_view, positive, negative, reference, positive.size(0))
+                        inputs, positive, negative, reference, positive.size(0))
                     # _, preds = torch.max(resnet_out, 1)
                     # loss_resnet = criterion(resnet_out, labels)
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
@@ -285,7 +285,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # running_corrects += torch.sum(preds == labels.data)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
-                mse += F.mse_loss(decoded_image, inputs)
+                mse += F.mse_loss(decoded_image, reference)
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
@@ -330,8 +330,6 @@ class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
         self.resnet_model = models.resnet152(pretrained=True)
-        # self.resnet_num_ftrs = self.resnet_model.fc.in_features
-        # self.resnet_model.fc = nn.Linear(self.resnet_num_ftrs, num_out)
         self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
@@ -487,7 +485,7 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x, x_view, positive, negative, reference, shape):
+    def forward(self, x, positive, negative, reference, shape):
         encoded_image = self.encoder(x)
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
@@ -624,8 +622,7 @@ def test_model():
             noise_level = noise_level.to(device)
             total += labels.size(0)
 
-            _, _, decoded_image, _, _, _, _, _ = model(
-                inputs, positive, negative)
+            _, _, decoded_image, _, _, _, _, _ = model(inputs, positive, negative, reference, positive.size(0))
             mse = F.mse_loss(decoded_image, reference)
             # calculate the mse of the decoded image regarding to each noise level
             mse_list = []
