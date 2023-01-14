@@ -53,28 +53,28 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 
 # Directories
 parser.add_argument("--data_root",
-                    default="ExperimentalDATA/Noise_var/",
+                    default="dataport/ExperimentalDATA/Noise_var/",
                     help="data root directory")
 
 parser.add_argument("--ref_root",
-                    default="ExperimentalDATA/ref/",
+                    default="dataport/ExperimentalDATA/ref/",
                     help="data root directory")
 
 parser.add_argument("--pkl_root",
-                    default="noise_dict.pkl",
+                    default="src-update/classification_experiments/Modified-ResNet-152/noise_dict.pkl",
                     help="pkl root directory")
 
 
 parser.add_argument("--data_to_inference",
-                    default="ExperimentalDATA/interference/",
+                    default="dataport/ExperimentalDATA/interference/",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
-                    default="output/Dif-level/diffusion/",
+                    default="dataport/output/Dif-level/diffusion/",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="output/tensorboard/Dif-level/diffusion/",
+                    default="dataport/output/tensorboard/Dif-level/diffusion/",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
