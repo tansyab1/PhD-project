@@ -53,28 +53,28 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 
 # Directories
 parser.add_argument("--data_root",
-                    default="dataport/ExperimentalDATA/Noise_var/",
+                    default="ExperimentalDATA/Noise_var/",
                     help="data root directory")
 
 parser.add_argument("--ref_root",
-                    default="dataport/ExperimentalDATA/ref/",
+                    default="ExperimentalDATA/ref/",
                     help="data root directory")
 
 parser.add_argument("--pkl_root",
-                    default="src-update/classification_experiments/Modified-ResNet-152/noise_dict.pkl",
+                    default="noise_dict.pkl",
                     help="pkl root directory")
 
 
 parser.add_argument("--data_to_inference",
-                    default="dataport/interference/clean-ui/",
+                    default="ExperimentalDATA/interference/",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
-                    default="dataport/output/Dif-level/diffusion/",
+                    default="output/Dif-level/diffusion/",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="dataport/output/tensorboard/Dif-level/diffusion/",
+                    default="output/tensorboard/Dif-level/diffusion/",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
@@ -123,9 +123,6 @@ parser.add_argument("--all_folds",
                     default=["0", "1"],
                     help="list of all folds available in data folder")
 
-parser.add_argument("--best_resnet",
-                    default="dataport/output/ref/train-0_val-1/fine-tuned-kvasircapsule.py/checkpoints/fine-tuned-kvasircapsule.py_epoch:48.pt",
-                    help="Resnet best weight file")
 opt = parser.parse_args()
 
 # ==========================================
@@ -629,7 +626,8 @@ def test_model():
             noise_level = noise_level.to(device)
             total += labels.size(0)
 
-            _, _, decoded_image, _, _, _, _, _ = model(inputs, positive, negative, reference, positive.size(0))
+            _, _, decoded_image, _, _, _, _, _ = model(
+                inputs, positive, negative, reference, positive.size(0))
             mse = F.mse_loss(decoded_image, reference)
             # calculate the mse of the decoded image regarding to each noise level
             mse_list = []
