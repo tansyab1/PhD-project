@@ -333,7 +333,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
-        self.resnet_model = models.resnet152(pretrained=True)
+        self.resnet_model = models.resnet50(pretrained=True)
         self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
@@ -420,14 +420,10 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         self.shape = (224, 224)
         self.dim = 64
-        self.attention_dim = 224
+        self.attention_dim = 112
         self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
         self.base_model = BaseNet(num_out).to("cuda:0")
-        # checkpoint_resnet = torch.load(opt.best_resnet)
-        # self.base_model.load_state_dict(
-        #     checkpoint_resnet["model_state_dict"])  # Load best weight
-        # freeze all layers
         for param in self.base_model.parameters():
             param.requires_grad = False
 
