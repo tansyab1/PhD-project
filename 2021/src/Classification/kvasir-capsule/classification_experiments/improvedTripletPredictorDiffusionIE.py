@@ -61,7 +61,7 @@ parser.add_argument("--ref_root",
                     help="data root directory")
 
 parser.add_argument("--pkl_root",
-                    default="noise_dict.pkl",
+                    default="src-update/classification_experiments/noise_dict.pkl",
                     help="pkl root directory")
 
 
@@ -266,7 +266,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, positive, negative, reference, positive.size(0))
+                        inputs, positive, negative, reference)
                     # _, preds = torch.max(resnet_out, 1)
                     # loss_resnet = criterion(resnet_out, labels)
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
@@ -353,7 +353,7 @@ class CrossAttention(nn.Module):
         self.to_v = nn.Linear(dim, inner_dim, bias=False)
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
-        num_patches_large = (input_size // patch_size_large)  # 4
+        num_patches_large = (input_size // patch_size_large)  # 14
 
         self.to_patch_embedding_x = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
@@ -391,7 +391,7 @@ class CrossAttention(nn.Module):
         v = self.to_v(x_kv)
         v = rearrange(v, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
-        q = self.to_q(x_q[:, 0].unsqueeze(1))
+        q = self.to_q(x_q)
         q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
@@ -401,6 +401,7 @@ class CrossAttention(nn.Module):
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         out = self.to_out(out)
+        out = self.mlp_head(out)
         return out
 
 
@@ -445,10 +446,10 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.cross_attention_layer = CrossAttention(dim=self.attention_dim, heads=7, dim_head=32, dropout=0.)
+        self.cross_attention_layer = CrossAttention(
+            dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
         self.fc_mu = nn.Linear(self.flatten_dim, 256)
         self.fc_var = nn.Linear(self.flatten_dim, 256)
-            
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
@@ -497,25 +498,27 @@ class MyNet(nn.Module):
         return z, mu, logvar
 
     def forward(self, x, positive, negative, reference):
-        encoded_image = self.encoder(x)
+        encoded_image = self.encoder(x)  # encode the image with channel = 64
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
-        
-        encoded_noise = encoded_noise.view(-1, self.flatten_dim)
 
-        z, mu, logvar = self.bottleneck(encoded_noise)
+        encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
+
+        z, mu, logvar = self.bottleneck(encoded_noise_flatten)
 
         noise_feature = self.decoder_mlp(z)
-        
-        noise_feature = noise_feature.view(-1, self.dim, self.shape[0], self.shape[1])
-        
+
+        noise_feature = noise_feature.view(-1,
+                                           self.dim, self.shape[0], self.shape[1])
+
         # print(noise_feature.shape)
 
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, noise_feature)
-        
-        cross_attention_feature = cross_attention_feature.view(-1, self.dim, self.shape[0], self.shape[1])
+
+        cross_attention_feature = cross_attention_feature.view(
+            -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image
         encoded_image = torch.cat(
             (cross_attention_feature, encoded_image), dim=1)
