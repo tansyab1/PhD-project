@@ -83,7 +83,7 @@ parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
 parser.add_argument("--lr", type=float, default=0.001,
                     help="Learning rate for training")
 
-parser.add_argument("--num_workers", type=int, default=32,
+parser.add_argument("--num_workers", type=int, default=10,
                     help="Number of workers in dataloader")
 
 parser.add_argument("--weight_decay", type=float,
@@ -231,7 +231,7 @@ def prepare_data():
 
 def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
 
-    best_model_wts = copy.deepcopy(model.state_dict())
+    # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
     triplet_loss = nn.TripletMarginLoss(margin=1.0, p=2)
 
@@ -342,7 +342,7 @@ class BaseNet(nn.Module):
 
 
 class CrossAttention(nn.Module):
-    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=14, input_size=56, channels=128):
+    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=16, input_size=224, channels=128):
         super().__init__()
         inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
@@ -362,8 +362,8 @@ class CrossAttention(nn.Module):
         )
 
         self.to_patch_embedding_noise = nn.Sequential(
-            Rearrange('b (c h p1 w p2) -> b (h w) (p1 p2 c)',
-                      p1=patch_size_large, p2=patch_size_large, c=channels, h=input_size),  # 14x14 patches with c = 128
+            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
+                      p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
             nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
 
@@ -417,8 +417,12 @@ class CrossAttention(nn.Module):
 class MyNet(nn.Module):
     def __init__(self, num_out=14):
         super(MyNet, self).__init__()
+        self.shape = (224, 224)
+        self.dim = 64
+        self.attention_dim = 224
+        self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
-        self.base_model = BaseNet(num_out).to("cuda:2")
+        self.base_model = BaseNet(num_out).to("cuda:0")
         # checkpoint_resnet = torch.load(opt.best_resnet)
         # self.base_model.load_state_dict(
         #     checkpoint_resnet["model_state_dict"])  # Load best weight
@@ -436,15 +440,14 @@ class MyNet(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(128),
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
         )
 
-        self.cross_attention_layer = CrossAttention(dim=128, heads=4, dim_head=32, dropout=0.)
-        self.fc_mu = nn.Linear(56*56*128, 256)
-        self.fc_var = nn.Linear(56*56*128, 256)
-        # self.fc3 = nn.Linear(256, 336*336*3)
+        self.cross_attention_layer = CrossAttention(dim=self.attention_dim, heads=7, dim_head=32, dropout=0.)
+        self.fc_mu = nn.Linear(self.flatten_dim, 256)
+        self.fc_var = nn.Linear(self.flatten_dim, 256)
             
 
         # MLP to encode the image to extract the noise level
@@ -452,8 +455,8 @@ class MyNet(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(128),
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
         )
 
@@ -464,14 +467,14 @@ class MyNet(nn.Module):
             nn.Linear(512, 1024),
             nn.BatchNorm1d(1024),
             nn.ReLU(),
-            nn.Linear(1024, 56*56*128),
+            nn.Linear(1024, self.flatten_dim),
             nn.Tanh(),
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
+            # nn.ConvTranspose2d(128, 128, kernel_size=3, stride=1, padding=1),
+            # nn.BatchNorm2d(64),
+            # nn.ReLU(),
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -493,30 +496,34 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x, positive, negative, reference, shape):
+    def forward(self, x, positive, negative, reference):
         encoded_image = self.encoder(x)
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
         
-        encoded_noise = encoded_noise.view(-1, 56*56*128)
+        encoded_noise = encoded_noise.view(-1, self.flatten_dim)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
 
         noise_feature = self.decoder_mlp(z)
         
-        noise_feature = noise_feature.view(-1, 128, 56, 56)
+        noise_feature = noise_feature.view(-1, self.dim, self.shape[0], self.shape[1])
+        
+        # print(noise_feature.shape)
 
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, noise_feature)
+        
+        cross_attention_feature = cross_attention_feature.view(-1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image
         encoded_image = torch.cat(
             (cross_attention_feature, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
 
-        resnet_out = self.base_model(decoded_image.to("cuda:2"))
-        resnet_out_encoded = self.base_model(reference.to("cuda:2"))
+        resnet_out = self.base_model(decoded_image.to("cuda:0"))
+        resnet_out_encoded = self.base_model(reference.to("cuda:0"))
         return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
@@ -913,7 +920,7 @@ def inference():
 if __name__ == '__main__':
     print("Started data preparation")
     data_loaders = prepare_data()
-    print(vars(opt))
+    # print(vars(opt))
     print("=====================================")
     print("Data is ready")
 
