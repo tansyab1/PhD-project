@@ -362,8 +362,8 @@ class CrossAttention(nn.Module):
         )
 
         self.to_patch_embedding_noise = nn.Sequential(
-            Rearrange('b (c h p1 w p2) -> b (h w) (p1 p2 c)',
-                      p1=patch_size_large, p2=patch_size_large, c=channels, h=input_size),  # 14x14 patches with c = 128
+            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
+                      p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
             nn.Linear(channels*patch_size_large*patch_size_large, dim),
         )
 
@@ -417,6 +417,9 @@ class CrossAttention(nn.Module):
 class MyNet(nn.Module):
     def __init__(self, num_out=14):
         super(MyNet, self).__init__()
+        self.shape = (224, 224)
+        self.dim = 128
+        self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
         self.base_model = BaseNet(num_out).to("cuda:2")
         # checkpoint_resnet = torch.load(opt.best_resnet)
@@ -441,10 +444,9 @@ class MyNet(nn.Module):
             nn.ReLU(),
         )
 
-        self.cross_attention_layer = CrossAttention(dim=128, heads=4, dim_head=32, dropout=0.)
-        self.fc_mu = nn.Linear(56*56*128, 256)
-        self.fc_var = nn.Linear(56*56*128, 256)
-        # self.fc3 = nn.Linear(256, 336*336*3)
+        self.cross_attention_layer = CrossAttention(dim=self.dim, heads=4, dim_head=32, dropout=0.)
+        self.fc_mu = nn.Linear(self.flatten_dim, 512)
+        self.fc_var = nn.Linear(self.flatten_dim, 512)
             
 
         # MLP to encode the image to extract the noise level
@@ -458,13 +460,13 @@ class MyNet(nn.Module):
         )
 
         self.decoder_mlp = nn.Sequential(
-            nn.Linear(256, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
             nn.Linear(512, 1024),
             nn.BatchNorm1d(1024),
             nn.ReLU(),
-            nn.Linear(1024, 56*56*128),
+            nn.Linear(1024, 2048),
+            nn.BatchNorm1d(2048),
+            nn.ReLU(),
+            nn.Linear(2048, self.flatten_dim),
             nn.Tanh(),
         )
 
@@ -493,19 +495,21 @@ class MyNet(nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
-    def forward(self, x, positive, negative, reference, shape):
+    def forward(self, x, positive, negative, reference):
         encoded_image = self.encoder(x)
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
         
-        encoded_noise = encoded_noise.view(-1, 56*56*128)
+        encoded_noise = encoded_noise.view(-1, self.flatten_dim)
 
         z, mu, logvar = self.bottleneck(encoded_noise)
 
         noise_feature = self.decoder_mlp(z)
         
-        noise_feature = noise_feature.view(-1, 128, 56, 56)
+        noise_feature = noise_feature.view(-1, self.dim, self.shape[0], self.shape[1])
+        
+        # print(noise_feature.shape)
 
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, noise_feature)
@@ -913,7 +917,7 @@ def inference():
 if __name__ == '__main__':
     print("Started data preparation")
     data_loaders = prepare_data()
-    print(vars(opt))
+    # print(vars(opt))
     print("=====================================")
     print("Data is ready")
 
