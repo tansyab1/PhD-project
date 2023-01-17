@@ -267,8 +267,18 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 with torch.set_grad_enabled(phase == 'train'):
                     resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
                         inputs, positive, negative, reference)
-                    # _, preds = torch.max(resnet_out, 1)
-                    # loss_resnet = criterion(resnet_out, labels)
+
+                    # put all data to cpu
+                    resnet_out = resnet_out.cpu()
+                    resnet_out_encoded = resnet_out_encoded.cpu()
+                    decoded_image = decoded_image.cpu()
+                    encoded_noise = encoded_noise.cpu()
+                    encoded_negative = encoded_negative.cpu()
+                    encoded_positive = encoded_positive.cpu()
+                    mu = mu.cpu()
+                    logvar = logvar.cpu()
+                    reference = reference.cpu()
+
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
@@ -283,6 +293,8 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
+                        # torch.cuda.empty_cache()  # decrease about 2GB
+                        # del loss  # nothing change
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
@@ -290,6 +302,8 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
                 mse += F.mse_loss(decoded_image, reference)
+                # empty cache
+                torch.cuda.empty_cache()
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
@@ -333,7 +347,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
-        self.resnet_model = models.resnet50(pretrained=True)
+        self.resnet_model = models.densenet121(pretrained=True)
         self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
@@ -423,14 +437,9 @@ class MyNet(nn.Module):
         self.attention_dim = 112
         self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
-        self.base_model = BaseNet(num_out).to("cuda:0")
+        self.base_model = BaseNet(num_out)
         for param in self.base_model.parameters():
             param.requires_grad = False
-
-        # self.cross_attention_layer = nn.Sequential(
-        #     CrossAttention(dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=14, input_size=56, channels=128),
-        #     PreNorm(2048, nn.LayerNorm(2048)),
-        # )
 
         # create an autoencoder block for input size 224*224*3 containing 2 conv layers
         self.encoder = nn.Sequential(
@@ -444,8 +453,8 @@ class MyNet(nn.Module):
 
         self.cross_attention_layer = CrossAttention(
             dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-        self.fc_mu = nn.Linear(self.flatten_dim, 256)
-        self.fc_var = nn.Linear(self.flatten_dim, 256)
+        self.fc_mu = nn.Linear(self.flatten_dim, 128)
+        self.fc_var = nn.Linear(self.flatten_dim, 128)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
@@ -458,13 +467,13 @@ class MyNet(nn.Module):
         )
 
         self.decoder_mlp = nn.Sequential(
-            nn.Linear(256, 512),
-            nn.BatchNorm1d(512),
+            nn.Linear(128, 256),
+            nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(512, 1024),
-            nn.BatchNorm1d(1024),
-            nn.ReLU(),
-            nn.Linear(1024, self.flatten_dim),
+            # nn.Linear(512, 1024),
+            # nn.BatchNorm1d(1024),
+            # nn.ReLU(),
+            nn.Linear(256, self.flatten_dim),
             nn.Tanh(),
         )
 
@@ -494,22 +503,23 @@ class MyNet(nn.Module):
         return z, mu, logvar
 
     def forward(self, x, positive, negative, reference):
-        encoded_image = self.encoder(x)  # encode the image with channel = 64
+        x = x.cuda(1)
+        self.encoder = self.encoder.cuda(1)
+        encoded_image = self.encoder(x)
+        
+        x = x.cuda(0)
+        encoded_image = encoded_image.cuda(0)
+        
+        # encode the image with channel = 64
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
 
         encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
-
         z, mu, logvar = self.bottleneck(encoded_noise_flatten)
-
         noise_feature = self.decoder_mlp(z)
-
         noise_feature = noise_feature.view(-1,
                                            self.dim, self.shape[0], self.shape[1])
-
-        # print(noise_feature.shape)
-
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, noise_feature)
 
@@ -521,8 +531,12 @@ class MyNet(nn.Module):
 
         decoded_image = self.decoder(encoded_image)
 
-        resnet_out = self.base_model(decoded_image.to("cuda:0"))
-        resnet_out_encoded = self.base_model(reference.to("cuda:0"))
+        self.base_model = self.base_model.cuda(1)
+        decoded_image = decoded_image.cuda(1)
+        reference = reference.cuda(1)
+
+        resnet_out = self.base_model(decoded_image)
+        resnet_out_encoded = self.base_model(reference)
         return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 

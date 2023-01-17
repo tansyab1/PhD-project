@@ -83,7 +83,7 @@ parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
 parser.add_argument("--lr", type=float, default=0.001,
                     help="Learning rate for training")
 
-parser.add_argument("--num_workers", type=int, default=32,
+parser.add_argument("--num_workers", type=int, default=10,
                     help="Number of workers in dataloader")
 
 parser.add_argument("--weight_decay", type=float,
@@ -231,7 +231,7 @@ def prepare_data():
 
 def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
 
-    best_model_wts = copy.deepcopy(model.state_dict())
+    # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
     triplet_loss = nn.TripletMarginLoss(margin=1.0, p=2)
 
@@ -266,9 +266,20 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, positive, negative, reference, positive.size(0))
-                    # _, preds = torch.max(resnet_out, 1)
-                    # loss_resnet = criterion(resnet_out, labels)
+                        inputs, positive, negative, reference)
+                    
+                    # put all data to cpu
+                    resnet_out = resnet_out.cpu()
+                    resnet_out_encoded = resnet_out_encoded.cpu()
+                    decoded_image = decoded_image.cpu()
+                    encoded_noise = encoded_noise.cpu()
+                    encoded_negative = encoded_negative.cpu()
+                    encoded_positive = encoded_positive.cpu()
+                    mu = mu.cpu()
+                    logvar = logvar.cpu()
+                    reference = reference.cpu()
+                    
+                    
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
@@ -290,6 +301,8 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
                 mse += F.mse_loss(decoded_image, reference)
+                # empty cache
+                torch.cuda.empty_cache()
 
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
@@ -333,7 +346,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
-        self.resnet_model = models.resnet152(pretrained=True)
+        self.resnet_model = models.densenet121(pretrained=True)
         self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
@@ -353,7 +366,7 @@ class CrossAttention(nn.Module):
         self.to_v = nn.Linear(dim, inner_dim, bias=False)
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
-        num_patches_large = (input_size // patch_size_large)  # 4
+        num_patches_large = (input_size // patch_size_large)  # 14
 
         self.to_patch_embedding_x = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
@@ -391,7 +404,7 @@ class CrossAttention(nn.Module):
         v = self.to_v(x_kv)
         v = rearrange(v, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
-        q = self.to_q(x_q[:, 0].unsqueeze(1))
+        q = self.to_q(x_q)
         q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
@@ -401,6 +414,7 @@ class CrossAttention(nn.Module):
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         out = self.to_out(out)
+        out = self.mlp_head(out)
         return out
 
 
@@ -419,14 +433,10 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         self.shape = (224, 224)
         self.dim = 64
-        self.attention_dim = 224
+        self.attention_dim = 112
         self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
-        self.base_model = BaseNet(num_out).to("cuda:1")
-        # checkpoint_resnet = torch.load(opt.best_resnet)
-        # self.base_model.load_state_dict(
-        #     checkpoint_resnet["model_state_dict"])  # Load best weight
-        # freeze all layers
+        self.base_model = BaseNet(num_out).to("cuda:2")
         for param in self.base_model.parameters():
             param.requires_grad = False
 
@@ -443,12 +453,12 @@ class MyNet(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-        )
+        ).to("cuda:0")
 
-        self.cross_attention_layer = CrossAttention(dim=self.attention_dim, heads=7, dim_head=32, dropout=0.)
-        self.fc_mu = nn.Linear(self.flatten_dim, 256)
-        self.fc_var = nn.Linear(self.flatten_dim, 256)
-            
+        self.cross_attention_layer = CrossAttention(
+            dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64).to("cuda:1")
+        self.fc_mu = nn.Linear(self.flatten_dim, 256).to("cuda:1")
+        self.fc_var = nn.Linear(self.flatten_dim, 256).to("cuda:1")
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
@@ -458,7 +468,7 @@ class MyNet(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-        )
+        ).to("cuda:1")
 
         self.decoder_mlp = nn.Sequential(
             nn.Linear(256, 512),
@@ -469,7 +479,7 @@ class MyNet(nn.Module):
             nn.ReLU(),
             nn.Linear(1024, self.flatten_dim),
             nn.Tanh(),
-        )
+        ).to("cuda:1")
 
         self.decoder = nn.Sequential(
             # nn.ConvTranspose2d(128, 128, kernel_size=3, stride=1, padding=1),
@@ -480,7 +490,7 @@ class MyNet(nn.Module):
             nn.ReLU(),
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
             nn.Tanh(),
-        )
+        ).to("cuda:0")
 
     def reparameterize(self, mu, logvar):
         std = logvar.mul(0.5).exp_()
@@ -497,33 +507,35 @@ class MyNet(nn.Module):
         return z, mu, logvar
 
     def forward(self, x, positive, negative, reference):
-        encoded_image = self.encoder(x)
-        encoded_noise = self.encoder_mlp(x)
-        encoded_positive = self.encoder_mlp(positive)
-        encoded_negative = self.encoder_mlp(negative)
-        
-        encoded_noise = encoded_noise.view(-1, self.flatten_dim)
+        encoded_image = self.encoder(x)  # encode the image with channel = 64
+        encoded_noise = self.encoder_mlp(x.to("cuda:1"))
+        encoded_positive = self.encoder_mlp(positive.to("cuda:1"))
+        encoded_negative = self.encoder_mlp(negative.to("cuda:1"))
 
-        z, mu, logvar = self.bottleneck(encoded_noise)
+        encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
+
+        z, mu, logvar = self.bottleneck(encoded_noise_flatten)
 
         noise_feature = self.decoder_mlp(z)
-        
-        noise_feature = noise_feature.view(-1, self.dim, self.shape[0], self.shape[1])
-        
+
+        noise_feature = noise_feature.view(-1,
+                                           self.dim, self.shape[0], self.shape[1])
+
         # print(noise_feature.shape)
 
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, noise_feature)
-        
-        cross_attention_feature = cross_attention_feature.view(-1, self.dim, self.shape[0], self.shape[1])
+
+        cross_attention_feature = cross_attention_feature.view(
+            -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image
         encoded_image = torch.cat(
             (cross_attention_feature, encoded_image), dim=1)
 
-        decoded_image = self.decoder(encoded_image)
+        decoded_image = self.decoder(encoded_image.to("cuda:0"))
 
-        resnet_out = self.base_model(decoded_image.to("cuda:1"))
-        resnet_out_encoded = self.base_model(reference.to("cuda:1"))
+        resnet_out = self.base_model(decoded_image.to("cuda:2"))
+        resnet_out_encoded = self.base_model(reference.to("cuda:2"))
         return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
