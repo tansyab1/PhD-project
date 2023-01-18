@@ -302,7 +302,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                         # del loss  # nothing change
 
                 # statistics
-                running_loss += loss.item() 
+                running_loss += loss.item()
                 # running_corrects += torch.sum(preds == labels.data)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
@@ -342,7 +342,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
             # Print output
             print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | PSNR:\t %.4f | MSE:\t %.4f | SSIM:\t %.4f'
-                  % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse))
+                  % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse, epoch_ssim))
 
     save_model(best_model_wts, best_epoch, best_epoch_loss,
                best_epoch_psnr, best_epoch_mse)
