@@ -25,7 +25,7 @@ def testFPS():
         for file in tqdm(glob.glob(datapath)):
             # output writer for the noise video
             output_video = cv2.VideoWriter(
-                testFPS_folder + str(fps) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), fps, (336, 336))
+                testFPS_folder + str(fps) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc'), fps, (336, 336))
 
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully
