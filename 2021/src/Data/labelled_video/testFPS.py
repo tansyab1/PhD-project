@@ -14,18 +14,23 @@ def create_noise(image, sigma, mean=0):
 
 def testFPS():
 
-    # process_mask = cv2.imread("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
+    process_mask = cv2.imread("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
     # sigmas = [5,10,15, 30]
 
     datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/ref_3c8d5f0b90d7475d.mp4"
     testFPS_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/testFPS/'
 
     FPS = [5, 10, 15, 20, 25, 30]
-    for fps in tqdm(FPS):
+    for sigma in tqdm(FPS):
+        if not os.path.exists(testFPS_folder + str(sigma) + '/'):
+            os.makedirs(testFPS_folder + str(sigma) + '/')
         for file in tqdm(glob.glob(datapath)):
+            # orifinal video writer for the reference
+            
+
             # output writer for the noise video
             output_video = cv2.VideoWriter(
-                testFPS_folder + str(fps) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc'), fps, (336, 336))
+                testFPS_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), sigma, (336, 336))
 
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully
@@ -37,9 +42,10 @@ def testFPS():
                 ret, frame = cap.read()
                 # ref_video.write(frame)
                 if ret is True:
-                    final = frame.copy()
+                    noise_img = create_noise(frame, sigma=10)
+                    finalnoise = np.where(process_mask < 10, frame, noise_img)
                     # Display the resulting frame
-                    output_video.write(final)
+                    output_video.write(finalnoise)
 
                 # Break the loop
                 else:
