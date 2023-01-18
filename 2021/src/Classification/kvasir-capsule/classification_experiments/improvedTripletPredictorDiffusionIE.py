@@ -514,7 +514,7 @@ class MyNet(nn.Module):
         self.encoder = self.encoder.cuda(1)
         encoded_image = self.encoder(x)    
         x = x.cuda(0)
-        encoded_image = encoded_image.cuda(0)    
+        encoded_image = encoded_image.cuda(0)
         # encode the image with channel = 64
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
