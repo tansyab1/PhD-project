@@ -532,8 +532,7 @@ class MyNet(nn.Module):
             -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image/ encoded noise
         # encoded_image = torch.cat(
-        #     (cross_attention_feature, encoded_image), dim=1)
-        
+        #     (cross_attention_feature, encoded_image), dim=1)        
         encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
@@ -576,7 +575,6 @@ def run_train(retrain=False):
     # criterion =  nn.MSELoss() # backprop loss calculation
     criterion = nn.CrossEntropyLoss()  # weight=weights
     criterion_ae = nn.MSELoss()
-
     # LR shceduler
     scheduler = lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
