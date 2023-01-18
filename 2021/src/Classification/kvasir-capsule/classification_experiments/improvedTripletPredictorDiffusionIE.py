@@ -576,9 +576,6 @@ def run_train(retrain=False):
     # criterion =  nn.MSELoss() # backprop loss calculation
     criterion = nn.CrossEntropyLoss()  # weight=weights
     criterion_ae = nn.MSELoss()
-    
-    # calculate the ssim loss
-    criterion_ssim = 
 
     # LR shceduler
     scheduler = lr_scheduler.ReduceLROnPlateau(
