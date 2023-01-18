@@ -29,6 +29,8 @@ from einops.layers.torch import Rearrange
 from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
+from torchmetrics import StructuralSimilarityIndexMeasure as SSIM
+
 from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
@@ -229,7 +231,7 @@ def prepare_data():
 # Train model
 # ==========================================================
 
-def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
+def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dict, scheduler, best_acc=0.0, start_epoch=0):
 
     # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
@@ -287,7 +289,10 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
                     # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
-                    loss = loss_ae + loss_triplet + loss_KL + loss_feature
+                    loss = loss_ae + loss_triplet + loss_feature
+                    # print("mu: ", mu, "logvar: ", logvar)
+                    
+                    # print("loss_ae: ", loss_ae.item(), "loss_triplet: ", loss_triplet.item(), "loss_KL: ", loss_KL.item(), "loss_feature: ", loss_feature.item())
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -297,17 +302,19 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                         # del loss  # nothing change
 
                 # statistics
-                running_loss += loss.item() * inputs.size(0)
+                running_loss += loss.item() 
                 # running_corrects += torch.sum(preds == labels.data)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
                 mse += F.mse_loss(decoded_image, reference)
+                ssim = SSIM(decoded_image, reference)
                 # empty cache
                 torch.cuda.empty_cache()
-
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
             epoch_psnr = 10 * torch.log10(1 / epoch_mse)
+            # calculate SSIM
+            epoch_ssim = ssim / dataloaders["dataset_size"][phase]
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
@@ -334,7 +341,7 @@ def train_model(model, optimizer, criterion, criterion_ae, dataloaders: dict, sc
                 scheduler.step(epoch_loss)
 
             # Print output
-            print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | PSNR:\t %.4f | MSE:\t %.4f'
+            print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | PSNR:\t %.4f | MSE:\t %.4f | SSIM:\t %.4f'
                   % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse))
 
     save_model(best_model_wts, best_epoch, best_epoch_loss,
@@ -505,11 +512,9 @@ class MyNet(nn.Module):
     def forward(self, x, positive, negative, reference):
         x = x.cuda(1)
         self.encoder = self.encoder.cuda(1)
-        encoded_image = self.encoder(x)
-        
+        encoded_image = self.encoder(x)    
         x = x.cuda(0)
-        encoded_image = encoded_image.cuda(0)
-        
+        encoded_image = encoded_image.cuda(0)    
         # encode the image with channel = 64
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
@@ -525,9 +530,11 @@ class MyNet(nn.Module):
 
         cross_attention_feature = cross_attention_feature.view(
             -1, self.dim, self.shape[0], self.shape[1])
-        # cat the cross attention feature and the encoded image
-        encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1)
+        # cat the cross attention feature and the encoded image/ encoded noise
+        # encoded_image = torch.cat(
+        #     (cross_attention_feature, encoded_image), dim=1)
+        
+        encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
 
@@ -568,7 +575,10 @@ def run_train(retrain=False):
 
     # criterion =  nn.MSELoss() # backprop loss calculation
     criterion = nn.CrossEntropyLoss()  # weight=weights
-    criterion_ae = nn.MSELoss()  # Absolute error for real loss calculations
+    criterion_ae = nn.MSELoss()
+    
+    # calculate the ssim loss
+    criterion_ssim = 
 
     # LR shceduler
     scheduler = lr_scheduler.ReduceLROnPlateau(
