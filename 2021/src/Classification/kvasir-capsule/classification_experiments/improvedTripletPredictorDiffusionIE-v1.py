@@ -494,7 +494,7 @@ class MyNet(nn.Module):
             # nn.ConvTranspose2d(128, 128, kernel_size=3, stride=1, padding=1),
             # nn.BatchNorm2d(64),
             # nn.ReLU(),
-            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(192, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
@@ -541,7 +541,8 @@ class MyNet(nn.Module):
             -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image/ encoded noise
         encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1)        
+            (cross_attention_feature, encoded_image), dim=1) 
+        encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)       
         # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
