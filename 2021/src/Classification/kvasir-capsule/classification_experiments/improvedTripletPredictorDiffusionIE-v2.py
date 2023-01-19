@@ -289,7 +289,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
                     # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
-                    loss = loss_ae + loss_triplet + loss_feature
+                    loss = loss_ae + loss_triplet + loss_feature + loss_KL
                     # print("mu: ", mu, "logvar: ", logvar)
                     
                     # print("loss_ae: ", loss_ae.item(), "loss_triplet: ", loss_triplet.item(), "loss_KL: ", loss_KL.item(), "loss_feature: ", loss_feature.item())
@@ -460,8 +460,8 @@ class MyNet(nn.Module):
 
         self.cross_attention_layer = CrossAttention(
             dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-        self.fc_mu = nn.Linear(self.flatten_dim, 128)
-        self.fc_var = nn.Linear(self.flatten_dim, 128)
+        self.fc_mu = nn.Linear(self.flatten_dim*2, 128)
+        self.fc_var = nn.Linear(self.flatten_dim*2, 128)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
@@ -480,7 +480,7 @@ class MyNet(nn.Module):
             # nn.Linear(512, 1024),
             # nn.BatchNorm1d(1024),
             # nn.ReLU(),
-            nn.Linear(256, self.flatten_dim),
+            nn.Linear(256, self.flatten_dim*2),
             nn.Tanh(),
         )
 
@@ -520,11 +520,6 @@ class MyNet(nn.Module):
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
 
-        # encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
-        # z, mu, logvar = self.bottleneck(encoded_noise_flatten)
-        # noise_feature = self.decoder_mlp(z)
-        # noise_feature = noise_feature.view(-1,
-        #                                    self.dim, self.shape[0], self.shape[1])
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, encoded_noise)
 
@@ -534,8 +529,14 @@ class MyNet(nn.Module):
         encoded_image = torch.cat(
             (cross_attention_feature, encoded_image), dim=1)        
         # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
+        
+        encoded_image_flatten = encoded_image.view(-1, self.flatten_dim*2)
+        z, mu, logvar = self.bottleneck(encoded_image_flatten)
+        noise_feature = self.decoder_mlp(z)
+        encoded_image_out = noise_feature.view(-1,
+                                           self.dim*2, self.shape[0], self.shape[1])
 
-        decoded_image = self.decoder(encoded_image)
+        decoded_image = self.decoder(encoded_image_out)
 
         self.base_model = self.base_model.cuda(1)
         decoded_image = decoded_image.cuda(1)
