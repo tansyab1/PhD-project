@@ -43,7 +43,7 @@ def addBlur():
             os.makedirs(defocus_save_folder + str(sigma) + '/')
         for file in tqdm(glob.glob(datapath)):
             output_video = cv2.VideoWriter(
-                defocus_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
+                defocus_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully
             if (cap.isOpened() is False):
@@ -75,7 +75,7 @@ def addBlur():
             set_imgs = []
             # save video with H.264 codec  
             output_video = cv2.VideoWriter(
-                motion_save_folder + str(size) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
+                motion_save_folder + str(size) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully
             if (cap.isOpened() is False):

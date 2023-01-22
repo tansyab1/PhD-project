@@ -31,7 +31,7 @@ def addUI():
                 os.makedirs(ui_save_folder + str(size) + '/' + str(angle) + '/')
             for file in tqdm(glob.glob(datapath)):
                 output_video = cv2.VideoWriter(
-                    ui_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
+                    ui_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
                 cap = cv2.VideoCapture(file)
                 # Check if camera opened successfully
                 if (cap.isOpened() is False):
