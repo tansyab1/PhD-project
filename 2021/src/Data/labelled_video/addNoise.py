@@ -4,7 +4,7 @@ import cv2
 import os
 import glob
 from tqdm import tqdm
-# from functools import reduce
+from functools import reduce
 from skimage.util import random_noise
 
 
@@ -24,21 +24,6 @@ def addNoise():
     noise_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Noise/'
     ref_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/ref-fps5/'
 
-    for file in tqdm(glob.glob(datapath)):
-        # orifinal video writer for the reference
-        ref_video = cv2.VideoWriter(
-            ref_folder + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
-
-        cap = cv2.VideoCapture(file)
-        ret, frame = cap.read()
-        # Check if camera opened successfully
-        if (cap.isOpened() is False):
-            print("Error opening video stream or file")
-
-        while ret:  # Use the ret to determin end of video
-            ref_video.write(frame) # Write frame
-            ret, frame = cap.read()
-            
     for sigma in tqdm(sigmas):
         if not os.path.exists(noise_save_folder + str(sigma) + '/'):
             os.makedirs(noise_save_folder + str(sigma) + '/')
@@ -72,3 +57,18 @@ def addNoise():
 
     # notify when the process is done
     print("Noise Done")
+    
+if __name__ == "__main__":
+    video = "2021/src/Data/labelled_video/setFPS.mp4"
+    # orifinal video writer for the reference
+    ref_video = cv2.VideoWriter("test.mp4", cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+
+    cap = cv2.VideoCapture(video)
+    ret, frame = cap.read()
+    # Check if camera opened successfully
+    if (cap.isOpened() is False):
+        print("Error opening video stream or file")
+
+    while ret:  # Use the ret to determin end of video
+        ref_video.write(frame) # Write frame
+        ret, frame = cap.read()
