@@ -30,20 +30,15 @@ def addNoise():
             ref_folder + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
 
         cap = cv2.VideoCapture(file)
+        ret, frame = cap.read()
         # Check if camera opened successfully
         if (cap.isOpened() is False):
             print("Error opening video stream or file")
 
-        # Read until video is completed
-        while (cap.isOpened()):
+        while ret:  # Use the ret to determin end of video
+            ref_video.write(frame) # Write frame
             ret, frame = cap.read()
-            ref_video.write(frame)
-            # Break the loop
-        else:
-            cap.release()
-            ref_video.release()
-            break
-
+            
     for sigma in tqdm(sigmas):
         if not os.path.exists(noise_save_folder + str(sigma) + '/'):
             os.makedirs(noise_save_folder + str(sigma) + '/')
