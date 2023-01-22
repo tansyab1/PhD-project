@@ -21,7 +21,7 @@ def addNoise():
     sigmas = [5, 10, 15, 30]
 
     datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
-    noise_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/Noise/'
+    noise_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Noise/'
     ref_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/ref-fps5/'
 
     for file in tqdm(glob.glob(datapath)):

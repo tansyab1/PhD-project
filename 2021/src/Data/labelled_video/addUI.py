@@ -23,7 +23,7 @@ def addUI():
     angles = [112,168,224]
     datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
 
-    ui_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/Uneven Illumination/'
+    ui_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Uneven Illumination/'
     for size in tqdm(sizes):
         for angle in angles:
             mask=cv2.imread(mask_dir+str(size)+"_"+str(angle)+".png",cv2.IMREAD_GRAYSCALE)

@@ -37,7 +37,7 @@ def addBlur():
     sizes = [5, 10, 15, 25]
 
     datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
-    defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/Blur/Defocus Blur/'
+    defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Defocus Blur/'
     for sigma in tqdm(sigmas):
         if not os.path.exists(defocus_save_folder + str(sigma) + '/'):
             os.makedirs(defocus_save_folder + str(sigma) + '/')
@@ -65,7 +65,7 @@ def addBlur():
 
     print("Defocus Blur- Done")
 
-    motion_save_folder = defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/Blur/Motion Blur/'
+    motion_save_folder = defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Motion Blur/'
     for size in tqdm(sizes):
     #    for angle in angles:
         if not os.path.exists(motion_save_folder + str(size) + '/'):
