@@ -288,15 +288,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
                         encoded_positive, encoded_negative, encoded_noise)
-                    # loss_KL = 0.5 * \
-                    #     torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
-
-                    # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
                     loss = loss_ae + loss_triplet + loss_feature
-                    # print("mu: ", mu, "logvar: ", logvar)
-                    
-                    # print("loss_ae: ", loss_ae.item(), "loss_triplet: ", loss_triplet.item(), "loss_KL: ", loss_KL.item(), "loss_feature: ", loss_feature.item())
-
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
@@ -305,12 +297,12 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                         # del loss  # nothing change
 
                 # statistics
-                running_loss += loss.item()
-                # running_corrects += torch.sum(preds == labels.data)
+                running_loss += loss.item() * inputs.size(0)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
                 mse += F.mse_loss(decoded_image, reference)
                 ssim_batch_tensor = ssim(decoded_image, reference)
+                print(ssim_batch_tensor.item())
                 # print(ssim_batch)
                 ssim_batch += ssim_batch_tensor.item()
                 # empty cache

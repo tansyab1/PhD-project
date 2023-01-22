@@ -311,7 +311,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
                 mse += F.mse_loss(decoded_image, reference)
                 ssim_batch_tensor = ssim(decoded_image, reference)
-                # print(ssim_batch)
+                print(ssim_batch_tensor.item())
                 ssim_batch += ssim_batch_tensor.item()
                 # empty cache
                 num_batches += 1
@@ -540,9 +540,9 @@ class MyNet(nn.Module):
         cross_attention_feature = cross_attention_feature.view(
             -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image/ encoded noise
-        encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1)        
-        # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
+        # encoded_image = torch.cat(
+        #     (cross_attention_feature, encoded_image), dim=1)        
+        encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)
 
