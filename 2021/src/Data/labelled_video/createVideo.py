@@ -1,5 +1,5 @@
 
-# import from addNoise.py 
+# import from addNoise.py
 import numpy as np
 import cv2
 # import csv
@@ -15,9 +15,42 @@ from addNoise import create_noise, addNoise
 from addUI import addUI
 # import all functions from addBlur.py
 from addBlur import addBlur
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
-# run the main function
+datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/*/*/*.mp4"
+datapath_ui = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/*/*/*/*.mp4"
+# savepath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/"
+
+# define the function to cut the video from second 15 to second 45
+
+
+def cutVideo():
+    # read all videos in the folder
+    for video in tqdm(glob.glob(datapath)):
+        savepath = video.replace("fps5", "cut")
+        # create path if not exist
+
+        os.makedirs(os.path.dirname(savepath), exist_ok=True)
+
+        # cut video from second 15 to second 45
+
+        ffmpeg_extract_subclip(
+            video, 15, 45, targetname=savepath)
+
+    for video in tqdm(glob.glob(datapath_ui)):
+        savepath = video.replace("fps5", "cut")
+        # create path if not exist
+
+        os.makedirs(os.path.dirname(savepath), exist_ok=True)
+
+        # cut video from second 15 to second 45
+
+        ffmpeg_extract_subclip(
+            video, 15, 45, targetname=savepath)
+
+    # run the main function
 if __name__ == "__main__":
-    addNoise()
-    addUI()
-    addBlur()
+    cutVideo()
+    # addNoise()
+    # addUI()
+    # addBlur()
