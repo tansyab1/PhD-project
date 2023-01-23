@@ -29,6 +29,16 @@ def selectUnique(dir):
         list_videos_same_name = [x for x in list_videos if video in x]
         # select one randomly
         selected_video = np.random.choice(list_videos_same_name)
-        saved_dir=selected_video.replace("UI", "selected_UI")
+        saved_dir=selected_video.replace("Uneven Illumination", "selected_UI")
         # save it to the new folder with the same name
         os.system('cp {} {}'.format(selected_video, saved_dir))
+        
+
+if __name__ == "__main__":
+    dir1 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/100"
+    dir2 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/200"
+    dir3 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/150"
+    dir4 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/250"
+    
+    for dir in [dir1, dir2, dir3, dir4]:
+        selectUnique(dir)
