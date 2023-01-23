@@ -59,16 +59,22 @@ def addNoise():
     print("Noise Done")
     
 if __name__ == "__main__":
-    video = "2021/src/Data/labelled_video/setFPS.mp4"
-    # orifinal video writer for the reference
-    ref_video = cv2.VideoWriter("test.mp4", cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+    saved_dir = "/Users/sy/Downloads/ref_videos/fps5/"
+    for video in tqdm(glob.glob("/Users/sy/Downloads/ref_videos/*.mp4")):
+        # video = "2021/src/Data/labelled_video/setFPS.mp4"
+        # get video name
+        
+        video_name = os.path.basename(video)
+        
+        # orifinal video writer for the reference
+        ref_video = cv2.VideoWriter(saved_dir + video_name, cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
 
-    cap = cv2.VideoCapture(video)
-    ret, frame = cap.read()
-    # Check if camera opened successfully
-    if (cap.isOpened() is False):
-        print("Error opening video stream or file")
-
-    while ret:  # Use the ret to determin end of video
-        ref_video.write(frame) # Write frame
+        cap = cv2.VideoCapture(video)
         ret, frame = cap.read()
+        # Check if camera opened successfully
+        if (cap.isOpened() is False):
+            print("Error opening video stream or file")
+
+        while ret:  # Use the ret to determin end of video
+            ref_video.write(frame) # Write frame
+            ret, frame = cap.read()
