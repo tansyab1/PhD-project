@@ -19,24 +19,29 @@ def apply_motion_blur(image, size, angle):
     k = cv2.warpAffine(k, cv2.getRotationMatrix2D(
         (size / 2 - 0.5, size / 2 - 0.5), angle, 1.0), (size, size))
     k = k * (1.0 / np.sum(k))
-    out = np.where(mask == np.array([0, 0, 0]), image, cv2.filter2D(dst, -1, k))
+    out = np.where(mask == np.array([0, 0, 0]),
+                   image, cv2.filter2D(dst, -1, k))
     return out
 
-mask = cv2.imread("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
+
+mask = cv2.imread(
+    "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
 
 
 def apply_defocus_blur(image, sigma):
-    dst = cv2.GaussianBlur(image, (int(6 * sigma) + 1, int(6 * sigma) + 1), sigma)
+    dst = cv2.GaussianBlur(
+        image, (int(6 * sigma) + 1, int(6 * sigma) + 1), sigma)
     out = np.where(mask == np.array([0, 0, 0]), image, dst)
     return out
 
+
 def addBlur():
-    
+
     sigmas = [1, 2, 3, 5]
     angles = [0, 45, 90, 135]
     sizes = [5, 10, 15, 25]
 
-    datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
+    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
     defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Defocus Blur/'
     for sigma in tqdm(sigmas):
         if not os.path.exists(defocus_save_folder + str(sigma) + '/'):
@@ -67,13 +72,13 @@ def addBlur():
 
     motion_save_folder = defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Motion Blur/'
     for size in tqdm(sizes):
-    #    for angle in angles:
+        #    for angle in angles:
         if not os.path.exists(motion_save_folder + str(size) + '/'):
             os.makedirs(motion_save_folder + str(size) + '/')
         for file in tqdm(glob.glob(datapath)):
             count = 0
             set_imgs = []
-            # save video with H.264 codec  
+            # save video with H.264 codec
             output_video = cv2.VideoWriter(
                 motion_save_folder + str(size) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
             cap = cv2.VideoCapture(file)
@@ -91,7 +96,8 @@ def addBlur():
                     else:
                         angle = calDirection(set_imgs)
                         for img in set_imgs:
-                            noise_img = apply_motion_blur(img, size=size, angle=angle)
+                            noise_img = apply_motion_blur(
+                                img, size=size, angle=angle)
                             finalnoise = np.where(mask < 10, img, noise_img)
                             # Display the resulting frame
                             output_video.write(finalnoise)
@@ -105,7 +111,8 @@ def addBlur():
                     if len(set_imgs) != 0:
                         angle = calDirection(set_imgs)
                         for img in set_imgs:
-                            noise_img = apply_motion_blur(img, size=size, angle=angle)
+                            noise_img = apply_motion_blur(
+                                img, size=size, angle=angle)
                             finalnoise = np.where(mask < 10, img, noise_img)
                             # Display the resulting frame
                             output_video.write(finalnoise)
