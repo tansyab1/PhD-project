@@ -9,7 +9,7 @@ import numpy as np
 from tqdm import tqdm
 from mask import create_mask
 
-mask_dir = "src/Data/labelled_video/mask/"
+mask_dir = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/mask/"
 process_mask = cv2.imread("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
 
 def applyui(image, mask):
