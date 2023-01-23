@@ -33,7 +33,7 @@ def selectUnique(dir):
         
         select_dir = os.path.dirname(selected_video)
         
-        saved_dir=select_dir.replace("Uneven Illumination", "selected_UI")
+        saved_dir=select_dir.replace("UnevenIllumination", "selected_UI")
         # create the new folder if it does not exist
         
         os.makedirs(saved_dir, exist_ok=True)
@@ -43,10 +43,10 @@ def selectUnique(dir):
         
 
 if __name__ == "__main__":
-    dir1 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/100"
-    dir2 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/200"
-    dir3 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/150"
-    dir4 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/Uneven Illumination/250"
+    dir1 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/UnevenIllumination/100"
+    dir2 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/UnevenIllumination/200"
+    dir3 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/UnevenIllumination/150"
+    dir4 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/UnevenIllumination/250"
     
     for dir in [dir1, dir2, dir3, dir4]:
         selectUnique(dir)
