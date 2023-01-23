@@ -34,6 +34,10 @@ def selectUnique(dir):
         select_dir = os.path.dirname(selected_video)
         
         saved_dir=select_dir.replace("Uneven Illumination", "selected_UI")
+        # create the new folder if it does not exist
+        
+        os.makedirs(saved_dir, exist_ok=True)
+        
         # save it to the new folder with the same name
         os.system('cp {} {}'.format(selected_video, saved_dir))
         
