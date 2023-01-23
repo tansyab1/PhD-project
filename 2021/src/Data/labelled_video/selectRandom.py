@@ -29,7 +29,11 @@ def selectUnique(dir):
         list_videos_same_name = [x for x in list_videos if video in x]
         # select one randomly
         selected_video = np.random.choice(list_videos_same_name)
-        saved_dir=selected_video.replace("Uneven Illumination", "selected_UI")
+        # get directory to save the selected video
+        
+        select_dir = os.path.dirname(selected_video)
+        
+        saved_dir=select_dir.replace("Uneven Illumination", "selected_UI")
         # save it to the new folder with the same name
         os.system('cp {} {}'.format(selected_video, saved_dir))
         
