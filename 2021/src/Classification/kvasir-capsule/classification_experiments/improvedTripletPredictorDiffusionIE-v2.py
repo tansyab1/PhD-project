@@ -29,7 +29,7 @@ from einops.layers.torch import Rearrange
 from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
-from torchmetrics import StructuralSimilarityIndexMeasure as SSIM
+from torchmetrics import StructuralSimilarityIndexMeasure
 
 from tqdm import tqdm
 from torchsummary import summary
@@ -82,7 +82,7 @@ parser.add_argument("--tensorboard_dir",
 # Hyper parameters
 parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
 
-parser.add_argument("--lr", type=float, default=0.001,
+parser.add_argument("--lr", type=float, default=0.01,
                     help="Learning rate for training")
 
 parser.add_argument("--num_workers", type=int, default=10,
@@ -250,6 +250,9 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
             running_loss = 0.0
             mse = 0.0
+            ssim_batch = 0.0
+            ssim = StructuralSimilarityIndexMeasure(data_range=2.0)
+            num_batches = 0
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
@@ -288,12 +291,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
-                    # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
                     loss = loss_ae + loss_triplet + loss_feature + loss_KL
-                    # print("mu: ", mu, "logvar: ", logvar)
-
-                    # print("loss_ae: ", loss_ae.item(), "loss_triplet: ", loss_triplet.item(), "loss_KL: ", loss_KL.item(), "loss_feature: ", loss_feature.item())
-
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
@@ -302,19 +300,22 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                         # del loss  # nothing change
 
                 # statistics
-                running_loss += loss.item()
-                # running_corrects += torch.sum(preds == labels.data)
+                running_loss += loss.item() * inputs.size(0)
                 # calculate the PSNR between the original and the decoded image using the MSE of pytorch
 
                 mse += F.mse_loss(decoded_image, reference)
-                ssim = SSIM(decoded_image, reference)
+                ssim_batch_tensor = ssim(decoded_image, reference)
+                # print(ssim_batch_tensor.item())
+                # print(ssim_batch)
+                ssim_batch += ssim_batch_tensor.item()
                 # empty cache
+                num_batches += 1
                 torch.cuda.empty_cache()
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
             epoch_psnr = 10 * torch.log10(1 / epoch_mse)
             # calculate SSIM
-            epoch_ssim = ssim / dataloaders["dataset_size"][phase]
+            epoch_ssim = ssim_batch / num_batches
 
             # update tensorboard writer
             writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
@@ -400,6 +401,17 @@ class CrossAttention(nn.Module):
                       p1=patch_size_large, p2=patch_size_large, c=channels, h=num_patches_large),  # 14x14 patches with c = 128
         )
 
+        self.matrix = nn.Linear(dim_head, num_patches_large*num_patches_large)
+
+    def reparameterize(self, mu, logvar):
+        std = logvar.mul(0.5).exp_()
+        std = std.to(device)
+        # return torch.normal(mu, std)
+        esp = torch.randn(*mu.size())
+        esp = esp.to(device)
+        z = mu + std * esp
+        return z
+
     def forward(self, x_q, x_kv):
         x_q = self.to_patch_embedding_x(x_q)
         x_kv = self.to_patch_embedding_noise(x_kv)
@@ -415,15 +427,23 @@ class CrossAttention(nn.Module):
         q = self.to_q(x_q)
         q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
 
-        dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
+        dots = self.reparameterize(q, k) * self.scale
+        dots = rearrange(dots, 'b h n d -> b (h n) d')
+        dots = self.matrix(dots)
+        dots = rearrange(dots, 'b (h i) d -> b h i d', b=b, h=h)
 
         attn = dots.softmax(dim=-1)
+
+        # print("q=", q.shape)
+        # print("k=", k.shape)
+        # print("dots=", dots.shape)
+        # print("attn=", attn.shape)
 
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         out = self.to_out(out)
         out = self.mlp_head(out)
-        return out
+        return out, q, k
 
 
 # class PreNorm(nn.Module):
@@ -460,8 +480,8 @@ class MyNet(nn.Module):
 
         self.cross_attention_layer = CrossAttention(
             dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-        self.fc_mu = nn.Linear(self.flatten_dim*2, 128)
-        self.fc_var = nn.Linear(self.flatten_dim*2, 128)
+        self.fc_mu = nn.Linear(self.flatten_dim, 128)
+        self.fc_var = nn.Linear(self.flatten_dim, 128)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
@@ -480,7 +500,7 @@ class MyNet(nn.Module):
             # nn.Linear(512, 1024),
             # nn.BatchNorm1d(1024),
             # nn.ReLU(),
-            nn.Linear(256, self.flatten_dim*2),
+            nn.Linear(256, self.flatten_dim),
             nn.Tanh(),
         )
 
@@ -520,23 +540,29 @@ class MyNet(nn.Module):
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
 
-        cross_attention_feature = self.cross_attention_layer(
+        # encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
+        # z, mu, logvar = self.bottleneck(encoded_noise_flatten)
+        # noise_feature = self.decoder_mlp(z)
+        # noise_feature = noise_feature.view(-1,
+        #                                    self.dim, self.shape[0], self.shape[1])
+        cross_attention_feature, mu, logvar = self.cross_attention_layer(
             encoded_image, encoded_noise)
+
+        # mu = 0
+        # logvar = 0
 
         cross_attention_feature = cross_attention_feature.view(
             -1, self.dim, self.shape[0], self.shape[1])
-        # cat the cross attention feature and the encoded image/ encoded noise
+        # element wise addition of the noise feature and the cross attention feature
+
+        encoded_noise_attention = torch.mul(
+            encoded_noise, cross_attention_feature)
+
         encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1)
+            (encoded_noise_attention, encoded_image), dim=1)
         # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
-        encoded_image_flatten = encoded_image.view(-1, self.flatten_dim*2)
-        z, mu, logvar = self.bottleneck(encoded_image_flatten)
-        noise_feature = self.decoder_mlp(z)
-        encoded_image_out = noise_feature.view(-1,
-                                               self.dim*2, self.shape[0], self.shape[1])
-
-        decoded_image = self.decoder(encoded_image_out)
+        decoded_image = self.decoder(encoded_image)
 
         self.base_model = self.base_model.cuda(1)
         decoded_image = decoded_image.cuda(1)
