@@ -29,7 +29,7 @@ from einops.layers.torch import Rearrange
 from torch import einsum
 from torch.utils.tensorboard import SummaryWriter
 
-from torchmetrics import StructuralSimilarityIndexMeasure 
+from torchmetrics import StructuralSimilarityIndexMeasure
 
 from tqdm import tqdm
 from torchsummary import summary
@@ -82,7 +82,7 @@ parser.add_argument("--tensorboard_dir",
 # Hyper parameters
 parser.add_argument("--bs", type=int, default=32, help="Mini batch size")
 
-parser.add_argument("--lr", type=float, default=0.001,
+parser.add_argument("--lr", type=float, default=0.01,
                     help="Learning rate for training")
 
 parser.add_argument("--num_workers", type=int, default=10,
@@ -270,7 +270,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative =model(
+                    resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative = model(
                         inputs, positive, negative, reference)
 
                     # put all data to cpu
@@ -302,7 +302,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
                 mse += F.mse_loss(decoded_image, reference)
                 ssim_batch_tensor = ssim(decoded_image, reference)
-                print(ssim_batch_tensor.item())
+                # print(ssim_batch_tensor.item())
                 # print(ssim_batch)
                 ssim_batch += ssim_batch_tensor.item()
                 # empty cache
@@ -486,7 +486,7 @@ class MyNet(nn.Module):
             # nn.ConvTranspose2d(128, 128, kernel_size=3, stride=1, padding=1),
             # nn.BatchNorm2d(64),
             # nn.ReLU(),
-            nn.ConvTranspose2d(192, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
@@ -510,7 +510,7 @@ class MyNet(nn.Module):
     def forward(self, x, positive, negative, reference):
         x = x.cuda(1)
         self.encoder = self.encoder.cuda(1)
-        encoded_image = self.encoder(x)    
+        encoded_image = self.encoder(x)
         x = x.cuda(0)
         encoded_image = encoded_image.cuda(0)
         # encode the image with channel = 64
@@ -525,16 +525,17 @@ class MyNet(nn.Module):
         #                                    self.dim, self.shape[0], self.shape[1])
         cross_attention_feature = self.cross_attention_layer(
             encoded_image, encoded_noise)
-        
+
         # mu = 0
         # logvar = 0
 
         cross_attention_feature = cross_attention_feature.view(
             -1, self.dim, self.shape[0], self.shape[1])
-        # cat the cross attention feature and the encoded image/ encoded noise
-        encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1) 
-        encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)       
+        # element wise addition of the noise feature and the cross attention feature
+
+        encoded_noise_attention = torch.mul(encoded_noise, cross_attention_feature)
+
+        encoded_image = torch.cat((encoded_noise_attention, encoded_image), dim=1)
         # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
 
         decoded_image = self.decoder(encoded_image)

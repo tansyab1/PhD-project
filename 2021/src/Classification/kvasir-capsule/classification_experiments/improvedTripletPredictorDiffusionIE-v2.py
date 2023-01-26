@@ -291,7 +291,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     # print(loss_resnet, loss_ae, loss_triplet, loss_KL)
                     loss = loss_ae + loss_triplet + loss_feature + loss_KL
                     # print("mu: ", mu, "logvar: ", logvar)
-                    
+
                     # print("loss_ae: ", loss_ae.item(), "loss_triplet: ", loss_triplet.item(), "loss_KL: ", loss_KL.item(), "loss_feature: ", loss_feature.item())
 
                     # backward + optimize only if in training phase
@@ -512,7 +512,7 @@ class MyNet(nn.Module):
     def forward(self, x, positive, negative, reference):
         x = x.cuda(1)
         self.encoder = self.encoder.cuda(1)
-        encoded_image = self.encoder(x)    
+        encoded_image = self.encoder(x)
         x = x.cuda(0)
         encoded_image = encoded_image.cuda(0)
         # encode the image with channel = 64
@@ -527,14 +527,14 @@ class MyNet(nn.Module):
             -1, self.dim, self.shape[0], self.shape[1])
         # cat the cross attention feature and the encoded image/ encoded noise
         encoded_image = torch.cat(
-            (cross_attention_feature, encoded_image), dim=1)        
+            (cross_attention_feature, encoded_image), dim=1)
         # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
-        
+
         encoded_image_flatten = encoded_image.view(-1, self.flatten_dim*2)
         z, mu, logvar = self.bottleneck(encoded_image_flatten)
         noise_feature = self.decoder_mlp(z)
         encoded_image_out = noise_feature.view(-1,
-                                           self.dim*2, self.shape[0], self.shape[1])
+                                               self.dim*2, self.shape[0], self.shape[1])
 
         decoded_image = self.decoder(encoded_image_out)
 
