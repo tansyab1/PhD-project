@@ -7,18 +7,18 @@ import os
 import glob
 from tqdm import tqdm
 # from functools import reduce
-from skimage.util import random_noise
+# from skimage.util import random_noise
 
 # import all functions from addNoise.py
-from addNoise import create_noise, addNoise
+# from addNoise import create_noise, addNoise
 # import all functions from addUI.py
-from addUI import addUI
+# from addUI import addUI
 # import all functions from addBlur.py
-from addBlur import addBlur
+# from addBlur import addBlur
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/*/*/*.mp4"
-datapath_ui = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/ref_videos/*.mp4"
+datapath_ui = "2021/src/Data/labelled_video/ref_4aebc5cb2d4847aa.mp4"
 # savepath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/"
 
 # define the function to cut the video from second 15 to second 45

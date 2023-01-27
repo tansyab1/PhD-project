@@ -291,6 +291,11 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
+                    # print("loss_ae: ", loss_ae)
+                    # print("loss_triplet: ", loss_triplet)
+                    # print("loss_feature: ", loss_feature)
+                    # print("loss_KL: ", loss_KL)
+
                     loss = loss_ae + loss_triplet + loss_feature + loss_KL
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -326,12 +331,13 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
             if phase == "val":
 
                 # keep best model weights
-                if epoch_psnr > best_acc:
+                if epoch_ssim > best_acc:
                     best_acc = epoch_psnr
                     best_model_wts = copy.deepcopy(model.state_dict())
                     best_epoch = epoch
                     best_epoch_loss = epoch_loss
                     best_epoch_psnr = epoch_psnr
+                    best_epoch_ssim = epoch_ssim
                     best_epoch_mse = epoch_mse
                     print("Found a better model")
 
@@ -346,7 +352,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                   % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse, epoch_ssim))
 
     save_model(best_model_wts, best_epoch, best_epoch_loss,
-               best_epoch_psnr, best_epoch_mse)
+               best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
 
 
 # ================================================
@@ -434,15 +440,16 @@ class CrossAttention(nn.Module):
 
         attn = dots.softmax(dim=-1)
 
-        # print("q=", q.shape)
-        # print("k=", k.shape)
-        # print("dots=", dots.shape)
-        # print("attn=", attn.shape)
-
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         out = self.to_out(out)
         out = self.mlp_head(out)
+        q = rearrange(q, 'b h n d -> b (h n d)')
+        k = rearrange(k, 'b h n d -> b (h n d)')
+
+        # normalize q and k
+        q = q / torch.norm(q, dim=1, keepdim=True)
+        k = k / torch.norm(k, dim=1, keepdim=True)
         return out, q, k
 
 
@@ -627,7 +634,7 @@ def run_train(retrain=False):
 # =====================================
 # Save models
 # =====================================
-def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_psnr, best_epoch_mse):
+def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_psnr, best_epoch_ssim, best_epoch_mse):
 
     # get code file name and make a name
     check_point_name = py_file_name + "_epoch:{}.pt".format(best_epoch)
@@ -641,6 +648,7 @@ def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_psnr, be
         "loss": best_epoch_loss,
         "psnr": best_epoch_psnr,
         "mse": best_epoch_mse,
+        "ssim": best_epoch_ssim,
     }, check_point_path)
 
 
