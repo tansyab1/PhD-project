@@ -384,7 +384,7 @@ class CrossAttention(nn.Module):
         num_patches_large = (input_size // patch_size_large)  # 14
 
         self.position = nn.Parameter(
-            torch.randn(1, num_patches_large+1, dim))
+            torch.randn(1, num_patches_large**2, dim))
 
         self.to_patch_embedding_x = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
@@ -428,8 +428,8 @@ class CrossAttention(nn.Module):
         b, n, _, h = *x_q.shape, self.heads
 
         # add position embedding
-        x_q = x_q + self.position[:, :(n+1)]
-        x_kv = x_kv + self.position[:, :(n+1)]
+        x_q = x_q + self.position
+        x_kv = x_kv + self.position
 
         k = self.to_k(x_kv)
         k = rearrange(k, 'b n (h d) -> b h n d', h=h, b=b, n=n)

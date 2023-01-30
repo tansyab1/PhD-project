@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser(description="Split data into k folds.")
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
-parser.add_argument("-s", "--src-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/Noise_var/")
-parser.add_argument("-d", "--dest-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Noise_var")
+parser.add_argument("-s", "--src-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/UI_var/")
+parser.add_argument("-d", "--dest-dir", type=str, default="/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/UI_var")
 parser.add_argument("-f", "--number-of-folds", type=int, default=2)
 parser.add_argument("-e", "--exclude-classes", nargs='+',default=[])
 
@@ -22,7 +22,7 @@ def split_data_into_equal_parts(data, number_of_parts):
 
 def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
-    split_file = open("%s_fold_split_5.csv" % str(number_of_folds), "w")
+    split_file = open("%s_fold_split_UI_var.csv" % str(number_of_folds), "w")
 
     split_file.write("file-name;class-name;split-index\n")
 

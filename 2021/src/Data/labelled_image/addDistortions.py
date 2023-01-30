@@ -69,7 +69,7 @@ names = ["Ampulla of vater",
          "Ulcer"]
 
 sigma_Noise = [5, 10, 15, 20, 30, 40]
-sigma_DefocusBlur = [0.75, 1, 2, 3, 5]
+sigma_DefocusBlur = [1, 2, 3, 5]
 angle_MotionBlurs = [0, 45, 90, 135]
 size_MotionBlurs = [5, 10, 15, 25]
 size_UIs = [100, 150, 200, 250]
@@ -140,28 +140,36 @@ input_dir = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_im
 # create a dictionary to contain names of images and the corresponding noise level
 noise_dict = {}
 
-print("Start adding noise")
-sigma_Noise_range = [5, 10, 20, 30]
+print("Start adding UI")
+size_UIs = [100, 150, 200, 250]
 # apply Noise to input images
 # for sig_Noise in tqdm(sigma_Noise):
 for name in names:
     # check if the folder exists
-    if not os.path.exists(save_dir+"Noise_var/"+"/"+name+"/"):
-        os.makedirs(save_dir+"Noise_var/"+"/"+name+"/")
+    if not os.path.exists(save_dir+"Blur_var/"+"/"+name+"/"):
+        os.makedirs(save_dir+"Blur_var/"+"/"+name+"/")
     for file in tqdm(glob.glob(input_dir+name+"/*.jpg")):
         image = cv2.imread(file)
-        random_sigma = random.choice(sigma_Noise_range)
+        
+        # random choose a ui level with the same probability
+        
+        random_sigma = np.random.choice(sigma_DefocusBlur, 1, p=[0.25, 0.25, 0.25, 0.25])
+        random_angle = np.random.choice(angle_UIs, 1, p=[0.33, 0.34, 0.33])
+        
+        # print(mask_dir+str(random_sigma.item())+"_"+str(random_angle.item())+".png")
+        
         # add name and noise level to the dictionary
         noise_dict[os.path.basename(file)] = random_sigma
 
-        # add random noise to the image with the variance of sigma_Noise
-        noise_img = create_noise(image, random_sigma)
+        ui_mask = cv2.imread(mask_dir+str(random_sigma.item())+"_"+str(random_angle.item())+".png", cv2.IMREAD_GRAYSCALE)
+        
+        ui_image = apply_defocus_blur(image, random_sigma)
 
-        # save t
+        # save the image with ui
 
-        finalnoise= np.where(mask <10, image, noise_img)
-        cv2.imwrite(save_dir+"Noise_var/"+"/"+name+"/"+os.path.basename(file), finalnoise)
+        finalnoise= np.where(mask <10, image, ui_image)
+        cv2.imwrite(save_dir+"Blur_var/"+"/"+name+"/"+os.path.basename(file), finalnoise)
 
 # save the dictionary to a pickle file
-with open(save_dir+"Noise_var/noise_dict.pkl", "wb") as f:
+with open(save_dir+"Blur_var/blur_dict.pkl", "wb") as f:
     pickle.dump(noise_dict, f)
