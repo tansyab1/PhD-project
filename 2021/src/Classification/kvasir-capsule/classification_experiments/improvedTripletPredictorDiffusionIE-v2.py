@@ -427,9 +427,7 @@ class CrossAttention(nn.Module):
         dots = rearrange(dots, 'b h n d -> b (h n) d')
         dots = self.matrix(dots)
         dots = rearrange(dots, 'b (h i) d -> b h i d', b=b, h=h)
-
         attn = dots.softmax(dim=-1)
-
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         out = self.to_out(out)
@@ -550,11 +548,9 @@ class MyNet(nn.Module):
 # ===============================================
 
 def prepare_model():
-
     model = MyNet()
     # model = nn.DataParallel(model, device_ids=[opt.device_id])
     model = model.to(device)
-
     return model
 
 
@@ -571,9 +567,7 @@ def run_train(retrain=False):
     # LR shceduler
     scheduler = lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
-
     # call main train loop
-
     if retrain:
         # train from a checkpoint
         checkpoint_path = input("Please enter the checkpoint path:")
@@ -641,7 +635,6 @@ def test_model():
 
     with torch.no_grad():
         for i, data in tqdm(enumerate(test_dataloader, 0)):
-
             inputs, labels, positive, negative, reference, noise_level = data
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -650,13 +643,11 @@ def test_model():
             reference = reference.to(device)
             noise_level = noise_level.to(device)
             total += labels.size(0)
-
             _, _, decoded_image, _, _, _, _, _ = model(
                 inputs, positive, negative, reference, positive.size(0))
             mse = F.mse_loss(decoded_image, reference)
             # calculate the mse of the decoded image regarding to each noise level
             mse_list = []
-
             for noise_level_i in np.unique(noise_level):
                 noise_level_i = noise_level_i.to(device)
                 mse_i = F.mse_loss(
@@ -683,8 +674,6 @@ def test_model():
 
     np.set_printoptions(linewidth=np.inf)
     with open("%s/%s_evaluation.csv" % (opt.out_dir, py_file_name), "w") as f:
-
-        # write the psnr and mse of each noise level in the mse_list
         f.write("PSNR: %f\n" % psnr)
         for noise_level_i, mse_i in mse_list:
             f.write("MSE of noise level %d is %f\n" % (noise_level_i, mse_i))
@@ -726,11 +715,7 @@ def prepare_prediction_file():
 
             df_temp = pd.DataFrame(
                 columns=["filename", "predicted-label", "actual-label"] + class_names)
-
-            # print("paths:", paths)
             filename = [list(paths)[0].split("/")[-1]]
-            # print("filenames:", filename)
-
             df_temp["filename"] = filename
 
             inputs = inputs.to(device)
