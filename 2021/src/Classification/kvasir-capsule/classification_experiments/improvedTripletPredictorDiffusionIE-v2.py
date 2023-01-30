@@ -257,7 +257,6 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
             for i, data in tqdm(enumerate(dataloader, 0)):
 
                 inputs, labels, positive, negative, reference = data
-                # input_view = inputs.view(inputs.size(0), -1)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 positive = positive.to(device)
@@ -291,18 +290,11 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
-                    # print("loss_ae: ", loss_ae)
-                    # print("loss_triplet: ", loss_triplet)
-                    # print("loss_feature: ", loss_feature)
-                    # print("loss_KL: ", loss_KL)
-
                     loss = loss_ae + loss_triplet + loss_feature + loss_KL
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                        # torch.cuda.empty_cache()  # decrease about 2GB
-                        # del loss  # nothing change
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
@@ -310,8 +302,6 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
                 mse += F.mse_loss(decoded_image, reference)
                 ssim_batch_tensor = ssim(decoded_image, reference)
-                # print(ssim_batch_tensor.item())
-                # print(ssim_batch)
                 ssim_batch += ssim_batch_tensor.item()
                 # empty cache
                 num_batches += 1
@@ -453,16 +443,6 @@ class CrossAttention(nn.Module):
         return out, q, k
 
 
-# class PreNorm(nn.Module):
-#     def __init__(self, dim, fn):
-#         super().__init__()
-#         self.norm = nn.LayerNorm(dim)
-#         self.fn = fn
-
-#     def forward(self, x, **kwargs):
-#         return self.fn(self.norm(x), **kwargs)
-
-
 class MyNet(nn.Module):
     def __init__(self, num_out=14):
         super(MyNet, self).__init__()
@@ -504,17 +484,11 @@ class MyNet(nn.Module):
             nn.Linear(128, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            # nn.Linear(512, 1024),
-            # nn.BatchNorm1d(1024),
-            # nn.ReLU(),
             nn.Linear(256, self.flatten_dim),
             nn.Tanh(),
         )
 
         self.decoder = nn.Sequential(
-            # nn.ConvTranspose2d(128, 128, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(64),
-            # nn.ReLU(),
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -546,17 +520,8 @@ class MyNet(nn.Module):
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
-
-        # encoded_noise_flatten = encoded_noise.view(-1, self.flatten_dim)
-        # z, mu, logvar = self.bottleneck(encoded_noise_flatten)
-        # noise_feature = self.decoder_mlp(z)
-        # noise_feature = noise_feature.view(-1,
-        #                                    self.dim, self.shape[0], self.shape[1])
         cross_attention_feature, mu, logvar = self.cross_attention_layer(
             encoded_image, encoded_noise)
-
-        # mu = 0
-        # logvar = 0
 
         cross_attention_feature = cross_attention_feature.view(
             -1, self.dim, self.shape[0], self.shape[1])
@@ -599,14 +564,8 @@ def prepare_model():
 def run_train(retrain=False):
     torch.cuda.empty_cache()
     model = prepare_model()
-
     dataloaders = prepare_data()
-
-    # optimizer = optim.Adam(model.parameters(), lr=opt.lr , weight_decay=opt.weight_decay)
     optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9)
-    # optimizer = optim.SGD(model.parameters(), lr=opt.lr )
-
-    # criterion =  nn.MSELoss() # backprop loss calculation
     criterion = nn.CrossEntropyLoss()  # weight=weights
     criterion_ae = nn.MSELoss()
     # LR shceduler
@@ -643,8 +602,6 @@ def save_model(model_weights,  best_epoch,  best_epoch_loss, best_epoch_psnr, be
     torch.save({
         "epoch": best_epoch,
         "model_state_dict": model_weights,
-        # "optimizer_state_dict": optimizer.state_dict(),
-        # "train_loss": train_loss,
         "loss": best_epoch_loss,
         "psnr": best_epoch_psnr,
         "mse": best_epoch_mse,
