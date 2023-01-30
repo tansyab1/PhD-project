@@ -4,7 +4,7 @@
 
 #  # Description ##################
 #  # pythroch resnet18 training
-#  Use the attention with mu and logvar to train the model
+#  Use the attention with mu and logvar combined with position encoding
 
 ###########################################
 
@@ -361,7 +361,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
-        self.resnet_model = models.densenet121(pretrained=True)
+        self.resnet_model = models.resnet152(pretrained=True)
         self.module = nn.Sequential(*list(self.resnet_model.children())[:-1])
 
     def forward(self, x):
@@ -382,6 +382,9 @@ class CrossAttention(nn.Module):
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
         num_patches_large = (input_size // patch_size_large)  # 14
+
+        self.position = nn.Parameter(
+            torch.randn(1, num_patches_large+1, dim))
 
         self.to_patch_embedding_x = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
@@ -423,6 +426,10 @@ class CrossAttention(nn.Module):
         x_kv = self.to_patch_embedding_noise(x_kv)
 
         b, n, _, h = *x_q.shape, self.heads
+
+        # add position embedding
+        x_q = x_q + self.position[:, :(n+1)]
+        x_kv = x_kv + self.position[:, :(n+1)]
 
         k = self.to_k(x_kv)
         k = rearrange(k, 'b n (h d) -> b h n d', h=h, b=b, n=n)

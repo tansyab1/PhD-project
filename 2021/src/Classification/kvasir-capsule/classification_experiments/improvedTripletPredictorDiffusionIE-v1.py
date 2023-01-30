@@ -5,6 +5,7 @@
 #  # Description ##################
 #  # pythroch resnet18 training
 
+# Use the attention model to train the model
 
 ###########################################
 
@@ -63,7 +64,7 @@ parser.add_argument("--ref_root",
                     help="data root directory")
 
 parser.add_argument("--pkl_root",
-                    default="src-update/classification_experiments/noise_dict.pkl",
+                    default="src/dict/noise_dict.pkl",
                     help="pkl root directory")
 
 
