@@ -332,7 +332,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
                 # keep best model weights
                 if epoch_ssim > best_acc:
-                    best_acc = epoch_psnr
+                    best_acc = epoch_ssim
                     best_model_wts = copy.deepcopy(model.state_dict())
                     best_epoch = epoch
                     best_epoch_loss = epoch_loss
