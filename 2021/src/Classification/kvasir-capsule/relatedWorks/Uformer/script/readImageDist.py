@@ -1,6 +1,6 @@
 import numpy as np
 import os
-import tqdm as tqdm
+from tqdm import tqdm
 import glob
 
 # define a function to read the image from the foler and find the reference image
