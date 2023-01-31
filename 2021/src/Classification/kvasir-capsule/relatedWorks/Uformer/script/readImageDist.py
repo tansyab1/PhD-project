@@ -22,7 +22,7 @@ def readImageDist(distPath, refPath, savePath):
 
             for file in tqdm(glob.glob(refPath)):
 
-                if file == name + '.jpg':
+                if os.path.basename(file).split('.')[0] == name:
                     # get the reference image path from the refPath
                     refImage = os.path.join(root, dirs)
                     refImage = os.path.join(refImage, file)
@@ -30,7 +30,7 @@ def readImageDist(distPath, refPath, savePath):
                     # get the save image path
                     saveImage = os.path.join(savePath, name + '.jpg')
                     # copy the reference image to the savePath
-                    os.system('cp ' + refImage + ' ' + saveImage)
+                    os.system('cp ' + file + ' ' + saveImage)
                     break
                 break
 
