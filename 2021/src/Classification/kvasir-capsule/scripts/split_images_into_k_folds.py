@@ -13,11 +13,11 @@ parser.add_argument("-f", "--number-of-folds", type=int, default=3)
 parser.add_argument("-e", "--exclude-classes", nargs='+',default=[])
 
 def split_data_into_equal_parts(data, number_of_parts):
-    part_length = len(data) // number_of_parts
+    part_length = [ len(data) * 0.5, len(data) * 0.4, len(data) * 0.1 ]
     parts = []
     for index in range(number_of_parts - 1):
-        parts += [ data[ index * part_length : (index + 1) * part_length ] ]
-    parts += [ data[ (number_of_parts - 1) * part_length : len(data) ] ]
+        parts += [ data[ index * part_length[index] : (index + 1) * part_length[index] ] ]
+    parts += [ data[ (number_of_parts - 1) * part_length[index] : len(data) ] ]
     return parts
 
 def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
