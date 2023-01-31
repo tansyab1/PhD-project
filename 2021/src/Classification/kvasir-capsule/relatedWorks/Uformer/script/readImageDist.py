@@ -6,6 +6,8 @@ import tqdm
 
 
 def readImageDist(distPath, refPath, savePath):
+    # create the savePath if it does not exist
+    os.makedirs(savePath, exist_ok=True)
     # read the image from the folder distPath and find the reference image refPath with the same name and save it to the savePath
 
     # get all the image names in the distPath
