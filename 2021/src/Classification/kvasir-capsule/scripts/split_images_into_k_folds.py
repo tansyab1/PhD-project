@@ -40,12 +40,14 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
         class_name = os.path.basename(class_path)
         file_paths = list(glob.glob("%s/*" % class_path))
+        # print(len(file_paths))
 
         if class_name in exclude_classes:
             print("Skipping class %s" % class_name)
             continue
 
         for split in split_data_into_equal_parts(file_paths, number_of_folds):
+            # print(len(split))
             for file_path in tqdm(split):
                 
                 file_name = os.path.basename(file_path)
