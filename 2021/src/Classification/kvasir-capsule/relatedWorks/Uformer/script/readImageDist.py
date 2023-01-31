@@ -25,3 +25,11 @@ def readImageDist(distPath, refPath, savePath):
                         saveImage = os.path.join(savePath, name + '.jpg')
                         # copy the reference image to the savePath
                         os.system('cp ' + refImage + ' ' + saveImage)
+                        
+if __name__ == "__main__":
+    # define the path of the distorted image and the reference image
+    refPath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/distorted_images/Blur_var'
+    distPath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/train'
+    # define the path to save the reference image
+    savePath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/train_groundtruth'
+    readImageDist(distPath, refPath, savePath)
