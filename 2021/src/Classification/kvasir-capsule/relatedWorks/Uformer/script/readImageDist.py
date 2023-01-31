@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from tqdm import tqdm
+import shutil
 import glob
 
 # define a function to read the image from the foler and find the reference image
@@ -17,20 +18,22 @@ def readImageDist(distPath, refPath, savePath):
         for file in tqdm(files):
             # get the image name
             name = file.split('.')[0]
+            found = False
 
             #  find the reference image refPath subfolder with the same name and save it to the savePath
-
-            for file in glob.glob(refPath):
-                if os.path.basename(file).split('.')[0] == name:
-                    print("here====================================================")
-                    
-                    # get the save image path
-                    saveImage = os.path.join(savePath, name + '.jpg')
-                    # copy the reference image to the savePath
-                    os.system('cp ' + file + ' ' + saveImage)
-                    # break
-                # break
-
+            if not found:
+                for file in glob.glob(refPath):
+                    if os.path.basename(file).split('.')[0] == name:
+                        print("here====================================================")
+                        
+                        # get the save image path
+                        saveImage = os.path.join(savePath, name + '.jpg')
+                        # copy the reference image to the savePath
+                        shutil.copy(file, os.path.join(savePath, name + '.jpg'))
+                        
+                        found = True
+                        break
+            
 
 if __name__ == "__main__":
     # define the path of the distorted image and the reference image
