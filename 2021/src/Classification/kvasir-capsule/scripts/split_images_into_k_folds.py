@@ -34,6 +34,7 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
     split_file = open("%s_fold_split_UI_var.csv" % str(number_of_folds), "w")
 
     split_file.write("file-name;class-name;split-index\n")
+    split_index = 0
 
     for class_path in glob.glob("%s/*" % src_dir):
 
@@ -44,7 +45,7 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
             print("Skipping class %s" % class_name)
             continue
 
-        for split_index, split in enumerate(split_data_into_equal_parts(file_paths, number_of_folds)):
+        for split in split_data_into_equal_parts(file_paths, number_of_folds):
             for file_path in tqdm(split):
                 
                 file_name = os.path.basename(file_path)
@@ -61,6 +62,8 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
                     shutil.copy(file_path, os.path.join(
                         dest_class_path, file_name))
+            
+            split_index += 1
 
 
 if __name__ == "__main__":
