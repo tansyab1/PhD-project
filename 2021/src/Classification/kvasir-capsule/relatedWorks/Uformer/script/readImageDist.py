@@ -9,35 +9,32 @@ import glob
 def readImageDist(distPath, refPath, savePath):
     # create the savePath if it does not exist
     os.makedirs(savePath, exist_ok=True)
-    refPath = os.path.join(refPath, '/*/*/*.jpg')
+    # refPath = os.path.join(refPath, '/*/*/*.jpg')
     # read the image from the folder distPath and find the reference image refPath with the same name and save it to the savePath
 
     # get all the image names in the distPath
     for root, dirs, files in os.walk(distPath):
-        for file in tqdm.tqdm(files):
+        for file in tqdm(files):
             # get the image name
             name = file.split('.')[0]
 
             #  find the reference image refPath subfolder with the same name and save it to the savePath
 
-            for file in tqdm(glob.glob(refPath)):
-
+            for file in glob.glob(refPath):
                 if os.path.basename(file).split('.')[0] == name:
-                    # get the reference image path from the refPath
-                    refImage = os.path.join(root, dirs)
-                    refImage = os.path.join(refImage, file)
-
+                    print("here====================================================")
+                    
                     # get the save image path
                     saveImage = os.path.join(savePath, name + '.jpg')
                     # copy the reference image to the savePath
                     os.system('cp ' + file + ' ' + saveImage)
-                    break
-                break
+                    # break
+                # break
 
 
 if __name__ == "__main__":
     # define the path of the distorted image and the reference image
-    refPath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Ref'
+    refPath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/Ref/*/*/*.jpg'
     distPath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/train'
     # define the path to save the reference image
     savePath = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/train_groundtruth'
