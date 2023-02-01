@@ -9,7 +9,7 @@ opt = parser.parse_args()
 
 if opt.train:
 	os.system("python train.py \
-		--dataroot ../final_dataset \
+		--dataroot ./final_data \
 		--no_dropout \
 		--name enlightening \
 		--model single \
@@ -40,7 +40,7 @@ if opt.train:
 elif opt.predict:
 	for i in range(1):
 	        os.system("python predict.py \
-	        	--dataroot ../test_dataset \
+	        	--dataroot ./test_dataset \
 	        	--name enlightening \
 	        	--model single \
 	        	--which_direction AtoB \
