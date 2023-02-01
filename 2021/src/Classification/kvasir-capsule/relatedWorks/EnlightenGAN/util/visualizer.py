@@ -7,7 +7,7 @@ from . import html
 
 class Visualizer():
     def __init__(self, opt):
-        # self.opt = opt
+        self.opt = opt
         self.display_id = opt.display_id
         self.use_html = opt.isTrain and not opt.no_html
         self.win_size = opt.display_winsize
@@ -114,6 +114,7 @@ class Visualizer():
             message += '%s: %.3f ' % (k, v)
 
         print(message)
+        self.log_name = os.path.join(self.opt.checkpoints_dir, self.opt.name, 'loss_log.txt')
         with open(self.log_name, "a") as log_file:
             log_file.write('%s\n' % message)
 

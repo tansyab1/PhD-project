@@ -9,6 +9,8 @@ import random
 augment   = Augment_RGB_torch()
 transforms_aug = [method for method in dir(augment) if callable(getattr(augment, method)) if not method.startswith('_')] 
 
+def is_image_file(filename):
+    return any(filename.endswith(extension) for extension in ['jpeg', 'JPEG', 'jpg', 'png', 'JPG', 'PNG', 'gif'])
 ##################################################################################################
 class DataLoaderTrain(Dataset):
     def __init__(self, rgb_dir, img_options=None, target_transform=None):
@@ -19,8 +21,8 @@ class DataLoaderTrain(Dataset):
         clean_files = sorted(os.listdir(os.path.join(rgb_dir, 'groundtruth')))
         noisy_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
         
-        self.clean_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in clean_files if is_png_file(x)]
-        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x)       for x in noisy_files if is_png_file(x)]
+        self.clean_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in clean_files if is_image_file(x)]
+        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x)       for x in noisy_files if is_image_file(x)]
         
         self.img_options=img_options
 
@@ -68,8 +70,8 @@ class DataLoaderVal(Dataset):
         noisy_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
 
 
-        self.clean_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in clean_files if is_png_file(x)]
-        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x) for x in noisy_files if is_png_file(x)]
+        self.clean_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in clean_files if is_image_file(x)]
+        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x) for x in noisy_files if is_image_file(x)]
         
 
         self.tar_size = len(self.clean_filenames)  
@@ -89,6 +91,15 @@ class DataLoaderVal(Dataset):
 
         clean = clean.permute(2,0,1)
         noisy = noisy.permute(2,0,1)
+        
+        #Crop Input and Target
+        ps = 192
+        H = clean.shape[1]
+        W = clean.shape[2]
+        r = np.random.randint(0, H - ps)
+        c = np.random.randint(0, W - ps)
+        clean = clean[:, r:r + ps, c:c + ps]
+        noisy = noisy[:, r:r + ps, c:c + ps]
 
         return clean, noisy, clean_filename, noisy_filename
 
@@ -103,7 +114,7 @@ class DataLoaderTest(Dataset):
         noisy_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
 
 
-        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x) for x in noisy_files if is_png_file(x)]
+        self.noisy_filenames = [os.path.join(rgb_dir, 'input', x) for x in noisy_files if is_image_file(x)]
         
 
         self.tar_size = len(self.noisy_filenames)  
@@ -135,7 +146,7 @@ class DataLoaderTestSR(Dataset):
         LR_files = sorted(os.listdir(os.path.join(rgb_dir)))
 
 
-        self.LR_filenames = [os.path.join(rgb_dir, x) for x in LR_files if is_png_file(x)]
+        self.LR_filenames = [os.path.join(rgb_dir, x) for x in LR_files if is_image_file(x)]
         
 
         self.tar_size = len(self.LR_filenames)  

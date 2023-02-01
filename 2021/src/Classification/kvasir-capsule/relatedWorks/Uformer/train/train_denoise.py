@@ -5,8 +5,8 @@ import sys
 dir_name = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(dir_name,'../dataset/'))
 sys.path.append(os.path.join(dir_name,'..'))
-print(sys.path)
-print(dir_name)
+# print(sys.path)
+# print(dir_name)
 
 import argparse
 import options
@@ -129,6 +129,11 @@ img_options_train = {'patch_size':opt.train_ps}
 train_dataset = get_training_data(opt.train_dir, img_options_train)
 train_loader = DataLoader(dataset=train_dataset, batch_size=opt.batch_size, shuffle=True, 
         num_workers=opt.train_workers, pin_memory=False, drop_last=False)
+# print the shape of the first batch
+# print("===> The shape of the first batch: ", next(iter(train_loader))[0].shape)
+
+# print("===> Loading validation datasets")
+
 val_dataset = get_validation_data(opt.val_dir)
 val_loader = DataLoader(dataset=val_dataset, batch_size=opt.batch_size, shuffle=False, 
         num_workers=opt.eval_workers, pin_memory=False, drop_last=False)

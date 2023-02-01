@@ -1,6 +1,6 @@
 ###############
 
-GPU: [0,1]
+GPU: [0]
 
 VERBOSE: True
 
@@ -18,10 +18,10 @@ OPTIM:
 
 TRAINING:
   TRAIN_PS: 128
-  VAL_PS: 196
+  VAL_PS: 192
   RESUME: False
-  TRAIN_DIR: '../SIDD_patches/train' # path to training data
-  VAL_DIR: '../SIDD_patches/val'     # path to validation data
+  TRAIN_DIR: './dataset/Noise_var/train' # path to training data
+  VAL_DIR: './dataset/Noise_var/val'     # path to validation data
   SAVE_DIR: './checkpoints'          # path to save models and images
   SAVE_IMAGES: False
   #VAL_AFTER_EVERY: 1

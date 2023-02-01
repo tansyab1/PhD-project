@@ -703,8 +703,11 @@ class LeFF(nn.Module):
 ########### window operation#############
 def window_partition(x, win_size, dilation_rate=1):
     B, H, W, C = x.shape
+    # print(x.shape)
+    # print(win_size)
     if dilation_rate !=1:
         x = x.permute(0,3,1,2) # B, C, H, W
+        
         assert type(dilation_rate) is int, 'dilation_rate should be a int'
         x = F.unfold(x, kernel_size=win_size,dilation=dilation_rate,padding=4*(dilation_rate-1),stride=win_size) # B, C*Wh*Ww, H/Wh*W/Ww
         windows = x.permute(0,2,1).contiguous().view(-1, C, win_size, win_size) # B' ,C ,Wh ,Ww
@@ -907,6 +910,9 @@ class LeWinTransformerBlock(nn.Module):
 
     def forward(self, x, mask=None):
         B, L, C = x.shape
+        
+        # print(x.shape)
+        
         H = int(math.sqrt(L))
         W = int(math.sqrt(L))
         

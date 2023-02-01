@@ -8,7 +8,7 @@ class Options():
     def init(self, parser):        
         # global settings
         parser.add_argument('--batch_size', type=int, default=32, help='batch size')
-        parser.add_argument('--nepoch', type=int, default=250, help='training epochs')
+        parser.add_argument('--nepoch', type=int, default=10, help='training epochs')
         parser.add_argument('--train_workers', type=int, default=4, help='train_dataloader workers')
         parser.add_argument('--eval_workers', type=int, default=4, help='eval_dataloader workers')
         parser.add_argument('--dataset', type=str, default ='SIDD')
