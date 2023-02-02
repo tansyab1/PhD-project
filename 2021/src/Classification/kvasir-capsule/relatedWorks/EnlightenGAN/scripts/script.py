@@ -11,7 +11,7 @@ if opt.train:
 	os.system("python train.py \
 		--dataroot ./final_data \
 		--no_dropout \
-		--name enlightening \
+		--name Blur \
 		--model single \
 		--dataset_mode unaligned \
 		--which_model_netG sid_unet_resize \
