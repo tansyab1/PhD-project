@@ -20,8 +20,8 @@ TRAINING:
   TRAIN_PS: 128
   VAL_PS: 192
   RESUME: False
-  TRAIN_DIR: './dataset/Blur_var/train' # path to training data
-  VAL_DIR: './dataset/Blur_var/val'     # path to validation data
-  SAVE_DIR: './checkpoints/Blur'          # path to save models and images
+  TRAIN_DIR: './dataset/UI_var/train' # path to training data
+  VAL_DIR: './dataset/UI_var/val'     # path to validation data
+  SAVE_DIR: './checkpoints/UI'          # path to save models and images
   SAVE_IMAGES: True
   #VAL_AFTER_EVERY: 1
