@@ -19,7 +19,7 @@ OPTIM:
 TRAINING:
   TRAIN_PS: 128
   VAL_PS: 192
-  RESUME: True
+  RESUME: False
   TRAIN_DIR: './dataset/Blur_var/train' # path to training data
   VAL_DIR: './dataset/Blur_var/val'     # path to validation data
   SAVE_DIR: './checkpoints/Blur'          # path to save models and images
