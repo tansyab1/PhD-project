@@ -2,7 +2,7 @@ import numpy as np
 import os
 from torch.utils.data import Dataset
 import torch
-from utils import is_png_file, load_img, Augment_RGB_torch
+from utils import is_image_file, load_img, Augment_RGB_torch
 import torch.nn.functional as F
 import random
 from PIL import Image
@@ -29,8 +29,8 @@ class DataLoaderTrain(Dataset):
         clean_files = sorted(os.listdir(os.path.join(rgb_dir, gt_dir)))
         noisy_files = sorted(os.listdir(os.path.join(rgb_dir, input_dir)))
         
-        self.clean_filenames = [os.path.join(rgb_dir, gt_dir, x) for x in clean_files if is_png_file(x)]
-        self.noisy_filenames = [os.path.join(rgb_dir, input_dir, x)       for x in noisy_files if is_png_file(x)]
+        self.clean_filenames = [os.path.join(rgb_dir, gt_dir, x) for x in clean_files if is_image_file(x)]
+        self.noisy_filenames = [os.path.join(rgb_dir, input_dir, x)       for x in noisy_files if is_image_file(x)]
         
         self.img_options=img_options
 
@@ -87,8 +87,8 @@ class DataLoaderVal(Dataset):
         noisy_files = sorted(os.listdir(os.path.join(rgb_dir, input_dir)))
 
 
-        self.clean_filenames = [os.path.join(rgb_dir, gt_dir, x) for x in clean_files if is_png_file(x)]
-        self.noisy_filenames = [os.path.join(rgb_dir, input_dir, x) for x in noisy_files if is_png_file(x)]
+        self.clean_filenames = [os.path.join(rgb_dir, gt_dir, x) for x in clean_files if is_image_file(x)]
+        self.noisy_filenames = [os.path.join(rgb_dir, input_dir, x) for x in noisy_files if is_image_file(x)]
         
 
         self.tar_size = len(self.clean_filenames)  
@@ -118,8 +118,8 @@ class DataLoaderVal_deblur(Dataset):
         inp_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
         tar_files = sorted(os.listdir(os.path.join(rgb_dir, 'groundtruth')))
 
-        self.inp_filenames = [os.path.join(rgb_dir, 'input', x)  for x in inp_files if is_png_file(x)]
-        self.tar_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in tar_files if is_png_file(x)]
+        self.inp_filenames = [os.path.join(rgb_dir, 'input', x)  for x in inp_files if is_image_file(x)]
+        self.tar_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in tar_files if is_image_file(x)]
 
         self.img_options = img_options
         self.tar_size       = len(self.tar_filenames)  # get the size of target
