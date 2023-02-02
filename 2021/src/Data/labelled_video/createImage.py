@@ -125,13 +125,14 @@ if __name__ == "__main__":
         for size in tqdm(sizes_ui):
             i += 1
             for angle in angles:
+                datapath_dir = os.path.dirname(filename)
                 mask = cv2.imread(mask_dir+str(size)+"_" +
                                   str(angle)+".png", cv2.IMREAD_GRAYSCALE)
                 for file in tqdm(glob.glob(datapath)):
                     frame = cv2.imread(file)
-                    noise_img = applyui(frame, mask=mask)
+                    noise_img = applyui(image, mask=mask)
                     finalnoise = np.where(
-                        process_mask < 10, frame, noise_img)
+                        process_mask < 10, image, noise_img)
                     print(datapath_dir.replace("ref_images", "dist_images") +
                           "/UI_" + str(i)  + ".jpg")
 
