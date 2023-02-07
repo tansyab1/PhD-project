@@ -31,7 +31,7 @@ parser.add_argument('--result_dir', default='/data1/wangzd/uformer_cvpr/results_
     type=str, help='Directory for results')
 parser.add_argument('--weights', default='/data1/wangzd/uformer_cvpr/logs/denoising/SIDD/Uformer_B_1129/models/model_best.pth',
     type=str, help='Path to weights')
-parser.add_argument('--gpus', default='3', type=str, help='CUDA_VISIBLE_DEVICES')
+parser.add_argument('--gpus', default='0,1', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--arch', default='Uformer_B', type=str, help='arch')
 parser.add_argument('--batch_size', default=1, type=int, help='Batch size for dataloader')
 parser.add_argument('--save_images', action='store_true', help='Save denoised images in result directory')
@@ -70,6 +70,8 @@ utils.mkdir(result_dir_img)
 
 model_restoration= utils.get_arch(args)
 
+print("number of gpus: ", torch.cuda.device_count())
+
 utils.load_checkpoint(model_restoration,args.weights)
 print("===>Testing using weights: ", args.weights)
 
@@ -92,6 +94,8 @@ def expand2square(timg,factor=16.0):
     return img, mask
 
 # Process data
+# create result ValidationNoisyBlocksSrgb.mat and ValidationGtBlocksSrgb.mat if not exist
+
 filepath = os.path.join(args.input_dir, 'ValidationNoisyBlocksSrgb.mat')
 img = sio.loadmat(filepath)
 Inoisy = np.float32(np.array(img['ValidationNoisyBlocksSrgb']))

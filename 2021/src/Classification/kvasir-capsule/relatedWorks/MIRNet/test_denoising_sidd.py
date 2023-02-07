@@ -24,12 +24,12 @@ from dataloaders.data_rgb import get_validation_data
 import utils
 from skimage import img_as_ubyte
 
-parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
-parser.add_argument('--input_dir', default='./datasets/sidd/',
+parser = argparse.ArgumentParser(description='RGB deblurring evaluation on the validation set of Noisevar')
+parser.add_argument('--input_dir', default='./dataset/Noise_var/test/',
     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='./results/denoising/sidd/',
+parser.add_argument('--result_dir', default='./results/denoising/Noise_var_latest/',
     type=str, help='Directory for results')
-parser.add_argument('--weights', default='./pretrained_models/denoising/model_denoising.pth',
+parser.add_argument('--weights', default='./checkpoints/results/Noise_var/checkpoints/Denoising/models/MIRNet/model_latest.pth',
     type=str, help='Path to weights')
 parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--bs', default=16, type=int, help='Batch size for dataloader')
@@ -62,6 +62,7 @@ model_restoration.eval()
 
 with torch.no_grad():
     psnr_val_rgb = []
+    ssim_val_rgb = []
     for ii, data_test in enumerate(tqdm(test_loader), 0):
         rgb_gt = data_test[0].cuda()
         rgb_noisy = data_test[1].cuda()
@@ -70,6 +71,7 @@ with torch.no_grad():
         rgb_restored = torch.clamp(rgb_restored,0,1)
      
         psnr_val_rgb.append(utils.batch_PSNR(rgb_restored, rgb_gt, 1.))
+        ssim_val_rgb.append(utils.batch_SSIM(rgb_restored, rgb_gt, 1.))
 
         rgb_gt = rgb_gt.permute(0, 2, 3, 1).cpu().detach().numpy()
         rgb_noisy = rgb_noisy.permute(0, 2, 3, 1).cpu().detach().numpy()
@@ -81,5 +83,7 @@ with torch.no_grad():
                 utils.save_img(args.result_dir + filenames[batch][:-4] + '.png', denoised_img)
             
 psnr_val_rgb = sum(psnr_val_rgb)/len(psnr_val_rgb)
+ssim_val_rgb = sum(ssim_val_rgb)/len(ssim_val_rgb)
 print("PSNR: %.2f " %(psnr_val_rgb))
+print("SSIM: %.4f " %(ssim_val_rgb))
 
