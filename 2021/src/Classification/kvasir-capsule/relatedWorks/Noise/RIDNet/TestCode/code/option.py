@@ -144,6 +144,8 @@ parser.add_argument('--testpath', type=str, default='../../data',
                     help='dataset directory for testing')
 parser.add_argument('--testset', type=str, default='Set5',
                     help='dataset name for testing')
+parser.add_argument('--testset_clean', type=str, default='Set5',
+                    help='dataset name for testing')
 
 args = parser.parse_args()
 template.set_template(args)

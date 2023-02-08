@@ -11,7 +11,7 @@ def set_opts():
                                                          help="Batchsize of training, (default:64)")
     parser.add_argument('--patch_size', type=int, default=128,
                                                    help="Patch size of data sample,  (default:128)")
-    parser.add_argument('--epochs', type=int, default=60, help="Training epohcs,  (default:60)")
+    parser.add_argument('--epochs', type=int, default=20, help="Training epohcs,  (default:60)")
     parser.add_argument('--lr', type=float, default=2e-4,
                                                   help="Initialized learning rate, (default: 2e-4)")
     parser.add_argument('--gamma', type=float, default=0.5,
@@ -32,7 +32,7 @@ def set_opts():
                                                            help="GPU ID, which allow multiple GPUs")
 
     # dataset settings
-    parser.add_argument('--SIDD_dir', default='/ssd1t/SIDD/', type=str, metavar='PATH',
+    parser.add_argument('--SIDD_dir', default='./datasets/', type=str, metavar='PATH',
                                               help="Path to save the SIDD dataset, (default: None)")
     parser.add_argument('--simulate_dir', default='/ssd1t/simulation/train', type=str,
                                     metavar='PATH', help="Path to save the images, (default: None)")

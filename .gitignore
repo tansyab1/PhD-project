@@ -14,3 +14,4 @@ checkpoint
 *tfevents*
 *.meta*
 *.mp4
+*.hdf5

@@ -2,7 +2,7 @@
     # training settings
     "batch_size": 16, 
     "patch_size": 128, 
-    "epochs": 70,
+    "epochs": 20,
     "lr_D": 1e-4,
     "lr_G": 1e-4,
     "lr_P": 2e-4,
@@ -22,8 +22,8 @@
     "ndf": 64,  
 
     ######### training and validation data path ########
-    "SIDD_train_h5": "/ssd1t/SIDD/small_imgs_train.hdf5", 
-    "SIDD_test_h5": "/ssd1t/SIDD/small_imgs_test.hdf5", 
+    "SIDD_train_h5": "./datasets/Noise_var/train/small_imgs_train.hdf5", 
+    "SIDD_test_h5": "./datasets/Noise_var/val/small_imgs_test.hdf5", 
 
     # saving models and logs
     "model_dir": "./models_DANet",

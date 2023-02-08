@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 import numpy as np
-import scipy.misc as misc
+import imageio
 
 import torch
 import torch.optim as optim
@@ -124,11 +124,49 @@ class checkpoint():
         for v, p in zip(save_list, postfix):
             normalized = v[0].data.mul(255 / self.args.rgb_range)
             ndarr = normalized.byte().permute(1, 2, 0).cpu().numpy()
-            misc.imsave('{}{}.png'.format(filename, p), ndarr)
+            imageio.imsave('{}{}.png'.format(filename, p), ndarr)
 
 def quantize(img, rgb_range):
     pixel_range = 255 / rgb_range
     return img.mul(pixel_range).clamp(0, 255).round().div(pixel_range)
+
+def calc_ssim(sr, hr, scale, rgb_range, benchmark=False):
+    # shave = scale
+    # if benchmark:
+    #     shave = scale + 6
+
+    sr = quantize(sr, rgb_range)
+    hr = quantize(hr, rgb_range)
+
+    diff = (sr - hr).data.div(rgb_range)
+    if diff.size(1) > 1:
+        diff = diff.mul(255 / 65.738).mul(255 / 129.057).mul(255 / 25.064)
+
+    (_, channel, height, width) = diff.size()
+    size = channel * height * width
+    diff = diff.view(channel, -1)
+
+    # calculate mean per channel
+    mu1 = diff.mean(1)
+    mu2 = diff.mean(1)
+
+    # calculate variance per channel
+    sigma1_2 = diff.var(1)
+    sigma2_2 = diff.var(1)
+
+    # calculate covariance per channel
+    sigma12 = diff.mul(diff).mean(1) - mu1.mul(mu2)
+
+    # calculate luminance, contrast, structure
+    C1 = (0.01 * rgb_range) ** 2
+    C2 = (0.03 * rgb_range) ** 2
+    luminance = (2 * mu1 * mu2 + C1) / (mu1 ** 2 + mu2 ** 2 + C1)
+    contrast = (2 * sigma12 + C2) / (sigma1_2 + sigma2_2 + C2)
+    structure = luminance * contrast
+
+    # calculate ssim
+    ssim = structure.mean()
+    return ssim.item()
 
 def calc_psnr(sr, hr, scale, rgb_range, benchmark=False):
     diff = (sr - hr).data.div(rgb_range)

@@ -13,7 +13,7 @@ from networks import VDN
 from datasets import DenoisingDatasets
 from loss import loss_fn
 from math import ceil
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 from utils import batch_PSNR, batch_SSIM
 import torchvision.utils as vutils
 import shutil

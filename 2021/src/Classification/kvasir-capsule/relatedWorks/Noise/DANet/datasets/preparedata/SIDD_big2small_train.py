@@ -15,17 +15,18 @@ parser.add_argument('--data_dir', default=None, type=str, metavar='PATH',
                                       help="path to save the training set of SIDD, (default: None)")
 args = parser.parse_args()
 
-path_all_noisy = glob(os.path.join(args.data_dir, '**/*NOISY*.PNG'), recursive=True)
+path_all_noisy = glob(os.path.join(args.data_dir, 'input/*.jpg'), recursive=True)
 path_all_noisy = sorted(path_all_noisy)
-path_all_gt = [x.replace('NOISY', 'GT') for x in path_all_noisy]
+# print(os.path.join(args.data_dir, 'input/'))
+path_all_gt = [x.replace('input', 'groundtruth') for x in path_all_noisy]
 print('Number of big images: {:d}'.format(len(path_all_gt)))
 
 print('Training: Split the original images to small ones!')
 path_h5 = os.path.join(args.data_dir, 'small_imgs_train.hdf5')
 if os.path.exists(path_h5):
     os.remove(path_h5)
-pch_size = 512
-stride = 512-128
+pch_size = 256
+stride = 256-128
 num_patch = 0
 C = 3
 with h5.File(path_h5, 'w') as h5_file:

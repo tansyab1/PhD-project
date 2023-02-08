@@ -83,9 +83,10 @@ class Trainer():
         with torch.no_grad():
             for idx_scale, scale in enumerate(self.noise_g):
                 eval_acc = 0
+                eval_ssim = 0
                 self.loader_test.dataset.set_scale(idx_scale)
                 tqdm_test = tqdm(self.loader_test, ncols=80)
-                for idx_img, (lr, hr, filename, _) in enumerate(tqdm_test):
+                for idx_img, (lr, hr, filename) in enumerate(tqdm_test):
                     filename = filename[0]
                     no_eval = (hr.nelement() == 1)
                     if not no_eval:
@@ -100,7 +101,11 @@ class Trainer():
                     if not no_eval:
                         eval_acc += utility.calc_psnr(
                             sr, hr, scale, self.args.rgb_range,
-                            benchmark=self.loader_test.dataset.benchmark
+                            benchmark=False
+                        )
+                        eval_ssim += utility.calc_ssim(
+                            sr, hr, scale, self.args.rgb_range,
+                            benchmark=False
                         )
                         save_list.extend([lr, hr])
 
@@ -108,12 +113,14 @@ class Trainer():
                         self.ckp.save_results(filename, save_list, scale)
 
                 self.ckp.log[-1, idx_scale] = eval_acc / len(self.loader_test)
+                self.ssim = eval_ssim / len(self.loader_test)
                 best = self.ckp.log.max(0)
                 self.ckp.write_log(
-                    '[{} x{}]\tPSNR: {:.3f} (Best: {:.3f} @epoch {})'.format(
+                    '[{} x{}]\tPSNR: {:.3f} \tSSIM: {:.4f} (Best: {:.3f} @epoch {})'.format(
                         self.args.data_test,
                         scale,
                         self.ckp.log[-1, idx_scale],
+                        self.ssim,
                         best[0][idx_scale],
                         best[1][idx_scale] + 1
                     )
