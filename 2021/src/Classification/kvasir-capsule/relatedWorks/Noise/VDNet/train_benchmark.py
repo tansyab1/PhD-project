@@ -227,7 +227,7 @@ def main():
         else:
             sys.exit('Please provide corrected model path!')
     else:
-        net = weight_init_kaiming(net)
+        # net = weight_init_kaiming(net)
         args.epoch_start = 0
         if os.path.isdir(args.log_dir):
             shutil.rmtree(args.log_dir)
@@ -242,7 +242,7 @@ def main():
     # train dataset
     path_SIDD_train = os.path.join(args.SIDD_dir, 'small_imgs_train.hdf5')
     # test dataset
-    path_SIDD_test = os.path.join(args.SIDD_dir, 'small_imgs_test.hdf5')
+    path_SIDD_test = os.path.join(args.SIDD_dir, 'small_imgs_val.hdf5')
     datasets = {'train':DenoisingDatasets.BenchmarkTrain(path_SIDD_train, 5000*args.batch_size,
                           args.patch_size, radius=args.radius, eps2=args.eps2, noise_estimate=True),
                                         'test_SIDD':DenoisingDatasets.BenchmarkTest(path_SIDD_test)}

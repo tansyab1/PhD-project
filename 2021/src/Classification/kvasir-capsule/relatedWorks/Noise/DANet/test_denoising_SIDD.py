@@ -23,6 +23,8 @@ parser.add_argument('--model', type=str, default='DANet+',
                     help="Model selection: DANet or DANet+, (default:DANet+)")
 parser.add_argument('--save_dir', type=str, default='./results/',
                     help="The directory to save the denoised image, (default:./results/)")
+parser.add_argument('--data_dir', type=str, default='./results/',
+                    help="The directory to save the denoised image, (default:./results/)")
 args = parser.parse_args()
 
 
@@ -32,7 +34,7 @@ net = UNetD(3, wf=32, depth=5).cuda()
 # load the pretrained model
 if args.model.lower() == 'danet':
     net.load_state_dict(torch.load(
-        './model_states/DANet.pt', map_location='cpu')['D'])
+        './model_DANet/model_state_20.pt', map_location='cpu')['D'])
 else:
     net.load_state_dict(torch.load(
         './model_states/DANetPlus.pt', map_location='cpu'))

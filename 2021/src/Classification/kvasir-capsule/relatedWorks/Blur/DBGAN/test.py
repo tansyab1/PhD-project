@@ -33,6 +33,9 @@ for phase, dataset_opt in sorted(opt['datasets'].items()):
 # Create model
 model = create_model(opt)
 
+# open text file to write PSNR and SSIM
+f = open("psnr_ssim.txt", "a")
+
 for test_loader in test_loaders:
     test_set_name = test_loader.dataset.opt['name']
     logger.info('\nTesting [{:s}]...'.format(test_set_name))
@@ -51,6 +54,14 @@ for test_loader in test_loaders:
         visuals = model.get_current_visuals(False)
 
         sr_img = util.tensor2img(visuals['SR'])  # uint8
+        ground_truth = data['HR'][0].numpy().transpose(1, 2, 0)
+        
+        # calculate PSNR and SSIM
+        # print('calculating PSNR and SSIM...')
+        psnr = util.calculate_psnr(sr_img, ground_truth)
+        ssim = util.calculate_ssim(sr_img, ground_truth)
+        
+        f.write(img_name + "PSNR: " + str(psnr) + "SSIM: " + str(ssim))
 
         # save images
         suffix = opt['suffix']
@@ -58,7 +69,11 @@ for test_loader in test_loaders:
             save_img_path = os.path.join(dataset_dir, img_name + suffix + '.png')
         else:
             save_img_path = os.path.join(dataset_dir, img_name + '.png')
+        print('Saving image [{:s}] ...'.format(save_img_path))
         util.save_img(sr_img, save_img_path)
+
+# move the text file to the results folder
+os.rename("psnr_ssim.txt", os.path.join(dataset_dir, "psnr_ssim.txt"))
 
        
        
