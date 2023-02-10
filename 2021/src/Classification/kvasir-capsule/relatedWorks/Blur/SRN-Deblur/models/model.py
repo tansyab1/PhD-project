@@ -6,7 +6,7 @@ import datetime
 import scipy.misc
 import numpy as np
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
+import tf_slim as slim
 from datetime import datetime
 from util.util import *
 from util.BasicConvLSTMCell import *
@@ -21,8 +21,10 @@ class DEBLUR(object):
 
         # if args.phase == 'train':
         self.crop_size = 256
-        self.data_list = open(args.datalist, 'rt').read().splitlines()
-        self.data_list = list(map(lambda x: x.split(' '), self.data_list))
+        self.data_list_noise = open(args.datalist, 'rt').read().splitlines()
+        self.data_list_gt = [x.replace('input', 'groundtruth') for x in self.data_list_noise]
+        
+        self.data_list = np.array([self.data_list_noise, self.data_list_gt]).T
         random.shuffle(self.data_list)
         self.train_dir = os.path.join('./checkpoints', args.model)
         if not os.path.exists(self.train_dir):
@@ -36,9 +38,9 @@ class DEBLUR(object):
 
     def input_producer(self, batch_size=10):
         def read_data():
-            img_a = tf.image.decode_image(tf.read_file(tf.string_join(['./training_set/', self.data_queue[0]])),
+            img_a = tf.image.decode_image(tf.io.read_file(tf.strings.join(['./training_set/', self.data_queue[0]])),
                                           channels=3)
-            img_b = tf.image.decode_image(tf.read_file(tf.string_join(['./training_set/', self.data_queue[1]])),
+            img_b = tf.image.decode_image(tf.io.read_file(tf.strings.join(['./training_set/', self.data_queue[1]])),
                                           channels=3)
             img_a, img_b = preprocessing([img_a, img_b])
             return img_a, img_b
@@ -47,16 +49,17 @@ class DEBLUR(object):
             imgs = [tf.cast(img, tf.float32) / 255.0 for img in imgs]
             if self.args.model != 'color':
                 imgs = [tf.image.rgb_to_grayscale(img) for img in imgs]
-            img_crop = tf.unstack(tf.random_crop(tf.stack(imgs, axis=0), [2, self.crop_size, self.crop_size, self.chns]),
+            img_crop = tf.unstack(tf.image.random_crop(tf.stack(imgs, axis=0), [2, self.crop_size, self.crop_size, self.chns]),
                                   axis=0)
             return img_crop
 
-        with tf.variable_scope('input'):
+        with tf.compat.v1.variable_scope('input'):
             List_all = tf.convert_to_tensor(self.data_list, dtype=tf.string)
             gt_list = List_all[:, 0]
             in_list = List_all[:, 1]
 
-            self.data_queue = tf.train.slice_input_producer([in_list, gt_list], capacity=20)
+            self.data_queue = tf.data.Dataset.from_tensor_slices((in_list, gt_list))
+            print(self.data_queue)
             image_in, image_gt = read_data()
             batch_in, batch_gt = tf.train.batch([image_in, image_gt], batch_size=batch_size, num_threads=8, capacity=20)
 
@@ -66,12 +69,12 @@ class DEBLUR(object):
         n, h, w, c = inputs.get_shape().as_list()
 
         if self.args.model == 'lstm':
-            with tf.variable_scope('LSTM'):
+            with tf.compat.v1.variable_scope('LSTM'):
                 cell = BasicConvLSTMCell([h / 4, w / 4], [3, 3], 128)
                 rnn_state = cell.zero_state(batch_size=self.batch_size, dtype=tf.float32)
 
         x_unwrap = []
-        with tf.variable_scope(scope, reuse=reuse):
+        with tf.compat.v1.variable_scope(scope, reuse=reuse):
             with slim.arg_scope([slim.conv2d, slim.conv2d_transpose],
                                 activation_fn=tf.nn.relu, padding='SAME', normalizer_fn=None,
                                 weights_initializer=tf.contrib.layers.xavier_initializer(uniform=True),

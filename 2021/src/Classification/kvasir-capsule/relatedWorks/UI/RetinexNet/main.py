@@ -3,7 +3,7 @@ import os
 import argparse
 from glob import glob
 
-from PIL import Image
+# from PIL import Image
 import tensorflow as tf
 
 from model import lowlight_enhance
@@ -56,7 +56,7 @@ def lowlight_train(lowlight_enhance):
         train_high_data.append(high_im)
 
     eval_low_data = []
-    eval_high_data = []
+    # eval_high_data = []
 
     eval_low_data_name = glob('./data/eval/low/*.*')
 
