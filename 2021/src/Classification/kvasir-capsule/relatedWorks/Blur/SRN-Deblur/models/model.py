@@ -41,8 +41,8 @@ class DEBLUR(object):
 
     def input_producer(self, batch_size=10):
         def read_data():
-            img_a = tf.image.decode_image(tf.io.read_file(next(iter(self.data_queue))[0]))
-            img_b = tf.image.decode_image(tf.io.read_file(next(iter(self.data_queue))[1]))
+            img_a = tf.image.decode_image(tf.io.read_file(os.join("./training_set", next(iter(self.data_queue))[0])))
+            img_b = tf.image.decode_image(tf.io.read_file(os.join("./training_set", next(iter(self.data_queue))[1])))
             img_a, img_b = preprocessing([img_a, img_b])
             return img_a, img_b
 
