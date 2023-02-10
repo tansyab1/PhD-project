@@ -8,9 +8,14 @@ import torch
 import yaml
 # from fire import Fire
 from tqdm import tqdm
+from math import log10, sqrt
+import matplotlib.pyplot as plt
 
 from aug import get_normalize
 from models.networks import get_generator
+from skimage.metrics import structural_similarity as ssim
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class Predictor:
@@ -95,8 +100,8 @@ def process_video(pairs, predictor, output_dir):
 
 def main(img_pattern: str,
          mask_pattern: Optional[str] = None,
-         weights_path='fpn_inception.h5',
-         out_dir='submit/',
+         weights_path='./models/fpn_inception.h5',
+         out_dir='/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DeblurGANv2/',
          side_by_side: bool = False,
          video: bool = False):
     def sorted_glob(pattern):
@@ -113,7 +118,8 @@ def main(img_pattern: str,
     if not video:
         for name, pair in tqdm(zip(names, pairs), total=len(names)):
             f_img, f_mask = pair
-            img, mask = map(cv2.imread, (f_img, f_mask))
+            img = cv2.imread(f_img)
+            mask = cv2.imread(f_mask) if f_mask is not None else None
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
             pred = predictor(img, mask)
@@ -122,6 +128,7 @@ def main(img_pattern: str,
             pred = cv2.cvtColor(pred, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(out_dir, name),
                         pred)
+            return pred
     else:
         process_video(pairs, predictor, out_dir)
 
@@ -130,16 +137,42 @@ def main(img_pattern: str,
 #     print(filenames)
 
 
-def get_files():
+def get_files(filepath=r'.\dataset1\blur'):
     list = []
-    for filepath, dirnames, filenames in os.walk(r'.\dataset1\blur'):
+    for filepath, dirnames, filenames in os.walk(filepath):
         for filename in filenames:
             list.append(os.path.join(filepath, filename))
     return list
 
 
+def cal_psnr(original, compressed):
+    mse = np.mean((original - compressed) ** 2)
+    if(mse == 0):  # MSE is zero means no noise is present in the signal .
+        # Therefore PSNR have no importance.
+        return 100
+    max_pixel = 255.0
+    psnr = 20 * log10(max_pixel / sqrt(mse))
+    return psnr
+
+
 if __name__ == '__main__':
-    img_path = get_files()
+    blurpath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/test/input"
+    gt_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Blur_var/test/groundtruth"
+    f = open("psnr-ssim.txt", "a")
+    img_path = get_files(blurpath)
+    gt = get_files(gt_path)
     for i in img_path:
-        main(i)
+        pre = main(i)
+        # img = .imread(i)
+        gt_img = cv2.imread(i.replace('input', 'groundtruth'))
+        psnr = cal_psnr(gt_img, pre)
+        # calculate ssim
+        ssim_inx = ssim(gt_img, pre, multichannel=True)
+        f.write(i.split('/')[-1] + " PSNR:" +
+                str(psnr) + " SISM:" + str(ssim_inx) + "\n")
+        print(i.split('/')[-1] + " PSNR:" + str(psnr) + " SISM:" + str(ssim_inx))
+
+    # move file f to folder result and rename it to psnr-ssim.txt
+    os.rename(f, os.path.join("submit", "psnr-ssim.txt"))
+
     # main('test_img/tt.mp4')

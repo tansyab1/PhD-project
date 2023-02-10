@@ -135,9 +135,9 @@ def main():
         print("Training...")
         
         train_dataset = GoProDataset(
-            blur_image_files = './datas/GoPro/train_blur_file.txt',
-            sharp_image_files = './datas/GoPro/train_sharp_file.txt',
-            root_dir = './datas/GoPro',
+            blur_image_files = './datas/GoPro/blur.txt',
+            sharp_image_files = './datas/GoPro/sharp.txt',
+            root_dir = './datas',
             crop = True,
             crop_size = IMAGE_SIZE,
             transform = transforms.Compose([
@@ -237,15 +237,15 @@ def main():
                 print("epoch:", epoch, "iteration:", iteration+1, "loss:%.4f"%loss.item(), 'time:%.4f'%(stop-start))
                 start = time.time()
                 
-        if (epoch)%100==0:
+        if (epoch)%10==0:
             if os.path.exists('./checkpoints/' + METHOD + '/epoch' + str(epoch)) == False:
             	os.system('mkdir ./checkpoints/' + METHOD + '/epoch' + str(epoch))
             
             print("Testing...")
             test_dataset = GoProDataset(
-                blur_image_files = './datas/GoPro/test_blur_file.txt',
-                sharp_image_files = './datas/GoPro/test_sharp_file.txt',
-                root_dir = './datas/GoPro',
+                blur_image_files = './datas/GoPro/blur.txt',
+                sharp_image_files = './datas/GoPro/sharp.txt',
+                root_dir = './datas',
                 transform = transforms.Compose([
                     transforms.ToTensor()
                 ]))

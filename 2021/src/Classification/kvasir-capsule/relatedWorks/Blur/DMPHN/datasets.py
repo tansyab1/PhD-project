@@ -35,7 +35,7 @@ class GoProDataset(Dataset):
     def __getitem__(self, idx):
         image_name = self.blur_image_files[idx][0:-1].split('/')
         blur_image = Image.open(os.path.join(self.root_dir, image_name[0], image_name[1], image_name[2], image_name[3])).convert('RGB')
-        sharp_image = Image.open(os.path.join(self.root_dir, image_name[0], image_name[1], 'sharp', image_name[3])).convert('RGB')
+        sharp_image = Image.open(os.path.join(self.root_dir, image_name[0], image_name[1], 'groundtruth', image_name[3])).convert('RGB')
         
         if self.rotation:
             degree = random.choice([90, 180, 270])
