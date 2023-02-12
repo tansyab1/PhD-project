@@ -76,6 +76,9 @@ img_multiple_of = 8
 
 txt = open(os.path.join(out_dir, 'results.txt'), 'a')
 
+psnr_cal = 0
+ssim_cal = 0
+
 for file_ in files:
     img = Image.open(file_).convert('RGB')
     input_ = TF.to_tensor(img).unsqueeze(0).cuda()
@@ -102,7 +105,15 @@ for file_ in files:
     save_img((os.path.join(out_dir, f+'.png')), restored)
     psnr = calc_psnr(cv2.imread(file_), restored)
     ssim = calc_ssim(cv2.imread(file_), restored)
+    print(f"{f} PSNR: {psnr:.2f} SSIM: {ssim:.4f}")
+    psnr_cal += psnr
+    ssim_cal += ssim
     
     txt.write(f"{f} PSNR: {psnr:.2f} SSIM: {ssim:.4f} \n")
+    
+psnr_cal = psnr_cal/len(files)
+ssim_cal = ssim_cal/len(files)
+
+print(f"Average PSNR: {psnr_cal:.2f} SSIM: {ssim_cal:.4f}")
 
 print(f"Files saved at {out_dir}")
