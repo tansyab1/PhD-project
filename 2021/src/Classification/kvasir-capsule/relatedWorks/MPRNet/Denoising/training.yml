@@ -2,7 +2,7 @@
 ## 
 ####
 
-GPU: [0]
+GPU: [0,1,2]
 
 VERBOSE: True
 
