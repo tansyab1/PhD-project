@@ -11,6 +11,9 @@ from natsort import natsorted
 from glob import glob
 import cv2
 import argparse
+from torchmetrics import StructuralSimilarityIndexMeasure as SSIM
+import math
+import numpy as np
 
 parser = argparse.ArgumentParser(description='Demo MPRNet')
 parser.add_argument('--input_dir', default='./samples/input/', type=str, help='Input images')
@@ -18,6 +21,18 @@ parser.add_argument('--result_dir', default='./samples/output/', type=str, help=
 parser.add_argument('--task', required=True, type=str, help='Task to run', choices=['Deblurring', 'Denoising', 'Deraining'])
 
 args = parser.parse_args()
+
+def calc_ssim(img1, img2):
+    ssim = SSIM()
+    return ssim(torch.tensor(img1), torch.tensor(img2))
+
+def calc_psnr(img1, img2):
+    mse = np.mean((img1 - img2) ** 2)
+    if mse == 0:
+        return 100
+    else:
+        return 20 * math.log10(255.0 / math.sqrt(mse))
+        
 
 def save_img(filepath, img):
     cv2.imwrite(filepath,cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
@@ -59,6 +74,8 @@ model.eval()
 
 img_multiple_of = 8
 
+txt = open(os.path.join(out_dir, 'results.txt'), 'a')
+
 for file_ in files:
     img = Image.open(file_).convert('RGB')
     input_ = TF.to_tensor(img).unsqueeze(0).cuda()
@@ -83,5 +100,9 @@ for file_ in files:
 
     f = os.path.splitext(os.path.split(file_)[-1])[0]
     save_img((os.path.join(out_dir, f+'.png')), restored)
+    psnr = calc_psnr(cv2.imread(file_), restored)
+    ssim = calc_ssim(cv2.imread(file_), restored)
+    
+    txt.write(f"{f} PSNR: {psnr:.2f} SSIM: {ssim:.4f} \n")
 
 print(f"Files saved at {out_dir}")
