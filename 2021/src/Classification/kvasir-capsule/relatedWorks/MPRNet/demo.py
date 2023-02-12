@@ -80,7 +80,9 @@ psnr_cal = 0
 ssim_cal = 0
 
 for file_ in files:
+    file_gt = file_.replace('input', 'groundtruth')
     img = Image.open(file_).convert('RGB')
+    # img_gt = Image.open(file_gt).convert('RGB')
     input_ = TF.to_tensor(img).unsqueeze(0).cuda()
 
     # Pad the input if not_multiple_of 8
@@ -103,8 +105,8 @@ for file_ in files:
 
     f = os.path.splitext(os.path.split(file_)[-1])[0]
     save_img((os.path.join(out_dir, f+'.png')), restored)
-    psnr = calc_psnr(cv2.imread(file_), restored)
-    ssim = calc_ssim(cv2.imread(file_), restored)
+    psnr = calc_psnr(cv2.imread(file_gt), restored)
+    ssim = calc_ssim(cv2.imread(file_gt), restored)
     print(f"{f} PSNR: {psnr:.2f} SSIM: {ssim:.4f}")
     psnr_cal += psnr
     ssim_cal += ssim
