@@ -28,8 +28,8 @@ args = parser.parse_args()
 
 #Hyper Parameters
 METHOD = "DMPHN_1_2_4_8"
-SAMPLE_DIR = "test_samples/Blur_var/test/input/"
-GT_DIR = "test_samples/Blur_var/test/groundtruth/"
+SAMPLE_DIR = "./datas/Blur_var/test/input/"
+GT_DIR = "./datas/Blur_var/test/groundtruth/"
 EXPDIR = "DMPHN_1_2_4_8_test_res"
 LEARNING_RATE = args.learning_rate
 EPOCHS = args.epochs
