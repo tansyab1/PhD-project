@@ -11,7 +11,7 @@ from natsort import natsorted
 from glob import glob
 import cv2
 import argparse
-from torchmetrics import StructuralSimilarityIndexMeasure as SSIM
+from torchmetrics.functional import structural_similarity_index_measure
 import math
 import numpy as np
 
@@ -23,8 +23,9 @@ parser.add_argument('--task', required=True, type=str, help='Task to run', choic
 args = parser.parse_args()
 
 def calc_ssim(img1, img2):
-    ssim = SSIM()
-    return ssim(torch.tensor(img1), torch.tensor(img2))
+    img1 = torch.tensor(img1).permute(2, 0, 1).unsqueeze(0).float()
+    img2 = torch.tensor(img2).permute(2, 0, 1).unsqueeze(0).float()
+    return structural_similarity_index_measure(img1, img2)
 
 def calc_psnr(img1, img2):
     mse = np.mean((img1 - img2) ** 2)
@@ -105,8 +106,12 @@ for file_ in files:
 
     f = os.path.splitext(os.path.split(file_)[-1])[0]
     save_img((os.path.join(out_dir, f+'.png')), restored)
-    psnr = calc_psnr(cv2.imread(file_gt), restored)
-    ssim = calc_ssim(cv2.imread(file_gt), restored)
+    imgt = cv2.imread(file_gt)
+    
+    psnr = calc_psnr(imgt, restored)
+    ssim = calc_ssim(imgt, restored)
+    
+    
     print(f"{f} PSNR: {psnr:.2f} SSIM: {ssim:.4f}")
     psnr_cal += psnr
     ssim_cal += ssim
