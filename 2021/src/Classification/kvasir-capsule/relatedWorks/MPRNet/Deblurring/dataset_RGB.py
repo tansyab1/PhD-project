@@ -15,13 +15,13 @@ class DataLoaderTrain(Dataset):
         super(DataLoaderTrain, self).__init__()
 
         inp_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
-        tar_files = sorted(os.listdir(os.path.join(rgb_dir, 'target')))
+        tar_files = sorted(os.listdir(os.path.join(rgb_dir, 'groundtruth')))
 
         self.inp_filenames = [os.path.join(rgb_dir, 'input', x)  for x in inp_files if is_image_file(x)]
-        self.tar_filenames = [os.path.join(rgb_dir, 'target', x) for x in tar_files if is_image_file(x)]
+        self.tar_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in tar_files if is_image_file(x)]
 
         self.img_options = img_options
-        self.sizex       = len(self.tar_filenames)  # get the size of target
+        self.sizex       = len(self.tar_filenames)  # get the size of groundtruth
 
         self.ps = self.img_options['patch_size']
 
@@ -103,13 +103,13 @@ class DataLoaderVal(Dataset):
         super(DataLoaderVal, self).__init__()
 
         inp_files = sorted(os.listdir(os.path.join(rgb_dir, 'input')))
-        tar_files = sorted(os.listdir(os.path.join(rgb_dir, 'target')))
+        tar_files = sorted(os.listdir(os.path.join(rgb_dir, 'groundtruth')))
 
         self.inp_filenames = [os.path.join(rgb_dir, 'input', x)  for x in inp_files if is_image_file(x)]
-        self.tar_filenames = [os.path.join(rgb_dir, 'target', x) for x in tar_files if is_image_file(x)]
+        self.tar_filenames = [os.path.join(rgb_dir, 'groundtruth', x) for x in tar_files if is_image_file(x)]
 
         self.img_options = img_options
-        self.sizex       = len(self.tar_filenames)  # get the size of target
+        self.sizex       = len(self.tar_filenames)  # get the size of groundtruth
 
         self.ps = self.img_options['patch_size']
 
