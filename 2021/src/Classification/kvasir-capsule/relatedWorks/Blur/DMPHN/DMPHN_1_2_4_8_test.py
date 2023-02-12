@@ -15,6 +15,7 @@ from torchvision import transforms, datasets
 from datasets import GoProDataset
 import time
 from PIL import Image
+from torchmetrics import StructuralSimilarityIndexMeasure as SSIM
 
 parser = argparse.ArgumentParser(description="Deep Multi-Patch Hierarchical Network")
 parser.add_argument("-e","--epochs",type = int, default = 2600)
@@ -27,7 +28,8 @@ args = parser.parse_args()
 
 #Hyper Parameters
 METHOD = "DMPHN_1_2_4_8"
-SAMPLE_DIR = "test_samples"
+SAMPLE_DIR = "test_samples/Blur_var/test/input/"
+GT_DIR = "test_samples/Blur_var/test/groundtruth/"
 EXPDIR = "DMPHN_1_2_4_8_test_res"
 LEARNING_RATE = args.learning_rate
 EPOCHS = args.epochs
@@ -53,9 +55,17 @@ def weight_init(m):
         n = m.weight.size(1)
         m.weight.data.normal_(0, 0.01)
         m.bias.data = torch.ones(m.bias.data.size())
+        
+
+def calculate_psnr(img1, img2):
+    mse = np.mean((img1 - img2) ** 2)
+    return 20 * math.log10(255.0 / math.sqrt(mse))
+    
 
 def main():
     print("init data folders")
+    
+    F.open('./test_results/' + EXPDIR + "/test_results.txt", 'a')
 
     encoder_lv1 = models.Encoder().apply(weight_init).cuda(GPU)
     encoder_lv2 = models.Encoder().apply(weight_init).cuda(GPU)
@@ -101,6 +111,7 @@ def main():
     for images_name in os.listdir(SAMPLE_DIR):
     	with torch.no_grad():             
             images_lv1 = transforms.ToTensor()(Image.open(SAMPLE_DIR + '/' + images_name).convert('RGB'))
+            images_lv1_gt = transforms.ToTensor()(Image.open(GT_DIR + '/' + images_name).convert('RGB'))
             images_lv1 = Variable(images_lv1 - 0.5).unsqueeze(0).cuda(GPU)
             start = time.time()           
             H = images_lv1.size(2)
@@ -162,7 +173,13 @@ def main():
             stop = time.time()
             test_time += stop-start
             print('RunTime:%.4f'%(stop-start), '  Average Runtime:%.4f'%(test_time/(iteration+1)))
-            save_images(deblur_image.data + 0.5, images_name) 
+            save_images(deblur_image.data + 0.5, images_name)
+            # calculate PSNR and SSIM 
+            # save PSNR and SSIM to a txt file
+            psnr = calculate_psnr(deblur_image.data + 0.5 , images_lv1_gt)
+            SSIM = SSIM(deblur_image.data + 0.5 , images_lv1_gt)
+            print('PSNR:%.4f'%(psnr), '  SSIM:%.4f'%(SSIM))
+            F.write(images_name[0] + '  PSNR:%.4f'%(psnr) + '  SSIM:%.4f'%(SSIM) + '\n')
             iteration += 1
             
 if __name__ == '__main__':
