@@ -334,9 +334,9 @@ if __name__ == "__main__":
     briques = 0
     entropys = 0
     # open txt file to write the results
-    f = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/bm3d.txt", "w")
-    in_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/BM3D/"
-    ref_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Noise_var/test/groundtruth/"
+    f = open("./results/VDNet.txt", "w")
+    in_path = "./results/"
+    ref_path = "../../../Noise_var/test/groundtruth/"
     for name in tqdm(os.listdir(in_path)):
         # check if the file is an image
         if not name.endswith(('.png', '.jpg', '.jpeg')):

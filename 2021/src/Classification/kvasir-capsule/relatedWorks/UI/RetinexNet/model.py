@@ -16,37 +16,40 @@ def concat(layers):
 def DecomNet(input_im, layer_num, channel=64, kernel_size=3):
     input_max = tf.reduce_max(input_im, axis=3, keepdims=True)
     input_im = concat([input_max, input_im])
-    with tf.variable_scope('DecomNet', reuse=tf.AUTO_REUSE):
-        conv = tf.layers.conv2d(input_im, channel, kernel_size * 3, padding='same', activation=None, name="shallow_feature_extraction")
+    with tf.compat.v1.variable_scope('DecomNet'):
+        conv = tf.keras.layers.Conv2D(channel, kernel_size*3, padding='same', activation=tf.nn.relu)(input_im)
         for idx in range(layer_num):
-            conv = tf.layers.conv2d(conv, channel, kernel_size, padding='same', activation=tf.nn.relu, name='activated_layer_%d' % idx)
-        conv = tf.layers.conv2d(conv, 4, kernel_size, padding='same', activation=None, name='recon_layer')
+            conv = tf.keras.layers.Conv2D(channel, kernel_size, padding='same', activation=tf.nn.relu)(conv)
+        conv = tf.keras.layers.Conv2D(4, kernel_size, padding='same', activation=None)(conv)
 
     R = tf.sigmoid(conv[:,:,:,0:3])
     L = tf.sigmoid(conv[:,:,:,3:4])
+    
+    # print("R shape: ", R.shape)
+    # print("L shape: ", L.shape)
 
     return R, L
 
 def RelightNet(input_L, input_R, channel=64, kernel_size=3):
     input_im = concat([input_R, input_L])
-    with tf.variable_scope('RelightNet'):
-        conv0 = tf.layers.conv2d(input_im, channel, kernel_size, padding='same', activation=None)
-        conv1 = tf.layers.conv2d(conv0, channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)
-        conv2 = tf.layers.conv2d(conv1, channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)
-        conv3 = tf.layers.conv2d(conv2, channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)
+    with tf.compat.v1.variable_scope('RelightNet'):
+        conv0 = tf.keras.layers.Conv2D(channel, kernel_size, padding='same', activation=tf.nn.relu)(input_im)
+        conv1 = tf.keras.layers.Conv2D(channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)(conv0)
+        conv2 = tf.keras.layers.Conv2D(channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)(conv1)
+        conv3 = tf.keras.layers.Conv2D(channel, kernel_size, strides=2, padding='same', activation=tf.nn.relu)(conv2)
         
-        up1 = tf.image.resize_nearest_neighbor(conv3, (tf.shape(conv2)[1], tf.shape(conv2)[2]))
-        deconv1 = tf.layers.conv2d(up1, channel, kernel_size, padding='same', activation=tf.nn.relu) + conv2
-        up2 = tf.image.resize_nearest_neighbor(deconv1, (tf.shape(conv1)[1], tf.shape(conv1)[2]))
-        deconv2= tf.layers.conv2d(up2, channel, kernel_size, padding='same', activation=tf.nn.relu) + conv1
-        up3 = tf.image.resize_nearest_neighbor(deconv2, (tf.shape(conv0)[1], tf.shape(conv0)[2]))
-        deconv3 = tf.layers.conv2d(up3, channel, kernel_size, padding='same', activation=tf.nn.relu) + conv0
+        up1 = tf.compat.v1.image.resize_nearest_neighbor(conv3, (tf.shape(conv2)[1], tf.shape(conv2)[2]))
+        deconv1 = tf.keras.layers.Conv2D(channel, kernel_size, padding='same', activation=tf.nn.relu)(up1) + conv2
+        up2 = tf.compat.v1.image.resize_nearest_neighbor(deconv1, (tf.shape(conv1)[1], tf.shape(conv1)[2]))
+        deconv2 = tf.keras.layers.Conv2D(channel, kernel_size, padding='same', activation=tf.nn.relu)(up2) + conv1
+        up3 = tf.compat.v1.image.resize_nearest_neighbor(deconv2, (tf.shape(conv0)[1], tf.shape(conv0)[2]))
+        deconv3 = tf.keras.layers.Conv2D(channel, kernel_size, padding='same', activation=tf.nn.relu)(up3) + conv0
         
-        deconv1_resize = tf.image.resize_nearest_neighbor(deconv1, (tf.shape(deconv3)[1], tf.shape(deconv3)[2]))
-        deconv2_resize = tf.image.resize_nearest_neighbor(deconv2, (tf.shape(deconv3)[1], tf.shape(deconv3)[2]))
+        deconv1_resize = tf.compat.v1.image.resize_nearest_neighbor(deconv1, (tf.shape(deconv3)[1], tf.shape(deconv3)[2]))
+        deconv2_resize = tf.compat.v1.image.resize_nearest_neighbor(deconv2, (tf.shape(deconv3)[1], tf.shape(deconv3)[2]))
         feature_gather = concat([deconv1_resize, deconv2_resize, deconv3])
-        feature_fusion = tf.layers.conv2d(feature_gather, channel, 1, padding='same', activation=None)
-        output = tf.layers.conv2d(feature_fusion, 1, 3, padding='same', activation=None)
+        feature_fusion = tf.keras.layers.Conv2D(channel, 1, padding='same', activation=tf.nn.relu)(feature_gather)
+        output = tf.keras.layers.Conv2D(1, 3, padding='same', activation=None)(feature_fusion)
     return output
 
 class lowlight_enhance(object):
@@ -55,8 +58,8 @@ class lowlight_enhance(object):
         self.DecomNet_layer_num = 5
 
         # build the model
-        self.input_low = tf.placeholder(tf.float32, [None, None, None, 3], name='input_low')
-        self.input_high = tf.placeholder(tf.float32, [None, None, None, 3], name='input_high')
+        self.input_low = tf.compat.v1.placeholder(tf.float32, [None, None, None, 3], name='input_low')
+        self.input_high = tf.compat.v1.placeholder(tf.float32, [None, None, None, 3], name='input_high')
 
         [R_low, I_low] = DecomNet(self.input_low, layer_num=self.DecomNet_layer_num)
         [R_high, I_high] = DecomNet(self.input_high, layer_num=self.DecomNet_layer_num)
@@ -87,19 +90,19 @@ class lowlight_enhance(object):
         self.loss_Decom = self.recon_loss_low + self.recon_loss_high + 0.001 * self.recon_loss_mutal_low + 0.001 * self.recon_loss_mutal_high + 0.1 * self.Ismooth_loss_low + 0.1 * self.Ismooth_loss_high + 0.01 * self.equal_R_loss
         self.loss_Relight = self.relight_loss + 3 * self.Ismooth_loss_delta
 
-        self.lr = tf.placeholder(tf.float32, name='learning_rate')
-        optimizer = tf.train.AdamOptimizer(self.lr, name='AdamOptimizer')
+        self.lr = tf.compat.v1.placeholder(tf.float32, name='learning_rate')
+        optimizer = tf.compat.v1.train.AdamOptimizer(self.lr)
 
-        self.var_Decom = [var for var in tf.trainable_variables() if 'DecomNet' in var.name]
-        self.var_Relight = [var for var in tf.trainable_variables() if 'RelightNet' in var.name]
+        self.var_Decom = [var for var in tf.compat.v1.trainable_variables() if 'DecomNet' in var.name]
+        self.var_Relight = [var for var in tf.compat.v1.trainable_variables() if 'RelightNet' in var.name]
 
         self.train_op_Decom = optimizer.minimize(self.loss_Decom, var_list = self.var_Decom)
         self.train_op_Relight = optimizer.minimize(self.loss_Relight, var_list = self.var_Relight)
 
-        self.sess.run(tf.global_variables_initializer())
+        self.sess.run(tf.compat.v1.global_variables_initializer())
 
-        self.saver_Decom = tf.train.Saver(var_list = self.var_Decom)
-        self.saver_Relight = tf.train.Saver(var_list = self.var_Relight)
+        self.saver_Decom = tf.compat.v1.train.Saver(var_list = self.var_Decom)
+        self.saver_Relight = tf.compat.v1.train.Saver(var_list = self.var_Relight)
 
         print("[*] Initialize model successfully...")
 
@@ -114,7 +117,7 @@ class lowlight_enhance(object):
         return tf.abs(tf.nn.conv2d(input_tensor, kernel, strides=[1, 1, 1, 1], padding='SAME'))
 
     def ave_gradient(self, input_tensor, direction):
-        return tf.layers.average_pooling2d(self.gradient(input_tensor, direction), pool_size=3, strides=1, padding='SAME')
+        return tf.compat.v1.layers.average_pooling2d(self.gradient(input_tensor, direction), pool_size=3, strides=1, padding='SAME')
 
     def smooth(self, input_I, input_R):
         input_R = tf.image.rgb_to_grayscale(input_R)
@@ -133,7 +136,7 @@ class lowlight_enhance(object):
 
             save_images(os.path.join(sample_dir, 'eval_%s_%d_%d.png' % (train_phase, idx + 1, epoch_num)), result_1, result_2)
 
-    def train(self, train_low_data, train_high_data, eval_low_data, batch_size, patch_size, epoch, lr, sample_dir, ckpt_dir, eval_every_epoch, train_phase):
+    def train(self, train_low_data, train_high_data, eval_low_data, batch_size, patch_size, epoch_num, lr, sample_dir, ckpt_dir, eval_every_epoch, train_phase):
         assert len(train_low_data) == len(train_high_data)
         numBatch = len(train_low_data) // int(batch_size)
 
@@ -164,7 +167,7 @@ class lowlight_enhance(object):
         start_time = time.time()
         image_id = 0
 
-        for epoch in range(start_epoch, epoch):
+        for epoch in range(start_epoch, epoch_num):
             for batch_id in range(start_step, numBatch):
                 # generate data for a batch
                 batch_input_low = np.zeros((batch_size, patch_size, patch_size, 3), dtype="float32")
@@ -223,11 +226,11 @@ class lowlight_enhance(object):
             return False, 0
 
     def test(self, test_low_data, test_high_data, test_low_data_names, save_dir, decom_flag):
-        tf.global_variables_initializer().run()
+        tf.compat.v1.global_variables_initializer().run()
 
         print("[*] Reading checkpoint...")
-        load_model_status_Decom, _ = self.load(self.saver_Decom, './model/Decom')
-        load_model_status_Relight, _ = self.load(self.saver_Relight, './model/Relight')
+        load_model_status_Decom, _ = self.load(self.saver_Decom, './model/Decom/RetinexNet-Decom-124800')
+        load_model_status_Relight, _ = self.load(self.saver_Relight, './model/Relight/RetinexNet-Relight-124800')
         if load_model_status_Decom and load_model_status_Relight:
             print("[*] Load weights successfully...")
         

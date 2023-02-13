@@ -2,7 +2,7 @@
 ## 
 ####
 
-GPU: [0,1,2]
+GPU: [0,1]
 
 VERBOSE: True
 
@@ -12,15 +12,15 @@ MODEL:
 
 # Optimization arguments.
 OPTIM:
-  BATCH_SIZE: 16
-  NUM_EPOCHS: 80
+  BATCH_SIZE: 8
+  NUM_EPOCHS: 10
   # NEPOCH_DECAY: [10]
   LR_INITIAL: 2e-4
   LR_MIN: 1e-6
   # BETA1: 0.9
 
 TRAINING:
-  VAL_AFTER_EVERY: 1
+  VAL_AFTER_EVERY: 10
   RESUME: False
   TRAIN_PS: 128
   VAL_PS: 256
