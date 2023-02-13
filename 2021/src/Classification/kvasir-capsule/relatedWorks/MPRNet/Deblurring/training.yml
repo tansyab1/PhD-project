@@ -2,7 +2,11 @@
 ## 
 ####
 
+<<<<<<< HEAD
 GPU: [0,1]
+=======
+GPU: [2]
+>>>>>>> 5f902b7f6fe54516ec33e5c7c7dc307d60f0e188
 
 VERBOSE: True
 
@@ -12,8 +16,13 @@ MODEL:
 
 # Optimization arguments.
 OPTIM:
+<<<<<<< HEAD
   BATCH_SIZE: 8
   NUM_EPOCHS: 10
+=======
+  BATCH_SIZE: 16
+  NUM_EPOCHS: 80
+>>>>>>> 5f902b7f6fe54516ec33e5c7c7dc307d60f0e188
   # NEPOCH_DECAY: [10]
   LR_INITIAL: 2e-4
   LR_MIN: 1e-6
