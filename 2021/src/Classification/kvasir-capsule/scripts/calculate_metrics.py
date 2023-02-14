@@ -152,7 +152,7 @@ def vif(img_ref, img_dist, wavelet='steerable', full=False):
     assert wavelet in ['steerable', 'haar', 'db2',
                        'bio2.2'], 'Invalid choice of wavelet'
     M = 3
-    sigma_nsq = 0.1
+    sigma_nsq = 0.4
 
     if wavelet == 'steerable':
         from pyrtools.pyramids import SteerablePyramidSpace as SPyr
@@ -313,17 +313,21 @@ def entropy(img):
 # function to call all the above functions
 
 def calculatemetrics(img_ref, img):
-    psnr = calculate_psnr(img_ref, img)
-    ssim = calculate_ssim(img_ref, img)
+    # psnr = calculate_psnr(img_ref, img)
+    # ssim = calculate_ssim(img_ref, img)
     img_ref_gray = cv2.cvtColor(img_ref, cv2.COLOR_BGR2GRAY)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     vif_inx = vif(img_ref_gray, img_gray)
     # vif = 0
     # uiqm, uciqe = calculate_uiqm_uciqe(img)
     # uiqm, uciqe = 0, 0
-    brique = calculate_briq(img)
+    # brique = calculate_briq(img)
     # niqe_idx = niqe(img)
-    entropy_idx = entropy(img)
+    # entropy_idx = entropy(img)
+    psnr = 0
+    ssim = 0
+    entropy_idx = 0
+    brique = 0
     return psnr, ssim, vif_inx, entropy_idx, brique
 
 
@@ -334,29 +338,113 @@ if __name__ == "__main__":
     briques = 0
     entropys = 0
     # open txt file to write the results
-    f = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/bm3d.txt", "w")
-    in_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/BM3D/"
+    
+    in_path_CycleISP = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/CycleISP/results/png/"
+    in_path_DANet = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DANet/results/"
+    in_path_DBGAN = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DBGAN/experiments/save/results/PSNR_GoPro/GoPro/"
+    in_path_DBGANv2 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DeblurGANv2/"
+    in_path_Uformer_noise = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/denoising/Noise_var/Uformer_B/"
+    in_path_Uformer_blur = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/deblurring/Blur_var/Uformer_B/"
+    in_path_Uformer_noise_latest = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/denoising/Noise_var/Uformer_B_latest/"
+    in_path_Uformer_blur_latest = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/deblurring/Blur_var/Uformer_B_latest/"
+    in_path_Uformer_UI = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/UI_var/Uformer_B/"
+    in_path_Uformer_UI_latest = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer/results/UI_var/Uformer_B_latest/"
+    in_path_RIDNet = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/RIDNet/TestCode/experiment/Noise/results/"
     ref_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/Noise_var/test/groundtruth/"
-    for name in tqdm(os.listdir(in_path)):
+    
+    vifs_CycleISP = 0
+    vifs_DANet = 0
+    vifs_DBGAN = 0
+    vifs_DBGANv2 = 0
+    vifs_Uformer_noise = 0
+    vifs_Uformer_blur = 0
+    vifs_Uformer_noise_latest = 0
+    vifs_Uformer_blur_latest = 0
+    vifs_Uformer_UI = 0
+    vifs_Uformer_UI_latest = 0
+    vifs_RIDNet = 0
+    
+    f_CycleISP = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/CycleISP.txt", "w")
+    f_DANet = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DANet.txt", "w")
+    f_DBGAN = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DBGAN.txt", "w")
+    f_DBGANv2 = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/DBGANv2.txt", "w")
+    f_Uformer_noise = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_noise.txt", "w")
+    f_Uformer_blur = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_blur.txt", "w")
+    f_Uformer_noise_latest = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_noise_latest.txt", "w")
+    f_Uformer_blur_latest = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_blur_latest.txt", "w")
+    f_Uformer_UI = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_UI.txt", "w")
+    f_Uformer_UI_latest = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/Uformer_UI_latest.txt", "w")
+    f_RIDNet = open("/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/results/RIDNet.txt", "w")
+    for name in tqdm(os.listdir(in_path_CycleISP)):
         # check if the file is an image
-        if not name.endswith(('.png', '.jpg', '.jpeg')):
+        if not name.endswith(('.png', '.jpg', '.jpeg', '.PNG', '_x1_SR.png')):
             continue
-        img_ref = cv2.imread(ref_path + name)
-        img = cv2.imread(in_path + name)
-        psnr, ssim, vif_ref, entropy_idx, brique = calculatemetrics(
-            img_ref, img)
+        img_CycleISP = cv2.imread(in_path_CycleISP + name)
+        img_DANet = cv2.imread(in_path_DANet + name.replace(".png", ".jpg"))
+        img_DBGAN = cv2.imread(in_path_DBGAN + name)
+        img_DBGANv2 = cv2.imread(in_path_DBGANv2 + name.replace(".png", ".jpg"))
+        img_Uformer_noise = cv2.imread(in_path_Uformer_noise + name.replace(".png", ".PNG"))
+        img_Uformer_blur = cv2.imread(in_path_Uformer_blur + name.replace(".png", ".PNG"))
+        img_Uformer_noise_latest = cv2.imread(in_path_Uformer_noise_latest + name.replace(".png", ".PNG"))
+        img_Uformer_blur_latest = cv2.imread(in_path_Uformer_blur_latest + name.replace(".png", ".PNG"))
+        img_Uformer_UI = cv2.imread(in_path_Uformer_UI + name.replace(".png", ".PNG"))
+        img_Uformer_UI_latest = cv2.imread(in_path_Uformer_UI_latest + name.replace(".png", ".PNG"))
+        img_RIDNet = cv2.imread(in_path_RIDNet + name.replace(".png", "_x1_SR.png"))
+        
+        img_ref = cv2.imread(ref_path + name.replace(".png", ".jpg"))
+        
+        psnr, ssim, vif_ref_CycleISP, entropy_idx, brique = calculatemetrics(img_ref, img_CycleISP)
+        psnr, ssim, vif_ref_DANet, entropy_idx, brique = calculatemetrics(img_ref, img_DANet)
+        psnr, ssim, vif_ref_DBGAN, entropy_idx, brique = calculatemetrics(img_ref, img_DBGAN)
+        psnr, ssim, vif_ref_DBGANv2, entropy_idx, brique = calculatemetrics(img_ref, img_DBGANv2)
+        psnr, ssim, vif_ref_Uformer_noise, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_noise)
+        psnr, ssim, vif_ref_Uformer_blur, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_blur)
+        psnr, ssim, vif_ref_Uformer_noise_latest, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_noise_latest)
+        psnr, ssim, vif_ref_Uformer_blur_latest, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_blur_latest)
+        psnr, ssim, vif_ref_Uformer_UI, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_UI)
+        psnr, ssim, vif_ref_Uformer_UI_latest, entropy_idx, brique = calculatemetrics(img_ref, img_Uformer_UI_latest)
+        psnr, ssim, vif_ref_RIDNet, entropy_idx, brique = calculatemetrics(img_ref, img_RIDNet)
         # print("psnr: ", psnr)
         # print("ssim: ", ssim)
         # print("vif: ", vif_ref)
         # print("brique: ", brique)
         # print("entropy: ", entropy_idx)
-        psnrs += psnr
-        ssims += ssim
-        vifs += vif_ref
-        briques += brique
-        entropys += entropy_idx
-        
-        f.write(name + " PSNR: " + str(psnr) + " SSIM: " + str(ssim) + " VIF: " +
-                str(vif_ref) + " BRIQUE: " + str(brique) + " entropy: " + str(entropy_idx) + "\n")
-        
-    print("Average PSNR: " + str(psnrs/len(os.listdir(in_path))) + " Average SSIM: " + str(ssims/len(os.listdir(in_path))) + " Average VIF: " + str(vifs/len(os.listdir(in_path))) + " Average BRIQUE: " + str(briques/len(os.listdir(in_path))) + " Average entropy: " + str(entropys/len(os.listdir(in_path))))
+        # psnrs += psnr
+        # ssims += ssim
+        vifs_CycleISP += vif_ref_CycleISP
+        vifs_DANet += vif_ref_DANet
+        vifs_DBGAN += vif_ref_DBGAN
+        vifs_DBGANv2 += vif_ref_DBGANv2
+        vifs_Uformer_noise += vif_ref_Uformer_noise
+        vifs_Uformer_blur += vif_ref_Uformer_blur
+        vifs_Uformer_noise_latest += vif_ref_Uformer_noise_latest
+        vifs_Uformer_blur_latest += vif_ref_Uformer_blur_latest
+        vifs_Uformer_UI += vif_ref_Uformer_UI
+        vifs_Uformer_UI_latest += vif_ref_Uformer_UI_latest
+        vifs_RIDNet += vif_ref_RIDNet
+        # briques += brique
+        # entropys += entropy_idx
+
+        f_CycleISP.write(name + " VIF: " + str(vif_ref_CycleISP) + "\n")
+        f_DANet.write(name + " VIF: " + str(vif_ref_DANet) + "\n")
+        f_DBGAN.write(name + " VIF: " + str(vif_ref_DBGAN) + "\n")
+        f_DBGANv2.write(name + " VIF: " + str(vif_ref_DBGANv2) + "\n")
+        f_Uformer_noise.write(name + " VIF: " + str(vif_ref_Uformer_noise) + "\n")
+        f_Uformer_blur.write(name + " VIF: " + str(vif_ref_Uformer_blur) + "\n")
+        f_Uformer_noise_latest.write(name + " VIF: " + str(vif_ref_Uformer_noise_latest) + "\n")
+        f_Uformer_blur_latest.write(name + " VIF: " + str(vif_ref_Uformer_blur_latest) + "\n")
+        f_Uformer_UI.write(name + " VIF: " + str(vif_ref_Uformer_UI) + "\n")
+        f_Uformer_UI_latest.write(name + " VIF: " + str(vif_ref_Uformer_UI_latest) + "\n")
+        f_RIDNet.write(name + " VIF: " + str(vif_ref_RIDNet) + "\n")
+
+    print("Average VIF for CycleISP: ", vifs_CycleISP / len(os.listdir(in_path_CycleISP)))
+    print("Average VIF for DANet: ", vifs_DANet / len(os.listdir(in_path_DANet)))
+    print("Average VIF for DBGAN: ", vifs_DBGAN / len(os.listdir(in_path_DBGAN)))
+    print("Average VIF for DBGANv2: ", vifs_DBGANv2 / len(os.listdir(in_path_DBGANv2)))
+    print("Average VIF for Uformer_noise: ", vifs_Uformer_noise / len(os.listdir(in_path_Uformer_noise)))
+    print("Average VIF for Uformer_blur: ", vifs_Uformer_blur / len(os.listdir(in_path_Uformer_blur)))
+    print("Average VIF for Uformer_noise_latest: ", vifs_Uformer_noise_latest / len(os.listdir(in_path_Uformer_noise_latest)))
+    print("Average VIF for Uformer_blur_latest: ", vifs_Uformer_blur_latest / len(os.listdir(in_path_Uformer_blur_latest)))
+    print("Average VIF for Uformer_UI: ", vifs_Uformer_UI / len(os.listdir(in_path_Uformer_UI)))
+    print("Average VIF for Uformer_UI_latest: ", vifs_Uformer_UI_latest / len(os.listdir(in_path_Uformer_UI_latest)))
+    print("Average VIF for RIDNet: ", vifs_RIDNet / len(os.listdir(in_path_RIDNet)))

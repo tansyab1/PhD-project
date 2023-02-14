@@ -22,11 +22,11 @@ from pdb import set_trace as stx
 
 parser = argparse.ArgumentParser(description='Image Deblurring using MPRNet')
 
-parser.add_argument('--input_dir', default='./Datasets/', type=str, help='Directory of validation images')
+parser.add_argument('--input_dir', default='./Datasets/Blur_var', type=str, help='Directory of validation images')
 parser.add_argument('--result_dir', default='./results/', type=str, help='Directory for results')
-parser.add_argument('--weights', default='./pretrained_models/model_deblurring.pth', type=str, help='Path to weights')
-parser.add_argument('--dataset', default='GoPro', type=str, help='Test Dataset') # ['GoPro', 'HIDE', 'RealBlur_J', 'RealBlur_R']
-parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
+parser.add_argument('--weights', default='./checkpoints/Deblurring/models/MPRNet/model_best.pth', type=str, help='Path to weights')
+parser.add_argument('--dataset', default='RealBlur_J', type=str, help='Test Dataset') # ['GoPro', 'HIDE', 'RealBlur_J', 'RealBlur_R']
+parser.add_argument('--gpus', default='0,1', type=str, help='CUDA_VISIBLE_DEVICES')
 
 args = parser.parse_args()
 
@@ -42,7 +42,8 @@ model_restoration = nn.DataParallel(model_restoration)
 model_restoration.eval()
 
 dataset = args.dataset
-rgb_dir_test = os.path.join(args.input_dir, dataset, 'test', 'input')
+rgb_dir_test = os.path.join(args.input_dir, 'test', 'input')
+print("===>Testing using dataset: ",rgb_dir_test)
 test_dataset = get_test_data(rgb_dir_test, img_options={})
 test_loader  = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False, num_workers=4, drop_last=False, pin_memory=True)
 
