@@ -65,7 +65,7 @@ def calculate_psnr(img1, img2):
 def main():
     print("init data folders")
     
-    F.open('./test_results/' + EXPDIR + "/test_results.txt", 'a')
+    txt = open('./test_results/' + EXPDIR + '/psnr.txt', 'w')
 
     encoder_lv1 = models.Encoder().apply(weight_init).cuda(GPU)
     encoder_lv2 = models.Encoder().apply(weight_init).cuda(GPU)
@@ -177,9 +177,9 @@ def main():
             # calculate PSNR and SSIM 
             # save PSNR and SSIM to a txt file
             psnr = calculate_psnr(deblur_image.data + 0.5 , images_lv1_gt)
-            SSIM = SSIM(deblur_image.data + 0.5 , images_lv1_gt)
-            print('PSNR:%.4f'%(psnr), '  SSIM:%.4f'%(SSIM))
-            F.write(images_name[0] + '  PSNR:%.4f'%(psnr) + '  SSIM:%.4f'%(SSIM) + '\n')
+            ssim = SSIM(deblur_image.data + 0.5 , images_lv1_gt)
+            print('PSNR:%.4f'%(psnr), '  SSIM:%.4f'%(ssim))
+            txt.write(images_name[0] + '  PSNR:%.4f'%(psnr) + '  SSIM:%.4f'%(ssim) + '\n')
             iteration += 1
             
 if __name__ == '__main__':
