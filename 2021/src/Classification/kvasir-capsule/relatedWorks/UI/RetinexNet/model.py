@@ -229,8 +229,8 @@ class lowlight_enhance(object):
         tf.compat.v1.global_variables_initializer().run()
 
         print("[*] Reading checkpoint...")
-        load_model_status_Decom, _ = self.load(self.saver_Decom, './model/Decom/RetinexNet-Decom-124800')
-        load_model_status_Relight, _ = self.load(self.saver_Relight, './model/Relight/RetinexNet-Relight-124800')
+        load_model_status_Decom, _ = self.load(self.saver_Decom, './checkpoint/Decom/')
+        load_model_status_Relight, _ = self.load(self.saver_Relight, './checkpoint/Relight/')
         if load_model_status_Decom and load_model_status_Relight:
             print("[*] Load weights successfully...")
         
@@ -248,5 +248,5 @@ class lowlight_enhance(object):
                 save_images(os.path.join(save_dir, name + "_R_low." + suffix), R_low)
                 save_images(os.path.join(save_dir, name + "_I_low." + suffix), I_low)
                 save_images(os.path.join(save_dir, name + "_I_delta." + suffix), I_delta)
-            save_images(os.path.join(save_dir, name + "_S."   + suffix), S)
+            save_images(os.path.join(save_dir, name + ".png"), S)
 
