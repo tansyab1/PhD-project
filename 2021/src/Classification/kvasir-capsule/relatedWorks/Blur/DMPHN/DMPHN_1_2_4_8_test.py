@@ -180,10 +180,10 @@ def main():
             save_images(deblur_image.data + 0.5, images_name)
             # calculate PSNR and SSIM 
             # save PSNR and SSIM to a txt file
-            psnr = calculate_psnr(deblur_image.data + 0.5 , images_lv1_gt)
-            ssim = SSIM(deblur_image.data + 0.5 , images_lv1_gt)
-            print('PSNR:%.4f'%(psnr), '  SSIM:%.4f'%(ssim))
-            txt.write(images_name[0] + '  PSNR:%.4f'%(psnr) + '  SSIM:%.4f'%(ssim) + '\n')
+            # psnr = calculate_psnr(deblur_image.data + 0.5 , images_lv1_gt)
+            # ssim = SSIM(deblur_image.data + 0.5 , images_lv1_gt)
+            # print('PSNR:%.4f'%(psnr), '  SSIM:%.4f'%(ssim))
+            # txt.write(images_name[0] + '  PSNR:%.4f'%(psnr) + '  SSIM:%.4f'%(ssim) + '\n')
             iteration += 1
             
 if __name__ == '__main__':
