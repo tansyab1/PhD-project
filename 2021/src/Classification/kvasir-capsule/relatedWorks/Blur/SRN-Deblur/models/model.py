@@ -3,7 +3,8 @@ import os
 import time
 import random
 import datetime
-import scipy.misc
+# import scipy.misc
+import cv2
 import numpy as np
 import tensorflow as tf
 import tf_slim as slim
@@ -67,7 +68,8 @@ class DEBLUR(object):
             in_list = self.data_list[:, 1]
 
             data = tf.data.Dataset.from_tensor_slices((in_list, gt_list))
-            batch_in, batch_gt = tf.compat.v1.data.make_one_shot_iterator(data.map(read_data).batch(batch_size).repeat()).get_next()
+            batch_in, batch_gt = tf.compat.v1.data.make_one_shot_iterator(
+                data.map(read_data).batch(batch_size).repeat()).get_next()
             return batch_in, batch_gt
 
     def generator(self, inputs, reuse=False, scope='g_net'):
@@ -215,11 +217,13 @@ class DEBLUR(object):
         #                  )
 
         # training operators
-        train_gnet = get_optimizer(self.loss_total, self.global_step, self.all_vars)
+        train_gnet = get_optimizer(
+            self.loss_total, self.global_step, self.all_vars)
 
         # session and thread
         gpu_options = tf.compat.v1.GPUOptions(allow_growth=True)
-        sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
+        sess = tf.compat.v1.Session(
+            config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
         self.sess = sess
         sess.run(tf.compat.v1.global_variables_initializer())
         self.saver = tf.compat.v1.train.Saver(
@@ -276,6 +280,7 @@ class DEBLUR(object):
         print(" [*] Reading checkpoints...")
         model_name = "deblur.model"
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+        # print(checkpoint_dir)
 
         if step is not None:
             ckpt_name = model_name + '-' + str(step)
@@ -300,18 +305,19 @@ class DEBLUR(object):
         H, W = height, width
         inp_chns = 3 if self.args.model == 'color' else 1
         self.batch_size = 1 if self.args.model == 'color' else 3
-        inputs = tf.placeholder(
+        inputs = tf.compat.v1.placeholder(
             shape=[self.batch_size, H, W, inp_chns], dtype=tf.float32)
         outputs = self.generator(inputs, reuse=False)
 
-        sess = tf.Session(config=tf.ConfigProto(
-            gpu_options=tf.GPUOptions(allow_growth=True)))
+        sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(
+            gpu_options=tf.compat.v1.GPUOptions(allow_growth=True)))
 
-        self.saver = tf.train.Saver()
-        self.load(sess, self.train_dir, step=523000)
+        self.saver = tf.compat.v1.train.Saver()
+        self.checkpoint_dir = os.path.join(self.train_dir, 'checkpoints')
+        self.load(sess, self.checkpoint_dir, step=None)
 
         for imgName in imgsName:
-            blur = scipy.misc.imread(os.path.join(input_path, imgName))
+            blur = cv2.imread(os.path.join(input_path, imgName))
             h, w, c = blur.shape
             # make sure the width is larger than the height
             rot = False
@@ -325,7 +331,8 @@ class DEBLUR(object):
                 scale = min(1.0 * H / h, 1.0 * W / w)
                 new_h = int(h * scale)
                 new_w = int(w * scale)
-                blur = scipy.misc.imresize(blur, [new_h, new_w], 'bicubic')
+                blur = cv2.resize(blur, (new_h, new_w),
+                                  interpolation=cv2.INTER_CUBIC)
                 resize = True
                 blurPad = np.pad(
                     blur, ((0, H - new_h), (0, W - new_w), (0, 0)), 'edge')
@@ -348,10 +355,10 @@ class DEBLUR(object):
             # crop the image into original size
             if resize:
                 res = res[:new_h, :new_w, :]
-                res = scipy.misc.imresize(res, [h, w], 'bicubic')
+                res = cv2.resize(res, (h, w), interpolation=cv2.INTER_CUBIC)
             else:
                 res = res[:h, :w, :]
 
             if rot:
                 res = np.transpose(res, [1, 0, 2])
-            scipy.misc.imsave(os.path.join(output_path, imgName), res)
+            cv2.imwrite(os.path.join(output_path, imgName), res)
