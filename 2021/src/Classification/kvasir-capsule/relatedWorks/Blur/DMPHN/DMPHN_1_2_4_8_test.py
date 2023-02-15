@@ -65,7 +65,7 @@ def calculate_psnr(img1, img2):
 def main():
     print("init data folders")
     
-    txt = open('./test_results/' + EXPDIR + '/psnr.txt', 'w')
+    
 
     encoder_lv1 = models.Encoder().apply(weight_init).cuda(GPU)
     encoder_lv2 = models.Encoder().apply(weight_init).cuda(GPU)
@@ -105,6 +105,8 @@ def main():
     
     if os.path.exists('./test_results/' + EXPDIR) == False:
         os.system('mkdir ./test_results/' + EXPDIR)     
+        
+    txt = open('./test_results/' + EXPDIR + '/psnr.txt', 'w')
             
     iteration = 0.0
     test_time = 0.0
