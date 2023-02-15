@@ -103,10 +103,11 @@ def main():
         decoder_lv4.load_state_dict(torch.load(str('./checkpoints/' + METHOD + "/decoder_lv4.pkl")))
         print("load decoder_lv4 success")
     
-    if os.path.notexists('./test_results/' + EXPDIR):
-        os.makedirs('./test_results/' + EXPDIR)    
-        
-    txt = open('./test_results/' + EXPDIR + '/psnr.txt', 'w')
+    # create folder to save test results if not exist
+    if not os.path.exists('./test_results/' + EXPDIR):
+        os.makedirs('./test_results/' + EXPDIR)
+     
+    txt = open('./test_results/' + EXPDIR + '/psnr.txt', 'w')   
             
     iteration = 0.0
     test_time = 0.0
