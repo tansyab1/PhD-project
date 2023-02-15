@@ -116,6 +116,7 @@ def main():
             images_lv1 = transforms.ToTensor()(Image.open(SAMPLE_DIR + '/' + images_name).convert('RGB'))
             images_lv1_gt = transforms.ToTensor()(Image.open(GT_DIR + '/' + images_name).convert('RGB'))
             images_lv1 = Variable(images_lv1 - 0.5).unsqueeze(0).cuda(GPU)
+            images_lv1_gt = Variable(images_lv1_gt - 0.5).unsqueeze(0).cuda(GPU)
             start = time.time()           
             H = images_lv1.size(2)
             W = images_lv1.size(3)
