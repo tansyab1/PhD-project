@@ -32,62 +32,68 @@ pathproposed = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled
 pathridnet = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/noise/ridnet"
 pathvdnet = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/noise/vdnet"
 
-for filename in glob("%s/*.png" % pathimg):
-    template = cv.imread(filename.replace("mirnet", "uformer"), cv.IMREAD_GRAYSCALE)
+pathdbgan = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/ui/retinex"
+pathdbganv2 = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/blur/dbganv2"
+pathDMBHN = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/blur/DMBHN"
+pathmprnetblur = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/blur/mprnet"
+pathproposedblur = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/ui/proposed"
+pathuformerblur = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/ui/uformer"
+pathref = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/blur/ref"
+pathimgblur = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/ui/mir/"
+
+pathlime = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/resultsforPaper/ui/lime"
+
+
+for filename in glob("%s/*.png" % pathimgblur):
+    template = cv.imread(filename.replace("mir", "uformer"), cv.IMREAD_GRAYSCALE)
     top_left, bottom_right = templatematch(cv.imread(filename, cv.IMREAD_GRAYSCALE), template)
 
-    for file in glob("%s/*" % pathgt):
+    for file in glob("%s/*" % pathuformerblur):
         if filename.split("/")[-1] == file.split("/")[-1]:
             img = cv.imread(file)
             crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathgt, file.split("/")[-1]+"_crop.png"), crop_img)
-            
-    for file in glob("%s/*" % pathbm3d):
-        # print("filename: ", filename)
-        # print("file: ", file)
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathbm3d, file.split("/")[-1]+"_crop.png"), crop_img)
-            
-    for file in glob("%s/*" % pathcycleisp):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathcycleisp, file.split("/")[-1]+"_crop.png"), crop_img)
-            
-    for file in glob("%s/*" % pathdanet):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathdanet, file.split("/")[-1]+"_crop.png"), crop_img)
+            cv.imwrite(os.path.join(pathuformerblur, file.split("/")[-1]+"_crop.png"), crop_img)
+        
     
-    for file in glob("%s/*" % pathmprnet):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathmprnet, file.split("/")[-1]+"_crop.png"), crop_img)
+    # for file in glob("%s/*" % pathdbganv2):
+    #     if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+    #         img = cv.imread(file)
+    #         crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+    #         cv.imwrite(os.path.join(pathdbganv2, file.split("/")[-1]+"_crop.png"), crop_img)
             
-    for file in glob("%s/*" % pathproposed):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathproposed, file.split("/")[-1]+"_crop.png"), crop_img)
-            
-    for file in glob("%s/*" % pathridnet):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathridnet, file.split("/")[-1]+"_crop.png"), crop_img)
-            
-    for file in glob("%s/*" % pathvdnet):
-        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
-            img = cv.imread(file)
-            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-            cv.imwrite(os.path.join(pathvdnet, file.split("/")[-1]+"_crop.png"), crop_img)
     
-    # crop image and save 
+    for file in glob("%s/*" % pathdbgan):
+        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+            img = cv.imread(file)
+            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+            cv.imwrite(os.path.join(pathdbgan, file.split("/")[-1]+"_crop.png"), crop_img)
+            
+            
+    # for file in glob("%s/*" % pathDMBHN):
+    #     if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+    #         img = cv.imread(file)
+    #         crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+    #         cv.imwrite(os.path.join(pathDMBHN, file.split("/")[-1]+"_crop.png"), crop_img)
+            
+    
+    for file in glob("%s/*" % pathlime):
+        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+            img = cv.imread(file)
+            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+            cv.imwrite(os.path.join(pathlime, file.split("/")[-1]+"_crop.png"), crop_img)
+            
+    for file in glob("%s/*" % pathproposedblur):
+        if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+            img = cv.imread(file)
+            crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+            cv.imwrite(os.path.join(pathproposedblur, file.split("/")[-1]+"_crop.png"), crop_img)
+            
+    # for file in glob("%s/*" % pathref):
+    #     if os.path.basename(filename).split(".")[0] == os.path.basename(file).split(".")[0]:
+    #         img = cv.imread(file)
+    #         crop_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+    #         cv.imwrite(os.path.join(pathref, file.split("/")[-1]+"_crop.png"), crop_img)
+    
     
 
 
