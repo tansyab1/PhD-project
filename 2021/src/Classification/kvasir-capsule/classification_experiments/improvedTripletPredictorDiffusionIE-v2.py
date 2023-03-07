@@ -358,7 +358,8 @@ class BaseNet(nn.Module):
         x = self.module(x)
         return x
 
-
+# self.cross_attention_layer = CrossAttention(
+#             dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
 class CrossAttention(nn.Module):
     def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=16, input_size=224, channels=128):
         super().__init__()
