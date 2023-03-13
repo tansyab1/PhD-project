@@ -3,7 +3,7 @@ import os
 
 # select random 1000 images with same name from each folder and move them to a new folder
 folder = ["input", "groundtruth"]
-original_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/upload/Noise/val/"
+original_path = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/ExperimentalDATA/forRelatedWorks/upload/"
 
 
 def changedir(typedis):
@@ -25,6 +25,6 @@ def cutfile(num=1000, original_path=original_path, destination_path=original_pat
 
 
 if __name__ == '__main__':
-    changedir("Noise")
+    # changedir("Noise")
     changedir("Blur")
     changedir("UI")
