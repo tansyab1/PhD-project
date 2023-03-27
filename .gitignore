@@ -15,3 +15,7 @@ checkpoint
 *.meta*
 *.mp4
 *.hdf5
+*.pdf
+*.drawio
+*.docx
+*.zip
