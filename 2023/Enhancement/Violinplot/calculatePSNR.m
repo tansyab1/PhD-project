@@ -6,7 +6,8 @@ function [psnr_mat] = calculatePSNR(folder_dist, folder_ref, method)
 
 %folder_dist = 'C:\Users\moham\Desktop\2023\Enhancement\Violinplot\images';
 %folder_ref = 'C:\Users\moham\Desktop\2023\Enhancement\Violinplot\images';
-files = dir(fullfile(folder1,'*.jpg'));
+files = dir(fullfile(folder,'*.jpg')) | dir(fullfile(folder,'*.png')) | dir(fullfile(folder,'*.bmp')) | dir(fullfile(folder,'*.tiff')) | dir(fullfile(folder,'*.tif')) | dir(fullfile(folder,'*.jpeg')) | dir(fullfile(folder,'*.PNG')) | dir(fullfile(folder,'*_x1_SR.png'));
+
 psnr_all = zeros(1,length(files));
 for i = 1:length(files)
     filename_dist = fullfile(folder_dist,files(i).name);

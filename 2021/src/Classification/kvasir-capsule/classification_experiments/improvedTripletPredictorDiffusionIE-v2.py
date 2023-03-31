@@ -18,6 +18,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import models, transforms
 # import TripletLoss as TripletLoss
+from cuml.manifold import TSNE
 import matplotlib.pyplot as plt
 import os
 import copy
@@ -239,6 +240,9 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
     for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
 
+        tsne_features = []  # for tsne visualization
+        tsne_labels = []  # for tsne visualization
+
         for phase in ["train", "val"]:
 
             if phase == "train":
@@ -256,12 +260,13 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
 
             for i, data in tqdm(enumerate(dataloader, 0)):
 
-                inputs, labels, positive, negative, reference = data
+                inputs, labels, positive, negative, reference, anchor_label = data
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 positive = positive.to(device)
                 negative = negative.to(device)
                 reference = reference.to(device)
+                anchor_label = anchor_label.to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -272,6 +277,9 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
                         inputs, positive, negative, reference)
 
+                    tsne_features.append(encoded_noise.detach().numpy())
+                    tsne_labels.append(anchor_label.detach().numpy())
+
                     # put all data to cpu
                     resnet_out = resnet_out.cpu()
                     resnet_out_encoded = resnet_out_encoded.cpu()
@@ -279,6 +287,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     encoded_noise = encoded_noise.cpu()
                     encoded_negative = encoded_negative.cpu()
                     encoded_positive = encoded_positive.cpu()
+
                     mu = mu.cpu()
                     logvar = logvar.cpu()
                     reference = reference.cpu()
@@ -286,7 +295,7 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_ae = criterion_ae(decoded_image, reference)
                     loss_triplet = triplet_loss(
-                        encoded_positive, encoded_negative, encoded_noise)
+                        encoded_noise, encoded_positive, encoded_negative)
                     loss_KL = 0.5 * \
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
@@ -320,6 +329,9 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
             # update the lr based on the epoch loss
             if phase == "val":
 
+                # plot TSNE visualization
+                plot_tsne(tsne_features, tsne_labels, epoch)
+
                 # keep best model weights
                 if epoch_ssim > best_acc:
                     best_acc = epoch_ssim
@@ -345,6 +357,20 @@ def train_model(model, optimizer, criterion_ssim, criterion_ae, dataloaders: dic
                best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
 
 
+def plot_tsne(features, labels, epoch):
+    tsne = TSNE(n_components=2, random_state=0)
+    X_2d = tsne.fit_transform(features)
+
+    plt.figure(figsize=(10, 10))
+    plt.scatter(X_2d[:, 0], X_2d[:, 1], c=labels,
+                cmap=plt.cm.get_cmap("jet", 10))
+    plt.colorbar(ticks=range(10))
+    plt.clim(-0.5, 9.5)
+    plt.savefig("tsne_epoch_{}.png".format(epoch))
+    plt.legend()
+    plt.close()
+
+
 # ================================================
 # New architecture
 # ================================================
@@ -360,6 +386,8 @@ class BaseNet(nn.Module):
 
 # self.cross_attention_layer = CrossAttention(
 #             dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
+
+
 class CrossAttention(nn.Module):
     def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=16, input_size=224, channels=128):
         super().__init__()

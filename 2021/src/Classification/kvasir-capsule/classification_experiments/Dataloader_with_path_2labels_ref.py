@@ -60,7 +60,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         negative_index = self.imgs.index(negative_image)
 
         # return the triplet including the anchor, positive and negative images
-        return positive_index, negative_index, ref_index
+        return positive_index, negative_index, ref_index, anchor_label
 
     # init the class
     def __init__(self, root, ref_paths, pickle_file, transform=None):
@@ -79,7 +79,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         # print(original_tuple)
 
         # create triplet of anchor, positive and negative images
-        positive_index, negative_index, ref_index = self.create_triplet(index)
+        positive_index, negative_index, ref_index, anchor_label = self.create_triplet(index)
         positive = super(ImageFolderWithPaths,
                          self).__getitem__(positive_index)
         negative = super(ImageFolderWithPaths,
@@ -90,7 +90,7 @@ class ImageFolderWithPaths(datasets.ImageFolder):
 
         # make a new tuple that includes original and the path
         tuple_with_path = (
-            original_tuple + (positive[0],) + (negative[0],) + (ref[0],))
+            original_tuple + (positive[0],) + (negative[0],) + (ref[0],) + (anchor_label,))
 
         return tuple_with_path
 

@@ -3,7 +3,8 @@ function [entropy_mat] = calculateentropy(folder, method)
 %CALCULATEMETRICS Summary of this function goes here
 %   Detailed explanation goes here
 %folder = 'C:\Users\moham\Desktop\2023\Enhancement\Violinplot\images';
-files = dir(fullfile(folder,'*.jpg'));
+files = dir(fullfile(folder,'*.jpg')) | dir(fullfile(folder,'*.png')) | dir(fullfile(folder,'*.bmp')) | dir(fullfile(folder,'*.tiff')) | dir(fullfile(folder,'*.tif')) | dir(fullfile(folder,'*.jpeg')) | dir(fullfile(folder,'*.PNG')) | dir(fullfile(folder,'*_x1_SR.png'));
+
 entropy_all = zeros(1,length(files));
 for i = 1:length(files)
     filename = fullfile(folder,files(i).name);
