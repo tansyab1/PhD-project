@@ -18,7 +18,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import models, transforms
 # import TripletLoss as TripletLoss
-from cuml.manifold import TSNE
+from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import os
 import copy
