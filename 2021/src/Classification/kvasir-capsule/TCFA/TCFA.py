@@ -38,7 +38,7 @@ from tqdm import tqdm
 from torchsummary import summary
 from torch.autograd import Variable
 
-from Dataloader_with_path_2labels_ref import ImageFolderWithPaths as dataset
+from utils.Dataloader_with_path_2labels_ref import ImageFolderWithPaths as dataset
 
 import string
 
