@@ -293,7 +293,7 @@ def train_model(model,
             mse = 0.0
             ssim_batch = 0.0
             ssim = StructuralSimilarityIndexMeasure(
-                data_range=2.0).to('cuda:2')
+                data_range=2.0)
             num_batches = 0
 
             # put two list to the gpu
@@ -320,12 +320,12 @@ def train_model(model,
                         inputs, positive, negative, reference)
 
                     # put all data to cpu
-                    resnet_out = resnet_out.to('cuda:2')
-                    resnet_out_encoded = resnet_out_encoded.to('cuda:2')
-                    decoded_image = decoded_image.to('cuda:2')
-                    encoded_noise = encoded_noise.to('cuda:2')
-                    encoded_negative = encoded_negative.to('cuda:2')
-                    encoded_positive = encoded_positive.to('cuda:2')
+                    resnet_out = resnet_out.to('cpu')
+                    resnet_out_encoded = resnet_out_encoded.to('cpu')
+                    decoded_image = decoded_image.to('cpu')
+                    encoded_noise = encoded_noise.to('cpu')
+                    encoded_negative = encoded_negative.to('cpu')
+                    encoded_positive = encoded_positive.to('cpu')
 
                     # # flatten the tensors encoded_noise over the batch dimension
                     # encoded_noise_flatten = encoded_noise.view(
@@ -337,7 +337,7 @@ def train_model(model,
 
                     # mu = mu.cpu()
                     # logvar = logvar.cpu()
-                    reference = reference.to('cuda:2')
+                    reference = reference.to('cpu')
 
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_ae = criterion_ae(decoded_image, reference)
@@ -398,7 +398,7 @@ def train_model(model,
                     best_epoch_ssim = epoch_ssim
                     best_epoch_mse = epoch_mse
                     print("Found a better model")
-                if epoch % 10 == 0:
+                if epoch % 5 == 0:
                     save_model(best_model_wts, best_epoch, best_epoch_loss,
                                best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
 
@@ -431,7 +431,7 @@ class BaseNet(nn.Module):
 
 
 class CrossAttention(nn.Module):
-    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=16, input_size=224, channels=128):
+    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=14, input_size=224, channels=128):
         super().__init__()
         inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
@@ -532,39 +532,35 @@ class MyNet(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
+            nn.MaxPool2d(2, 2),
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
+            nn.MaxPool2d(2, 2),
         )
 
-        self.cross_attention_layer = CrossAttention(
-            dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-        self.fc_mu = nn.Linear(self.flatten_dim, 128)
-        self.fc_var = nn.Linear(self.flatten_dim, 128)
+        # self.cross_attention_layer = CrossAttention(
+        #     dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=14, input_size=56, channels=64)
+        # self.fc_mu = nn.Linear(self.flatten_dim, 128)
+        # self.fc_var = nn.Linear(self.flatten_dim, 128)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
+            nn.MaxPool2d(2, 2),
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-        )
-
-        self.decoder_mlp = nn.Sequential(
-            nn.Linear(128, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, self.flatten_dim),
-            nn.Tanh(),
+            nn.MaxPool2d(2, 2),
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
+            nn.ConvTranspose2d(64, 3, kernel_size=2, stride=2),
             nn.Tanh(),
         )
 
@@ -588,15 +584,17 @@ class MyNet(nn.Module):
         encoded_image = self.encoder(x)
         x = x.cuda(0)
         encoded_image = encoded_image.cuda(0)
+        # print("here1")
         # encode the image with channel = 64
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
-        cross_attention_feature, mu, logvar = self.cross_attention_layer(
-            encoded_image, encoded_noise)
+        # print("here2")
+        # cross_attention_feature, mu, logvar = self.cross_attention_layer(
+        #     encoded_image, encoded_noise)
 
-        cross_attention_feature = cross_attention_feature.view(
-            -1, self.dim, self.shape[0], self.shape[1])
+        # cross_attention_feature = cross_attention_feature.view(
+        #     -1, self.dim, self.shape[0], self.shape[1])
         # element wise addition of the noise feature and the cross attention feature
 
         # encoded_noise_attention = torch.mul(
@@ -614,7 +612,7 @@ class MyNet(nn.Module):
 
         resnet_out = self.base_model(decoded_image)
         resnet_out_encoded = self.base_model(reference)
-        return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
+        return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, True, True
 
 
 # ===============================================

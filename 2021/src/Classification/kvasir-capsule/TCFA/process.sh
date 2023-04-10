@@ -1,10 +1,11 @@
-python3 TCFA.py \
+python3 TCFAv2.py \
     --data_root ./dataForVisualization/UI_var/ \
     --ref_root ./dataForVisualization/Ref/ \
     --pkl_root ./dataForVisualization/UI_var/ui_dict.pkl \
-    --out_dir ./output/ \
-    --tensorboard_dir ./tensorboard/ \
-    --num_workers 4 \
-    --bs 32 \
+    --out_dir ./outputv2/ \
+    --mat_dir ./outputv2/mat/epoch0/ \
+    --tensorboard_dir ./tensorboardv2/ \
+    --num_workers 12 \
+    --bs 24 \
     --num_epochs 50 \
     --action "train"
