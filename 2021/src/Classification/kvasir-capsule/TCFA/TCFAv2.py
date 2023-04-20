@@ -273,7 +273,7 @@ def train_model(model,
 
     # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
-    triplet_loss = nn.TripletMarginLoss(margin=5.0, p=2)
+    triplet_loss = nn.TripletMarginLoss(margin=20.0, p=2)
 
     for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
 
@@ -346,7 +346,7 @@ def train_model(model,
                     # loss_KL = 0.5 * \
                     #     torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
-                    loss = loss_ae + loss_triplet + loss_feature
+                    loss = loss_ae + 10 * loss_triplet + loss_feature
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
@@ -399,8 +399,16 @@ def train_model(model,
                     best_epoch_mse = epoch_mse
                     print("Found a better model")
                 if epoch % 5 == 0:
-                    save_model(best_model_wts, best_epoch, best_epoch_loss,
-                               best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
+                    if epoch > start_epoch:
+                        save_model(best_model_wts, best_epoch, best_epoch_loss,
+                                   best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
+                    elif opt.action == "retrain":
+                        best_model_wts = copy.deepcopy(model.state_dict())
+                        best_epoch = start_epoch
+                        best_epoch_loss = epoch_loss
+                        best_epoch_psnr = epoch_psnr
+                        best_epoch_ssim = epoch_ssim
+                        best_epoch_mse = epoch_mse
 
                 # Get current lr
                 lr = optimizer.param_groups[0]['lr']
@@ -647,7 +655,7 @@ def run_train(retrain=False):
         model.load_state_dict(checkpoint["model_state_dict"])
         start_epoch = checkpoint["epoch"]
         # loss = checkpoint["loss"]
-        acc = checkpoint["psnr"]
+        acc = checkpoint["ssim"]
         train_model(model, optimizer, criterion, criterion_ae, dataloaders,
                     scheduler, best_acc=acc, start_epoch=start_epoch)
 
@@ -694,7 +702,7 @@ def check_model_graph():
 def test_model():
     print("hint: ./output/TCFA.py/checkpoints/TCFA_epoch:#.pt")
     # test_model_checkpoint = input("Please enter the path of test model:")
-    test_model_checkpoint = "./output/TCFA.py/checkpoints/TCFA_epoch:0.pt"
+    test_model_checkpoint = "./outputv2/TCFAv2.py/checkpoints/TCFAv2_epoch:19.pt"
     checkpoint = torch.load(test_model_checkpoint)
 
     model = prepare_model()
@@ -730,7 +738,7 @@ def test_model():
 
                 flatten_noise = encoded_noise.view(
                     encoded_noise.size(0), -1)
-                
+
                 # convert it from float32 to unit8
                 flatten_noise = flatten_noise.type(torch.float16)
 
@@ -761,7 +769,7 @@ def test_model():
 
     # f.close()
     # plot the results of the T-SNE embedding
-    plot_tsne(tsne_features, tsne_labels, epoch=0)
+    plot_tsne(tsne_features, tsne_labels, epoch=5)
 
     print("Report generated")
 
@@ -769,16 +777,22 @@ def test_model():
 def plot_tsne(features, labels, epoch):
     features = np.concatenate(features, axis=0)
     labels = np.concatenate(labels, axis=0)
+
+    # # save the features and labels for T-SNE to mat file
+    # savemat(opt.mat_dir + "/tsne_features_{}.mat".format(epoch),
+    #         {"tsne_features": features, "tsne_labels": labels})
+
     tsne = TSNE(n_components=2, random_state=0)
     X_2d = tsne.fit_transform(features)
 
     plt.figure(figsize=(10, 10))
-    plt.scatter(X_2d[:, 0], X_2d[:, 1], c=labels,
-                cmap=plt.cm.get_cmap("jet", 10))
-    plt.colorbar(ticks=range(10))
-    plt.clim(-0.5, 9.5)
+
+    # draw the scatter plot for each class
+    for i in np.unique(labels):
+        idx = np.where(labels == i)
+        plt.scatter(X_2d[idx, 0], X_2d[idx, 1], label=i)
+
     plt.savefig("tsne_epoch_{}.png".format(epoch))
-    plt.legend()
     plt.close()
 
 # ==============================================
