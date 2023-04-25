@@ -8,4 +8,4 @@ python3 TCFAv2.py \
     --num_workers 12 \
     --bs 24 \
     --num_epochs 50 \
-    --action "train"
+    --action "test"
