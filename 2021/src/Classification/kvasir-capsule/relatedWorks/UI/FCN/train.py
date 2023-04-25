@@ -1,21 +1,22 @@
-from tqdm import tqdm
-from warmup_scheduler import GradualWarmupScheduler
-from losses import CharbonnierLoss
-from networks.MIRNet_model import MIRNet
-# from pdb import set_trace as stx
-from dataloaders.data_rgb import get_training_data, get_validation_data
-import utils
+from config import Config
+import argparse
+from model import FCN
 import numpy as np
 import time
 import random
-# import glob
-from natsort import natsorted
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
 import torch
 import os
-from config import Config
+from losses import CharbonnierLoss, SSIMLoss
+from dataloader import get_training_data, get_validation_data
+from warmup_scheduler import GradualWarmupScheduler
+from tqdm import tqdm
+from psnr import batch_PSNR, batch_SSIM
+
+argparser = argparse.ArgumentParser(description='PyTorch FCN Training')
+
 opt = Config('training.yml')
 
 gpus = ','.join([str(i) for i in opt.GPU])
@@ -31,24 +32,23 @@ np.random.seed(1234)
 torch.manual_seed(1234)
 torch.cuda.manual_seed_all(1234)
 
-warmup = True
-
 start_epoch = 1
+
 mode = opt.MODEL.MODE
 session = opt.MODEL.SESSION
 
 result_dir = os.path.join(opt.TRAINING.SAVE_DIR, mode, 'results', session)
 model_dir = os.path.join(opt.TRAINING.SAVE_DIR, mode, 'models',  session)
 
-utils.mkdir(result_dir)
-utils.mkdir(model_dir)
+os.makedirs(result_dir, exist_ok=True)
+os.makedirs(model_dir, exist_ok=True)
 
 train_dir = opt.TRAINING.TRAIN_DIR
 val_dir = opt.TRAINING.VAL_DIR
 save_images = opt.TRAINING.SAVE_IMAGES
 
-######### Model ###########
-model_restoration = MIRNet()
+# load model and put on GPU
+model_restoration = FCN()
 model_restoration.cuda()
 
 device_ids = [i for i in range(torch.cuda.device_count())]
@@ -61,7 +61,8 @@ new_lr = opt.OPTIM.LR_INITIAL
 optimizer = optim.Adam(model_restoration.parameters(), lr=new_lr, betas=(
     0.9, 0.999), eps=1e-8, weight_decay=1e-8)
 
-######### Scheduler ###########
+warmup = True
+
 if warmup:
     warmup_epochs = 3
     scheduler_cosine = optim.lr_scheduler.CosineAnnealingLR(
@@ -70,29 +71,9 @@ if warmup:
         optimizer, multiplier=1, total_epoch=warmup_epochs, after_scheduler=scheduler_cosine)
     scheduler.step()
 
-######### Resume ###########
-if opt.TRAINING.RESUME:
-    path_chk_rest = utils.get_last_path(model_dir, '_latest.pth')
-    utils.load_checkpoint(model_restoration, path_chk_rest)
-    start_epoch = utils.load_start_epoch(path_chk_rest) + 1
-    utils.load_optim(optimizer, path_chk_rest)
-
-    for i in range(1, start_epoch):
-        scheduler.step()
-    new_lr = scheduler.get_lr()[0]
-    print('------------------------------------------------------------------------------')
-    print("==> Resuming Training with learning rate:", new_lr)
-    print('------------------------------------------------------------------------------')
-
-if len(device_ids) > 1:
-    model_restoration = nn.DataParallel(
-        model_restoration, device_ids=device_ids)
-
-######### Loss ###########
-criterion = CharbonnierLoss().cuda()
-
-######### DataLoaders ###########
-img_options_train = {'patch_size': opt.TRAINING.TRAIN_PS}
+print('===> Start Epoch {} End Epoch {}'.format(
+    start_epoch, opt.OPTIM.NUM_EPOCHS + 1))
+print('===> Loading datasets')
 
 train_dataset = get_training_data(train_dir)
 train_loader = DataLoader(dataset=train_dataset, batch_size=opt.OPTIM.BATCH_SIZE,
@@ -102,11 +83,9 @@ val_dataset = get_validation_data(val_dir)
 val_loader = DataLoader(dataset=val_dataset, batch_size=16,
                         shuffle=False, num_workers=8, drop_last=False)
 
-print('===> Start Epoch {} End Epoch {}'.format(
-    start_epoch, opt.OPTIM.NUM_EPOCHS + 1))
-print('===> Loading datasets')
+criterionl1 = CharbonnierLoss().cuda()
+criterionssim = SSIMLoss().cuda()
 
-mixup = utils.MixUp_AUG()
 best_psnr = 0
 best_epoch = 0
 best_iter = 0
@@ -117,33 +96,27 @@ print(f"\nEvaluation after every {eval_now} Iterations !!!\n")
 for epoch in range(start_epoch, opt.OPTIM.NUM_EPOCHS + 1):
     epoch_start_time = time.time()
     epoch_loss = 0
-    train_id = 1
 
     for i, data in enumerate(tqdm(train_loader), 0):
+        target = data[0].cuda()
+        input_ = data[1].cuda()
 
         # zero_grad
         for param in model_restoration.parameters():
             param.grad = None
 
-        target = data[0].cuda()
-        input_ = data[1].cuda()
-
-        if epoch > 5:
-            target, input_ = mixup.aug(target, input_)
-
         restored = model_restoration(input_)
         restored = torch.clamp(restored, 0, 1)
 
-        loss = criterion(restored, target)
+        loss_l1 = criterionl1(restored, target)
+        loss_ssim = criterionssim(restored, target)
+
+        loss = loss_l1 + loss_ssim
 
         loss.backward()
         optimizer.step()
         epoch_loss += loss.item()
-
-        #### Evaluation ####
         if i % eval_now == 0 and i > 0:
-            if save_images:
-                utils.mkdir(result_dir + '%d/%d' % (epoch, i))
             model_restoration.eval()
             with torch.no_grad():
                 psnr_val_rgb = []
@@ -154,21 +127,7 @@ for epoch in range(start_epoch, opt.OPTIM.NUM_EPOCHS + 1):
 
                     restored = model_restoration(input_)
                     restored = torch.clamp(restored, 0, 1)
-                    psnr_val_rgb.append(utils.batch_PSNR(restored, target, 1.))
-
-                    if save_images:
-                        target = target.permute(
-                            0, 2, 3, 1).cpu().detach().numpy()
-                        input_ = input_.permute(
-                            0, 2, 3, 1).cpu().detach().numpy()
-                        restored = restored.permute(
-                            0, 2, 3, 1).cpu().detach().numpy()
-
-                        for batch in range(input_.shape[0]):
-                            temp = np.concatenate(
-                                (input_[batch]*255, restored[batch]*255, target[batch]*255), axis=1)
-                            utils.save_img(os.path.join(result_dir, str(epoch), str(
-                                i), filenames[batch][:-4] + '.jpg'), temp.astype(np.uint8))
+                    psnr_val_rgb.append(batch_PSNR(restored, target, 1.))
 
                 psnr_val_rgb = sum(psnr_val_rgb)/len(psnr_val_rgb)
 
@@ -181,7 +140,7 @@ for epoch in range(start_epoch, opt.OPTIM.NUM_EPOCHS + 1):
                                 'optimizer': optimizer.state_dict()
                                 }, os.path.join(model_dir, "model_best.pth"))
 
-                print("[Ep %d it %d\t PSNR SIDD: %.4f\t] ----  [best_Ep_SIDD %d best_it_SIDD %d Best_PSNR_SIDD %.4f] " %
+                print("[Ep %d it %d\t PSNR FCN: %.4f\t] ----  [best_Ep_FCN %d best_it_FCN %d Best_PSNR_FCN %.4f] " %
                       (epoch, i, psnr_val_rgb, best_epoch, best_iter, best_psnr))
 
             model_restoration.train()
@@ -197,8 +156,9 @@ for epoch in range(start_epoch, opt.OPTIM.NUM_EPOCHS + 1):
                 'state_dict': model_restoration.state_dict(),
                 'optimizer': optimizer.state_dict()
                 }, os.path.join(model_dir, "model_latest.pth"))
-
-    torch.save({'epoch': epoch,
-                'state_dict': model_restoration.state_dict(),
-                'optimizer': optimizer.state_dict()
-                }, os.path.join(model_dir, f"model_epoch_{epoch}.pth"))
+    
+    if epoch % 10 == 0:
+        torch.save({'epoch': epoch,
+                    'state_dict': model_restoration.state_dict(),
+                    'optimizer': optimizer.state_dict()
+                    }, os.path.join(model_dir, f"model_epoch_{epoch}.pth"))
