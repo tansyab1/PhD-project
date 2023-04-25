@@ -93,13 +93,13 @@ class DataLoaderVal(Dataset):
         noisy = noisy.permute(2,0,1)
         
         #Crop Input and Target
-        ps = 192
-        H = clean.shape[1]
-        W = clean.shape[2]
-        r = np.random.randint(0, H - ps)
-        c = np.random.randint(0, W - ps)
-        clean = clean[:, r:r + ps, c:c + ps]
-        noisy = noisy[:, r:r + ps, c:c + ps]
+        # ps = 336
+        # H = clean.shape[1]
+        # W = clean.shape[2]
+        # r = np.random.randint(0, H - ps)
+        # c = np.random.randint(0, W - ps)
+        # clean = clean[:, r:r + ps, c:c + ps]
+        # noisy = noisy[:, r:r + ps, c:c + ps]
 
         return clean, noisy, clean_filename, noisy_filename
 

@@ -25,11 +25,11 @@ import utils
 from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RGB deblurring evaluation on the validation set of Noisevar')
-parser.add_argument('--input_dir', default='./dataset/Noise_var/test/',
+parser.add_argument('--input_dir', default='./dataset/UI_var/test/',
     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='./results/denoising/Noise_var_latest/',
+parser.add_argument('--result_dir', default='./results/UI_var_best_336/',
     type=str, help='Directory for results')
-parser.add_argument('--weights', default='./checkpoints/results/Noise_var/checkpoints/Denoising/models/MIRNet/model_latest.pth',
+parser.add_argument('--weights', default='./checkpoints/UI/Denoising/models/MIRNet/model_best.pth',
     type=str, help='Path to weights')
 parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--bs', default=16, type=int, help='Batch size for dataloader')
@@ -66,8 +66,10 @@ with torch.no_grad():
     for ii, data_test in enumerate(tqdm(test_loader), 0):
         rgb_gt = data_test[0].cuda()
         rgb_noisy = data_test[1].cuda()
+        # print(rgb_gt.shape)
         filenames = data_test[2]
         rgb_restored = model_restoration(rgb_noisy)
+        # print(rgb_restored.shape)
         rgb_restored = torch.clamp(rgb_restored,0,1)
      
         psnr_val_rgb.append(utils.batch_PSNR(rgb_restored, rgb_gt, 1.))
