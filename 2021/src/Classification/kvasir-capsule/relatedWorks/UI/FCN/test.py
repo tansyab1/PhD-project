@@ -29,7 +29,7 @@ parser.add_argument('--input_dir', default='./dataset/UI_var/test/',
     type=str, help='Directory of validation images')
 parser.add_argument('--result_dir', default='./results/',
     type=str, help='Directory for results')
-parser.add_argument('--weights', default='./checkpoints/UI/Denoising/models/MIRNet/model_best.pth',
+parser.add_argument('--weights', default='./checkpoints/UIcorrection/models/FCN/model_best.pth',
     type=str, help='Path to weights')
 parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--bs', default=16, type=int, help='Batch size for dataloader')
@@ -51,9 +51,13 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=args.bs, shuffle=False
 model_restoration = FCN()
 
 # load weights
-model_restoration.load_state_dict(torch.load(args.weights))
+utils.load_checkpoint(model_restoration,args.weights)
+print("===>Testing using weights: ", args.weights)
+
 model_restoration.cuda()
+
 model_restoration=nn.DataParallel(model_restoration)
+
 model_restoration.eval()
 
 
