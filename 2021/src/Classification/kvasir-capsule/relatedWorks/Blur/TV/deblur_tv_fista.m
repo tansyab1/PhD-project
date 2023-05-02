@@ -1,4 +1,4 @@
-function X_out = deblur_tv_fista(Bobs, P, center, lambda, l, u, pars)
+function [X_out, fun_all] = deblur_tv_fista(Bobs, P, center, lambda, l, u, pars)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %This function implements FISTA for solving the linear inverse problem with
     % the total variation regularizer and either reflexive or periodic boundary
@@ -92,7 +92,7 @@ function X_out = deblur_tv_fista(Bobs, P, center, lambda, l, u, pars)
     if (flag & isfield(pars, 'denoiseiter'))
         denoiseiter = pars.denoiseiter;
     else
-        denoiseiter = 1;
+        denoiseiter = 10;
     end
 
     % If there are two output arguments, initalize the function values vector.
