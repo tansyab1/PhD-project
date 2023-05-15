@@ -25,11 +25,11 @@ import utils
 from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RGB deblurring evaluation on the validation set of Noisevar')
-parser.add_argument('--input_dir', default='./dataset/UI_var/test/',
+parser.add_argument('--input_dir', default='./dataset/Blur_var/test/',
     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='./results/UI_var_best_336/',
+parser.add_argument('--result_dir', default='./results/Blur_var_best_336/',
     type=str, help='Directory for results')
-parser.add_argument('--weights', default='./checkpoints/UI/Denoising/models/MIRNet/model_best.pth',
+parser.add_argument('--weights', default='./checkpoints/Blur/Denoising/models/MIRNet/model_best.pth',
     type=str, help='Path to weights')
 parser.add_argument('--gpus', default='0', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--bs', default=16, type=int, help='Batch size for dataloader')
