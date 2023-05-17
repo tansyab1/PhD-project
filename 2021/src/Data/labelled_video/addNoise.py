@@ -7,6 +7,9 @@ from tqdm import tqdm
 from functools import reduce
 from skimage.util import random_noise
 
+# check version opencv
+print(cv2.__version__)
+
 
 def create_noise(image, sigma, mean=0):
     noise_img = random_noise(image, mode='gaussian',
@@ -20,9 +23,9 @@ def addNoise():
         "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/mask.png")
     sigmas = [5, 10, 15, 30]
 
-    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
-    noise_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Noise/'
-    ref_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/ref-fps5/'
+    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/final/*.mp4"
+    noise_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/Noise/'
+    # ref_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/ref-fps5/'
 
     for sigma in tqdm(sigmas):
         if not os.path.exists(noise_save_folder + str(sigma) + '/'):
@@ -32,7 +35,7 @@ def addNoise():
 
             # output writer for the noise video
             output_video = cv2.VideoWriter(
-                noise_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+                noise_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
 
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully

@@ -23,7 +23,7 @@ def find_centroid(img):
 def find_direction(x1, y1, x2, y2):
     # find the slope of the line
     if (x2 - x1) == 0:
-        return 45
+        return 90
     # find the angle of the line
     slope = (y2 - y1) / (x2 - x1)
     angle = np.arctan(slope)

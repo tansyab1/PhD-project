@@ -25,14 +25,16 @@ function [niqe_mean, brisque_mean, entropy_mean] = calnoref(video)
         % read frame
         frame = read(v, i);
         
-        % calculate niqe
-        niqe_list(i) = niqe(frame);
+        % if frame is not null
+        if ~isempty(frame)
+            % calculate niqe
+            niqe_list(i) = niqe(frame);
 
-        % calculate brisque
-        brisque_list(i) = brisque(frame);
+            % calculate brisque
+            brisque_list(i) = brisque(frame);
 
-        % calculate entropy
-        entropy_list(i) = entropy(frame);
+            % calculate entropy
+            entropy_list(i) = entropy(frame);
 
     end
 

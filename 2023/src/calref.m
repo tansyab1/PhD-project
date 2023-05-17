@@ -27,21 +27,24 @@ function [psnr, ssim, vif] = calref(ref, dist)
 
         % calculate the PSNR, SSIM, and VIF for the current frame
         
-        % PSNR
-        psnr_list(i) = psnr(refFrame, distFrame);
+        % if the frame is not None (i.e. the frame exists)
+        if ~isempty(refFrame) && ~isempty(distFrame)
+            % PSNR
+            psnr_list(i) = psnr(refFrame, distFrame);
 
-        % SSIM
-        ssim_list(i) = ssim(refFrame, distFrame);
+            % SSIM
+            ssim_list(i) = ssim(refFrame, distFrame);
 
-        % VIF
+            % VIF
 
-        % convert the reference frame to grayscale
-        refFrameGray = rgb2gray(refFrame);
-        % convert the distorted frame to grayscale
-        distFrameGray = rgb2gray(distFrame);
+            % convert the reference frame to grayscale
+            refFrameGray = rgb2gray(refFrame);
+            % convert the distorted frame to grayscale
+            distFrameGray = rgb2gray(distFrame);
 
-        % calculate the VIF for the current frame
-        vif_list(i) = vifvec(refFrameGray, distFrameGray);
+            % calculate the VIF for the current frame
+            vif_list(i) = vifvec(refFrameGray, distFrameGray);
+        end
 
     end
 

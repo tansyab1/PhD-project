@@ -21,9 +21,9 @@ def applyui(image, mask):
 def addUI():
     sizes = [250,150,200,100]
     angles = [112,168,224]
-    datapath= "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
-
-    ui_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Uneven Illumination/'
+    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/final/*.mp4"
+    ui_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/UI/'
+    
     for size in tqdm(sizes):
         for angle in angles:
             mask=cv2.imread(mask_dir+str(size)+"_"+str(angle)+".png",cv2.IMREAD_GRAYSCALE)
@@ -31,7 +31,7 @@ def addUI():
                 os.makedirs(ui_save_folder + str(size) + '/' + str(angle) + '/')
             for file in tqdm(glob.glob(datapath)):
                 output_video = cv2.VideoWriter(
-                    ui_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+                    ui_save_folder + str(size) + '/'+ str(angle) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
                 cap = cv2.VideoCapture(file)
                 # Check if camera opened successfully
                 if (cap.isOpened() is False):

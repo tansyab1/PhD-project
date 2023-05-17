@@ -1,7 +1,8 @@
 import os 
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+import csv
+from tqdm import tqdm
 
 # calculate the Spatial Information and Temporal Information of a video
 
@@ -23,22 +24,23 @@ def calcualteSITI(videoin):
         # read the frame
         ret, frame = video.read()
         # convert the frame to gray
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # normalize the gray image
-        gray = gray/255
-        # calculate the spatial information
-        sobelx = cv2.Sobel(gray,cv2.CV_64F,1,0,ksize=3)
-        sobely = cv2.Sobel(gray,cv2.CV_64F,0,1,ksize=3)
-        # discard the first and the last row and column 
-        sobelx = sobelx[1:-1,1:-1]
-        sobely = sobely[1:-1,1:-1]
-        
-        spatial.append(np.std(np.sqrt(sobelx**2+sobely**2)))
-        
-        # calculate the temporal information between two frames
-        temporal.append(np.std(np.abs(gray[1:-1,1:-1]-gray_old[1:-1,1:-1])))
-        gray_old = gray
-        # print(spatial[-1], temporal[-1])
+        if frame is not None:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # normalize the gray image
+            gray = gray/255
+            # calculate the spatial information
+            sobelx = cv2.Sobel(gray,cv2.CV_64F,1,0,ksize=3)
+            sobely = cv2.Sobel(gray,cv2.CV_64F,0,1,ksize=3)
+            # discard the first and the last row and column 
+            sobelx = sobelx[1:-1,1:-1]
+            sobely = sobely[1:-1,1:-1]
+            
+            spatial.append(np.std(np.sqrt(sobelx**2+sobely**2)))
+            
+            # calculate the temporal information between two frames
+            temporal.append(np.std(np.abs(gray[1:-1,1:-1]-gray_old[1:-1,1:-1])))
+            gray_old = gray
+            # print(spatial[-1], temporal[-1])
         
     return np.max(spatial), np.max(temporal)
 
@@ -60,13 +62,13 @@ def calculateCGCF(videoin):
             frame_old = video.read()[1]
         # read the frame
         ret, frame = video.read()
-        # convert to 0-1 range
-        # calculate the colorfulness
-        colorfulness.append(colorfulness_measure(frame))
-        # calculate the global contrast factor
-        gcf.append(compute_global_contrast_factor(frame))
-        frame_old = frame
-        # print(colorfulness[-1], gcf[-1])
+        
+        if frame is not None:
+            # calculate the colorfulness
+            colorfulness.append(colorfulness_measure(frame))
+            # calculate the global contrast factor
+            gcf.append(compute_global_contrast_factor(frame))
+            # print(colorfulness[-1], gcf[-1])
         
     return np.max(gcf), np.max(colorfulness)
 
@@ -136,10 +138,20 @@ def compute_global_contrast_factor(img):
 
 if __name__ == '__main__':
     # get the file list
-    file = "/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/test.mp4"
+    forder = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/cut/ref_videos/ref_videos"
+    # file = "/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/test.mp4"
     
-    si, ti = calcualteSITI(file)
-    print(si, ti)   
+    # read all the files in the folder and save the result to a csv file
     
-    gcf, c = calculateCGCF(file)     
-    print(gcf, c)
+    for file in tqdm(os.listdir(forder)):
+        if file.endswith(".mp4"):
+            # print(os.path.join(forder, file))
+            fullpath = os.path.join(forder, file)
+            si, ti = calcualteSITI(fullpath)
+            gcf, c = calculateCGCF(fullpath)
+            
+            # save the result to a csv file
+            with open('result.csv', 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow([file, si, ti, gcf, c])
+                f.close()

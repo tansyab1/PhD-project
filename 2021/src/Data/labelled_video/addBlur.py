@@ -38,18 +38,20 @@ def apply_defocus_blur(image, sigma):
 def addBlur():
 
     sigmas = [1, 2, 3, 5]
-    angles = [0, 45, 90, 135]
+    # angles = [0, 45, 90, 135]
     sizes = [5, 10, 15, 25]
 
-    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/select20/*.mp4"
-    defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Defocus Blur/'
+    datapath = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/final/*.mp4"
+    defocus_save_folder = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/DefocusBlur/"
     for sigma in tqdm(sigmas):
         if not os.path.exists(defocus_save_folder + str(sigma) + '/'):
             os.makedirs(defocus_save_folder + str(sigma) + '/')
         for file in tqdm(glob.glob(datapath)):
+            # print("Processing: ")
             output_video = cv2.VideoWriter(
-                defocus_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+                defocus_save_folder + str(sigma) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
             cap = cv2.VideoCapture(file)
+            
             # Check if camera opened successfully
             if (cap.isOpened() is False):
                 print("Error opening video stream or file")
@@ -70,7 +72,7 @@ def addBlur():
 
     print("Defocus Blur- Done")
 
-    motion_save_folder = defocus_save_folder = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/forSubTest/videoReadGUI/fps5/Blur/Motion Blur/'
+    motion_save_folder = "/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/MotionBlur/"
     for size in tqdm(sizes):
         #    for angle in angles:
         if not os.path.exists(motion_save_folder + str(size) + '/'):
@@ -80,7 +82,7 @@ def addBlur():
             set_imgs = []
             # save video with H.264 codec
             output_video = cv2.VideoWriter(
-                motion_save_folder + str(size) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 5, (336, 336))
+                motion_save_folder + str(size) + '/' + os.path.basename(file), cv2.VideoWriter_fourcc(*'avc1'), 30, (336, 336))
             cap = cv2.VideoCapture(file)
             # Check if camera opened successfully
             if (cap.isOpened() is False):
