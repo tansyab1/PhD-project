@@ -41,7 +41,7 @@ for image in os.listdir(pathOut):
         # entropy_list.append(entropy)
 
 # plot histogram of variance and entropy with mininumum border
-plt.hist(variance_list, color='orange', edgecolor='black')
+plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             )
@@ -49,11 +49,10 @@ plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
 plt.xlabel('Variance of images')
 # frequency label
 plt.ylabel('Frequency')
-# set font size
-plt.rcParams.update({'font.size': 20})
+
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
-            format='eps', dpi=1000)
+            format='eps')
 # plt.hist(entropy_list, color='red', edgecolor='black')
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.png'
