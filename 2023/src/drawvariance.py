@@ -45,8 +45,16 @@ plt.hist(variance_list, color='orange', edgecolor='black')
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             )
+# x-axis label 
+plt.xlabel('Variance of images')
+# frequency label
+plt.ylabel('Frequency')
 # save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps', dpi=1000)
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps', format='eps', dpi=1000)
+# x-axis label
+plt.xlabel('Variance of images')
+# frequency label
+plt.ylabel('Frequency')
 
 # plt.hist(entropy_list, color='red', edgecolor='black')
 # # save histogram to file .eps
