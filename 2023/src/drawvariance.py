@@ -25,13 +25,13 @@ for image in os.listdir(pathOut):
         # get image name
         image_name = image.split('.')[0]
         # load image
-        img =cv2.imread(pathOut + image, cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(pathOut + image, cv2.IMREAD_GRAYSCALE)
         # print(np.max(img))
         # # convert image to grayscale without scale to 0-1
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # convert image to tensor
         # img = transforms.ToTensor()(img)
-        
+
         # calculate variance and entropy of image
         variance = np.var(img)
         print(variance)
@@ -45,17 +45,15 @@ plt.hist(variance_list, color='orange', edgecolor='black')
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             )
-# x-axis label 
-plt.xlabel('Variance of images')
-# frequency label
-plt.ylabel('Frequency')
-# save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps', format='eps', dpi=1000)
 # x-axis label
 plt.xlabel('Variance of images')
 # frequency label
 plt.ylabel('Frequency')
-
+# set font size
+plt.rcParams.update({'font.size': 20})
+# save histogram to file .eps
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
+            format='eps', dpi=1000)
 # plt.hist(entropy_list, color='red', edgecolor='black')
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.png'
