@@ -88,6 +88,9 @@ def TSNEvisualiza(inpath):
     # plot the result
     plt.figure(figsize=(10, 10))
     plt.scatter(features[:, 0], features[:, 1], c='b', marker='x')
+    # set font size of x-axis and y-axis
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     # for i, txt in enumerate(img_names):
     #     plt.annotate(txt, (features[i, 0], features[i, 1]))
     # save plot to file
