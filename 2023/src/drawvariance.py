@@ -33,7 +33,7 @@ for image in os.listdir(pathOut):
         # img = transforms.ToTensor()(img)
         
         # calculate variance and entropy of image
-        variance = np.std(img)
+        variance = np.var(img)
         print(variance)
         # entropy = -np.sum(img.numpy() * np.log2(img.numpy() + 1e-10))
         # add variance and entropy to list
@@ -45,6 +45,8 @@ plt.hist(variance_list, color='orange', edgecolor='black')
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             )
+# save histogram to file .eps
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps', dpi=1000)
 
 # plt.hist(entropy_list, color='red', edgecolor='black')
 # # save histogram to file .eps
