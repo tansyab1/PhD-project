@@ -25,12 +25,13 @@ for image in os.listdir(pathOut):
         # get image name
         image_name = image.split('.')[0]
         # load image
-        img = Image.open(pathOut + image)
-        # convert image to grayscale
-        img = img.convert('L')
+        img =cv2.imread(pathOut + image, cv2.IMREAD_GRAYSCALE)
+        print(np.max(img))
+        # # convert image to grayscale without scale to 0-1
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # convert image to tensor
         img = transforms.ToTensor()(img)
-        print(np.mean(img.numpy()))
+        
         # calculate variance and entropy of image
         variance = np.std(img.numpy())
         # entropy = -np.sum(img.numpy() * np.log2(img.numpy() + 1e-10))
