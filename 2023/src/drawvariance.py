@@ -41,7 +41,7 @@ for image in os.listdir(pathOut):
         # entropy_list.append(entropy)
 
 # plot histogram of variance and entropy with mininumum border
-plt.hist(variance_list, color='blue', edgecolor='black')
+plt.hist(variance_list, color='orange', edgecolor='black')
 # save histogram to file .eps
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             )
