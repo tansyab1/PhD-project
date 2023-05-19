@@ -91,7 +91,8 @@ def TSNEvisualiza(inpath):
     # for i, txt in enumerate(img_names):
     #     plt.annotate(txt, (features[i, 0], features[i, 1]))
     # save plot to file
-    plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/tsne.png')
+    # save to .eps file with minimum boarder size (bbox_inches='tight')
+    plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/tsne.eps', format='eps', dpi=1000, bbox_inches='tight')
 
 
 if __name__ == '__main__':
