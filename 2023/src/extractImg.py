@@ -21,4 +21,5 @@ def extractImages(pathIn, pathOut):
 pathIn = '/home/duongnh/Documents/2023/data/video/'
 pathOut = '/home/duongnh/Documents/2023/data/img/'
 for video in os.listdir(pathIn):
-    extractImages(pathIn + video, pathOut)
+    if video.endswith(".mp4"):
+        extractImages(pathIn + video, pathOut)
