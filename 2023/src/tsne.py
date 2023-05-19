@@ -12,9 +12,9 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 # import matplotlib library
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
-pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/\
-    process/labelled_videos_process/main/KvasirCapsuleIQA/final/imgs/'
+pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/final/imgs/'
 # for video in os.listdir(pathIn):
 #     if video.endswith(".mp4"):
 #         extractImages(pathIn + video, pathOut)
@@ -28,7 +28,7 @@ vgg16.classifier = torch.nn.Sequential(*list(vgg16.classifier.children())[:-1])
 vgg16.eval()
 # move model to cuda
 vgg16.cuda()
-pca = PCA(n_components=4096)
+pca = PCA(n_components=1024)
 tsne = TSNE(n_components=2, random_state=0)
 
 # extract features from all images from image folder
@@ -56,8 +56,9 @@ def extractFeature(pathIn):
     feature = vgg16(img)
     # convert feature to numpy array
     feature = feature.cpu().data.numpy()
+    # print(feature.shape)
     # extract feature and reduce to 4096 dimension using using PCA
-    feature = pca.fit_transform(feature)
+    # feature = pca.fit_transform(feature)
     # add all features to a list and return
     return feature, image_name
 
@@ -71,7 +72,7 @@ def TSNEvisualiza(inpath):
     # create a list to store all image names
     img_names = []
     # read all images in folder
-    for img in os.listdir(inpath):
+    for img in tqdm(os.listdir(inpath)):
         # extract feature from image
         feature, name = extractFeature(inpath + img)
         # add feature to list
@@ -89,7 +90,8 @@ def TSNEvisualiza(inpath):
     plt.scatter(features[:, 0], features[:, 1], c='b', marker='x')
     # for i, txt in enumerate(img_names):
     #     plt.annotate(txt, (features[i, 0], features[i, 1]))
-    plt.show()
+    # save plot to file
+    plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/tsne.png')
 
 
 if __name__ == '__main__':
