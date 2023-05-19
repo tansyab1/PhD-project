@@ -26,11 +26,13 @@ for image in os.listdir(pathOut):
         image_name = image.split('.')[0]
         # load image
         img = Image.open(pathOut + image)
+        # convert image to grayscale
+        img = img.convert('L')
         # convert image to tensor
         img = transforms.ToTensor()(img)
         # calculate variance and entropy of image
         variance = np.var(img.numpy())
-        entropy = -np.sum(img.numpy() * np.log2(img.numpy()))
+        entropy = -np.sum(img.numpy() * np.log2(img.numpy() + 1e-10))
         # add variance and entropy to list
         variance_list.append(variance)
         entropy_list.append(entropy)
@@ -38,10 +40,10 @@ for image in os.listdir(pathOut):
 # plot histogram of variance and entropy with mininumum border
 plt.hist(variance_list, color='blue', edgecolor='black')
 # save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png',
             format='eps', dpi=1000)
 
 plt.hist(entropy_list, color='red', edgecolor='black')
 # save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps',
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.png',
             format='eps', dpi=1000)
