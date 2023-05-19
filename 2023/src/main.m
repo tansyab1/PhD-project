@@ -70,6 +70,9 @@ for i = 1:length(ref_videos)
             fid = fopen('result_cal.csv','a');
             with = [ref_videos(i).name,',',kindofdist(j).name,',',levelofdist(k).name,',',num2str(psnr(j,k)),',',num2str(ssim(j,k)),',',num2str(vif(j,k)),',',num2str(niqe(j,k)),',',num2str(brisque(j,k)),',',num2str(entropy(j,k)),'\n'];
             
+            % save result to file csv
+
+            fprintf(fid,with);
         end
         
         
