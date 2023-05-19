@@ -18,8 +18,8 @@ def extractImages(pathIn, pathOut):
 
 
 # read all videos in folder
-pathIn = '/home/duongnh/Documents/2023/data/video/'
-pathOut = '/home/duongnh/Documents/2023/data/img/'
+pathIn = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/final/'
+pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/final/imgs/'
 for video in os.listdir(pathIn):
     if video.endswith(".mp4"):
         extractImages(pathIn + video, pathOut)
