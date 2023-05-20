@@ -26,31 +26,40 @@ times = [2690,	1828,	2568,	1543,	3356,	3537,	3254,
 
 
 # plot histogram of variance and entropy with mininumum border
-# set font size of x-axis and y-axis to 20
-# plt.rc('xtick', labelsize=20)
-# plt.rc('ytick', labelsize=20)
-plt.xlabel('Age of participants')
-# frequency label
-plt.ylabel('Frequency')
-plt.hist(age, color='green', edgecolor='black', bins=15)
-# x-stick step 1
-plt.yticks(np.arange(0, 10, 1))
-# save histogram to file .eps
-plt.savefig(
-    '/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/age.eps', format='eps')
-
-# # plot for times
-# # set x range from 1000 to 4000
-# plt.xlim(1500, 4000)
-# # x-axis label
-# plt.xlabel('Processing time (s)')
+plt.rc('xtick', labelsize=15)
+plt.rc('ytick', labelsize=15)
+plt.rc('axes', labelsize=15)
+plt.rc('axes', titlesize=15)
+# plt.xlabel('Age of participants')
 # # frequency label
 # plt.ylabel('Frequency')
-# # set font size of x-axis and y-axis to 20
-# plt.rc('xtick', labelsize=20)
-# plt.rc('ytick', labelsize=20)
-# plt.hist(times, color='brown', edgecolor='black', bins=15)
+
+# # # change everything to size 15
+
+# # plt.rc('axes', titlesize=15)
+# # plt.rc('axes', labelsize=15)
+
+# plt.hist(age, color='green', edgecolor='black', bins=15)
+# # x-stick step 1
+# plt.yticks(np.arange(0, 10, 1))
 # # save histogram to file .eps
 # plt.savefig(
-#     '/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/times.eps', format='eps')
+#     '/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/age.eps', format='eps')
+
+# plot for times
+# set x range from 1000 to 4000
+plt.xlim(1500, 4000)
+# x-axis label
+plt.xlabel('Processing time (s)')
+# frequency label
+plt.ylabel('Frequency')
+# set font size of x-axis and y-axis to 20
+plt.rc('xtick', labelsize=20)
+plt.rc('ytick', labelsize=20)
+plt.yticks(np.arange(0, 10, 1))
+plt.xticks(np.arange(1500, 4100, 500))
+plt.hist(times, color='brown', edgecolor='black', bins=15)
+# save histogram to file .eps
+plt.savefig(
+    '/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/times.eps', format='eps')
 
