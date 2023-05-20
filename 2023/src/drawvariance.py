@@ -54,7 +54,7 @@ for image in os.listdir(pathOut):
 
 plt.rc('xtick', labelsize=15)
 plt.rc('ytick', labelsize=15)
-plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
+# plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             # )
