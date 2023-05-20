@@ -43,22 +43,21 @@ for image in os.listdir(pathOut):
         print(entropy)
         # add variance and entropy to list
         variance_list.append(variance)
-        # entropy_list.append(entropy)
+        entropy_list.append(entropy)
 
 # plot histogram of variance and entropy with mininumum border
-plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
-# save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
-            )
+# plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
+# # save histogram to file .eps
+# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
+            # )
 # x-axis label
-plt.xlabel('Variance of images')
+plt.xlabel('Entropy of images')
 # frequency label
 plt.ylabel('Frequency')
 
 # save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
-            format='eps')
-# plt.hist(entropy_list, color='red', edgecolor='black')
-# # save histogram to file .eps
-# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.png'
-#             )
+# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
+#             format='eps')
+plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
+# save histogram to file .eps
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
