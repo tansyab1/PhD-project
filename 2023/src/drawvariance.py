@@ -34,8 +34,13 @@ for image in os.listdir(pathOut):
 
         # calculate variance and entropy of image
         variance = np.var(img)
-        print(variance)
-        # entropy = -np.sum(img.numpy() * np.log2(img.numpy() + 1e-10))
+        # print(variance)
+        # calculate normalized histogram of image
+        hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+        hist = hist / np.sum(hist)
+        # calculate entropy of image
+        entropy = -np.sum(hist * np.log2(hist + 1e-7))
+        print(entropy)
         # add variance and entropy to list
         variance_list.append(variance)
         # entropy_list.append(entropy)
