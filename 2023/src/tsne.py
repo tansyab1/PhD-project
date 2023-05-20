@@ -91,6 +91,7 @@ def TSNEvisualiza(inpath):
     # set font size of x-axis and y-axis
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
+    
     # for i, txt in enumerate(img_names):
     #     plt.annotate(txt, (features[i, 0], features[i, 1]))
     # save plot to file
