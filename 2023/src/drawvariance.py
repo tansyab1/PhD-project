@@ -54,7 +54,7 @@ for image in os.listdir(pathOut):
 
 plt.rc('xtick', labelsize=15)
 plt.rc('ytick', labelsize=15)
-# plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
+plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             # )
@@ -65,15 +65,15 @@ plt.rc('ytick', labelsize=15)
 # # set x-axis range
 # plt.xticks(np.arange(0, 5000, 500))
 # plt.yticks(np.arange(0, 8, 1))
-plt.xlabel('Entropy of images')
+plt.xlabel('Variance of images')
 # frequency label
 plt.ylabel('Frequency')
 
 # save to tight layout
 plt.tight_layout()
 # save histogram to file .eps
-# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
-#             format='eps')
-plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
-# save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
+            format='eps')
+# plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
+# # save histogram to file .eps
+# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
