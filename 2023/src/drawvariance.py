@@ -52,34 +52,28 @@ for image in os.listdir(pathOut):
 # plt.xlim(0, 5000)
 
 
-# plt.rc('xtick', labelsize=15)
-# plt.rc('ytick', labelsize=15)
-# plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
-# # # save histogram to file .eps
-# # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
-#             # )
-# # x-axis label
-
-# # rotate x-axis label to 45 degree
-# # plt.xticks(rotation=45)
-# # # set x-axis range
-# # plt.xticks(np.arange(0, 5000, 500))
-# # plt.yticks(np.arange(0, 8, 1))
-# plt.xlabel('Variance of images')
-# # frequency label
-# plt.ylabel('Frequency')
-
-# # save to tight layout
-# plt.tight_layout()
+plt.rc('xtick', labelsize=15)
+plt.rc('ytick', labelsize=15)
+plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
 # # save histogram to file .eps
-# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
-#             format='eps')
-# # plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
-# # # save histogram to file .eps
-# # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
+# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
+            # )
+# x-axis label
 
-# draw violin plot of variance and entropy
-plt.violinplot(variance_list, showmeans=True, showmedians=True)
-# plt.violinplot(entropy_list, showmeans=True, showmedians=True)
+# rotate x-axis label to 45 degree
+# plt.xticks(rotation=45)
+# # set x-axis range
+# plt.xticks(np.arange(0, 5000, 500))
+# plt.yticks(np.arange(0, 8, 1))
+plt.xlabel('Variance of images')
+# frequency label
+plt.ylabel('Frequency')
+
+# save to tight layout
 plt.tight_layout()
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/varian_violin.eps', format='eps')
+# save histogram to file .eps
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
+            format='eps')
+# plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
+# # save histogram to file .eps
+# plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
