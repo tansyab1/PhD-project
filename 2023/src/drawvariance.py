@@ -13,8 +13,9 @@ from sklearn.manifold import TSNE
 # import matplotlib library
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import seaborn as sns
 
-pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/final/imgs/'
+pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/Reference/imgs/'
 
 variance_list = []
 entropy_list = []
@@ -79,7 +80,11 @@ for image in os.listdir(pathOut):
 # # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
 
 # draw violin plot of variance and entropy
-plt.violinplot(variance_list, showmeans=True, showmedians=True)
-# plt.violinplot(entropy_list, showmeans=True, showmedians=True)
+sns.set_theme(style="whitegrid")
+# plt.rc('xtick', labelsize=15)
+# plt.rc('ytick', labelsize=15)
+sns.violinplot(x=variance_list, color='orange')
+# # # save histogram to file .eps with tight layout
+sns.despine(left=True)
 plt.tight_layout()
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/varian_violin.eps', format='eps')
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance_violin.eps', format='eps')
