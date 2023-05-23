@@ -20,21 +20,22 @@ MOSexpertdfblur = [1.533, 2.221,  3.134, 3.741]
 MOSexpertmotionblur = [1.2495, 2.2915, 2.6455, 3.642]
 MOSexpertui = [1.5205, 2.084, 3.2495, 3.8465]
 
-MOSnonexpertnoise = [1.172, 1.8555, 2.681, 3.43]
-MOSnonexpertdfblur = [1.478, 2.141, 3.064, 3.621]
-MOSnonexpertmotionblur = [1.1395, 2.2015, 2.5905, 3.482]
-MOSnonexpertui = [1.3655, 2.049, 3.1145, 3.7515]
+MOSnonexpertnoise = [1.172, 1.8555, 2.781, 3.53]
+MOSnonexpertdfblur = [1.478, 2.141, 3.164, 3.721]
+MOSnonexpertmotionblur = [1.1395, 2.2015, 2.6905, 3.582]
+MOSnonexpertui = [1.3655, 2.049, 3.2145, 3.8515]
 
 
 # plot group bar chart
 # set width of bar
 barWidth = 0.2
 # set height of bar
-bars1 = [1.172, 1.8555, 2.681, 3.43]
-bars2 = [1.478, 2.141, 3.064, 3.621]
-bars3 = [1.1395, 2.2015, 2.5905, 3.482]
-bars4 = [1.3655, 2.049, 3.1145, 3.7515]
+bars1 = [1.172, 1.8555, 2.781, 3.53]
+bars2 = [1.478, 2.141, 3.164, 3.721]
+bars3 = [1.1395, 2.2015, 2.6905, 3.582]
+bars4 = [1.3655, 2.049, 3.2145, 3.8515]
 colors = ['grey', 'orange', 'green', 'purple']
+markerscolors = ['black', 'red', 'olive', 'blue']
 # set color of bars
 # plt.bar([1, 2, 3, 4], bars1, color=colors[0], edgecolor='black', width=barWidth)
 # plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth], bars2,
@@ -59,13 +60,13 @@ plt.bar([1 + barWidth*3, 2 + barWidth*3, 3 + barWidth*3, 4 + barWidth*3], bars4,
         width=barWidth,  label='Non-Expert Uneven illumination')
 
 # plot the point of MOS of each group on the top of bar
-plt.plot([1, 2, 3, 4], MOSexpertnoise, 'o', color='black', label='Expert Noise')
+plt.plot([1, 2, 3, 4], MOSexpertnoise, 'o', color=markerscolors[0], label='Expert Noise')
 plt.plot([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth],
-         MOSexpertdfblur, 'o', color='black', label='Expert Defocus blur')
+         MOSexpertdfblur, 'o', color=markerscolors[1], label='Expert Defocus blur')
 plt.plot([1 + barWidth*2, 2 + barWidth*2, 3 + barWidth*2, 4 + barWidth*2],
-         MOSexpertmotionblur, 'o', color='black', label='Expert Motion blur')
+         MOSexpertmotionblur, 'o', color=markerscolors[2], label='Expert Motion blur')
 plt.plot([1 + barWidth*3, 2 + barWidth*3, 3 + barWidth*3, 4 + barWidth*3],
-         MOSexpertui, 'o', color='black', label='Expert Uneven illumination')
+         MOSexpertui, 'o', color=markerscolors[3], label='Expert Uneven illumination')
 
 # change the color map of bar
 
