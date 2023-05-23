@@ -1,11 +1,11 @@
-python3 TCFAv2.py \
+python3 analyzemargin.py \
     --data_root ./dataForVisualization/UI_var/ \
     --ref_root ./dataForVisualization/Ref/ \
     --pkl_root ./dataForVisualization/UI_var/ui_dict.pkl \
-    --out_dir ./outputv2/ \
-    --mat_dir ./outputv2/mat/epoch0/ \
+    --out_dir ./outputpaper/ \
+    --mat_dir ./outputpaper/mat/epoch0/ \
     --tensorboard_dir ./tensorboardv2/ \
     --num_workers 12 \
-    --bs 24 \
+    --bs 32 \
     --num_epochs 50 \
-    --action "test"
+    --action "train"
