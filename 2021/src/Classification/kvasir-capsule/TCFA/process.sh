@@ -1,4 +1,4 @@
-python3 analyzemargin.py \
+python3 testMargin.py \
     --data_root ./dataForVisualization/UI_var/ \
     --ref_root ./dataForVisualization/Ref/ \
     --pkl_root ./dataForVisualization/UI_var/ui_dict.pkl \
@@ -7,5 +7,5 @@ python3 analyzemargin.py \
     --tensorboard_dir ./tensorboardv2/ \
     --num_workers 12 \
     --bs 32 \
-    --num_epochs 50 \
+    --num_epochs 10 \
     --action "train"

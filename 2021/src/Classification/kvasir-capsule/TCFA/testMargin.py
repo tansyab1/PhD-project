@@ -11,7 +11,6 @@
 from __future__ import print_function, division
 
 import argparse
-import pickle
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -45,12 +44,10 @@ from torch.autograd import Variable
 from utils.Dataloader_with_path_2labels_ref import ImageFolderWithPaths as dataset
 
 import string
-from ray import tune
-from ray.air import session
-from ray.air.checkpoint import Checkpoint
-from ray.tune.schedulers import ASHAScheduler
-from ray.tune import CLIReporter
+
+# inport davies bouldin index 
 from sklearn.metrics import davies_bouldin_score
+# import silhouette score
 from sklearn.metrics import silhouette_score
 
 # ======================================
@@ -146,7 +143,7 @@ parser.add_argument("--all_folds",
 opt = parser.parse_args()
 
 # print all input parameters to the console
-# print(opt)
+print(opt)
 
 # ==========================================
 # Device handling
@@ -270,140 +267,147 @@ def get_activation(name):
     return hook
 
 
-def train_model(config):
-    
-    
-    model = prepare_model()
-    dataloaders = prepare_data()
-    optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9)
-    criterion = nn.CrossEntropyLoss()  # weight=weights
-    criterion_ae = nn.MSELoss()
-    best_acc=0.0
-    start_epoch=0
-    # LR shceduler
-    scheduler_lr = lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
-    
+def train_model(model,
+                optimizer,
+                criterion_ssim,
+                criterion_ae,
+                dataloaders: dict,
+                scheduler,
+                best_acc=0.0,
+                start_epoch=0):
+
+    # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
-    triplet_loss = nn.TripletMarginLoss(margin=config["margin"], p=2)
+    for margin in tqdm([1.0, 2, 4, 8, 16, 32, 64]):
+        triplet_loss = nn.TripletMarginLoss(margin=margin, p=2)
 
-    for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
+        for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
 
-        # tsne_features = []  # for tsne visualization
-        # tsne_labels = []  # for tsne visualization
+            tsne_features_in = []  # for tsne visualization
+            tsne_labels_in = []  # for tsne visualization
+                        # put two list to the gpu
+            # tsne_features_in = torch.Tensor(tsne_features).to('cuda:2')
+            # tsne_labels_in = torch.Tensor(tsne_labels).to('cuda:2')
 
-        for phase in ["train", "val"]:
+            for phase in ["train", "val"]:
 
-            if phase == "train":
-                model.train()
-                dataloader = dataloaders["train"]
-            else:
-                model.eval()
-                dataloader = dataloaders["val"]
+                if phase == "train":
+                    model.train()
+                    dataloader = dataloaders["train"]
+                else:
+                    model.eval()
+                    dataloader = dataloaders["val"]
 
-            running_loss = 0.0
-            mse = 0.0
-            ssim_batch = 0.0
-            ssim = StructuralSimilarityIndexMeasure(
-                data_range=2.0).to('cuda:2')
-            num_batches = 0
+                running_loss = 0.0
+                mse = 0.0
+                ssim_batch = 0.0
+                ssim = StructuralSimilarityIndexMeasure(
+                    data_range=2.0).to('cuda:2')
+                num_batches = 0
 
+                for i, data in tqdm(enumerate(dataloader, 0)):
 
-            for i, data in tqdm(enumerate(dataloader, 0)):
+                    inputs, labels, positive, negative, reference, anchor_label = data
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
+                    positive = positive.to(device)
+                    negative = negative.to(device)
+                    # reference = reference.to(device)
+                    anchor_label = anchor_label.to('cuda:2')
 
-                inputs, labels, positive, negative, reference, anchor_label = data
-                inputs = inputs.to(device)
-                labels = labels.to(device)
-                positive = positive.to(device)
-                negative = negative.to(device)
-                reference = reference.to(device)
-                anchor_label = anchor_label.to("cuda:2")
+                    # zero the parameter gradients
+                    optimizer.zero_grad()
 
-                # zero the parameter gradients
-                optimizer.zero_grad()
+                    # forward
+                    # track history if only in train
+                    with torch.set_grad_enabled(phase == 'train'):
+                        encoded_noise, encoded_positive, encoded_negative = model(
+                            inputs, positive, negative)
 
-                # forward
-                # track history if only in train
-                with torch.set_grad_enabled(phase == 'train'):
-                    resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
-                        inputs, positive, negative, reference)
+                        encoded_noise = encoded_noise.to('cuda:2')
+                        encoded_positive = encoded_positive.to('cuda:2')
+                        encoded_negative = encoded_negative.to('cuda:2')
 
-                    # put all data to cpu
-                    resnet_out = resnet_out.to('cuda:2')
-                    resnet_out_encoded = resnet_out_encoded.to('cuda:2')
-                    decoded_image = decoded_image.to('cuda:2')
-                    encoded_noise = encoded_noise.to('cuda:2')
-                    encoded_negative = encoded_negative.to('cuda:2')
-                    encoded_positive = encoded_positive.to('cuda:2')
+                        loss_triplet = triplet_loss(
+                            encoded_noise, encoded_positive, encoded_negative)
+                        
+                        # flatten the tensors encoded_noise over the batch dimension
+                        encoded_noise_flatten = encoded_noise.view(
+                            encoded_noise.shape[0], -1)
+                        
+                        # append the encoded_noise_flatten to the tsne_features to the new line
+                        if phase == 'val':
+                            tsne_features_in.append(encoded_noise_flatten.cpu().numpy())
+                            tsne_labels_in.append(anchor_label.cpu().numpy())
+                            # print(np.shape(tsne_features_in))
+                            
+                        
+                        
+                        # tsne_features = np.squeeze(tsne_features)
+                        # tsne_labels = np.squeeze(tsne_labels)
+                        
+                        # print(np.shape(tsne_features))
+                        loss = loss_triplet
+                        # score = davies_bouldin_score(tsne_features, tsne_labels)
+                        # print(score)
+                        # print(tsne_features.shape)
+                        # tsne_features = tsne_features.cpu().detach().numpy()
+                        # tsne_labels = tsne_labels.cpu().detach().numpy()
+                        # backward + optimize only if in training phase
+                        if phase == 'train':
+                            loss.backward()
+                            optimizer.step()
+
+                    # statistics
+                    running_loss += loss.item() * inputs.size(0)
                     
-                    # caculate the davies bouldin score for the encoded noise
-                    dbscore = davies_bouldin_score(encoded_noise.cpu(), anchor_label.cpu())
+                    # break
+                    
+                    num_batches += 1
+                    torch.cuda.empty_cache()
                     
                     
-                    # give it to the ray tune
-                    session.report({"objective": dbscore})               
-                    reference = reference.to('cuda:2')
+                # calculate the davies bouldin score 
+                if phase == 'val':
+                    print("Calculating the davies bouldin score")
+                    # print(tsne_features_in.shape)
+                    tsne_features_cpu = np.reshape(tsne_features_in, (-1, 193600))
+                    tsne_labels_cpu = np.reshape(tsne_labels_in, (-1, 1))
+                    tsne_labels_cpu = np.squeeze(tsne_labels_cpu)
+                    
+                    # print(np.shape(tsne_features_cpu))
+                    # print(np.shape(tsne_labels_cpu))
+                    
+                    # release the memory
+                    # del tsne_features_in
+                    # del tsne_labels_in
+                    
+                    tsne_features_cpu = np.squeeze(tsne_features_cpu)
+                    tsne_labels_cpu = np.squeeze(tsne_labels_cpu)
+                        
+                    score_davies = davies_bouldin_score(tsne_features_cpu, tsne_labels_cpu)
+                    
+                    # calculate the silhouette score
+                    score_silhouette = silhouette_score(tsne_features_cpu, tsne_labels_cpu)
+                    
+                    # save epoch and score to the txt file
+                    with open('margin_{margin}.txt'.format(margin=margin), 'a') as f:
+                        f.write("Epoch: %d, Davies Bouldin score: %.4f, Silhouette score: %.4f\n" % (epoch, score_davies, score_silhouette))
+                
+                
+                # epoch_loss = running_loss / dataloaders["dataset_size"][phase]
+                # epoch_mse = mse / dataloaders["dataset_size"][phase]
+                # epoch_psnr = 10 * torch.log10(1 / epoch_mse)
+                # # calculate SSIM
+                # epoch_ssim = ssim_batch / num_batches
 
-                    loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
-                    loss_ae = criterion_ae(decoded_image, reference)
-                    loss_triplet = triplet_loss(
-                        encoded_noise, encoded_positive, encoded_negative)
-                    # loss_KL = 0.5 * \
-                    #     torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
+                # # update tensorboard writer
+                # writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
+                # writer.add_scalars("PSNR", {phase: epoch_psnr}, epoch)
+                # writer.add_scalars("mse", {phase: epoch_mse}, epoch)
 
-                    loss = loss_ae + loss_triplet + loss_feature
-                    # backward + optimize only if in training phase
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
-
-                # statistics
-                running_loss += loss.item() * inputs.size(0)
-                # calculate the PSNR between the original and the decoded image using the MSE of pytorch
-
-                mse += F.mse_loss(decoded_image, reference)
-                ssim_batch_tensor = ssim(decoded_image, reference)
-                ssim_batch += ssim_batch_tensor.item()
-                # empty cache
-                num_batches += 1
-                torch.cuda.empty_cache()
-            epoch_loss = running_loss / dataloaders["dataset_size"][phase]
-            epoch_mse = mse / dataloaders["dataset_size"][phase]
-            epoch_psnr = 10 * torch.log10(1 / epoch_mse)
-            # calculate SSIM
-            epoch_ssim = ssim_batch / num_batches
-
-            # update tensorboard writer
-            writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
-            writer.add_scalars("PSNR", {phase: epoch_psnr}, epoch)
-            writer.add_scalars("mse", {phase: epoch_mse}, epoch)
-
-            # update the lr based on the epoch loss
-            if phase == "val":
-
-                # keep best model weights
-                if epoch_ssim > best_acc:
-                    best_acc = epoch_ssim
-                    best_model_wts = copy.deepcopy(model.state_dict())
-                    best_epoch = epoch
-                    best_epoch_loss = epoch_loss
-                    best_epoch_psnr = epoch_psnr
-                    best_epoch_ssim = epoch_ssim
-                    best_epoch_mse = epoch_mse
-                    print("Found a better model")
-                if epoch % 10 == 0:
-                    save_model(best_model_wts, best_epoch, best_epoch_loss,
-                               best_epoch_psnr, best_epoch_ssim, best_epoch_mse)
-
-                # Get current lr
-                lr = optimizer.param_groups[0]['lr']
-                # print("lr=", lr)
-                writer.add_scalar("LR", lr, epoch)
-                scheduler_lr.step(epoch_loss)
-
-            # Print output
-            print('Epoch:\t  %d |Phase: \t %s | Loss:\t\t %.4f | PSNR:\t %.4f | MSE:\t %.4f | SSIM:\t %.4f'
-                  % (epoch, phase, epoch_loss, epoch_psnr, epoch_mse, epoch_ssim))
+                # update the lr based on the epoch loss
+                # if phase == nv
 
 
 # ================================================
@@ -516,98 +520,24 @@ class MyNet(nn.Module):
         self.attention_dim = 112
         self.flatten_dim = self.shape[0] * self.shape[1] * self.dim
 
-        # self.base_model = BaseNet(num_out)
-        # for param in self.base_model.parameters():
-        #     param.requires_grad = False
-
-        # create an autoencoder block for input size 224*224*3 containing 2 conv layers
-        # self.encoder = nn.Sequential(
-        #     nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
-        #     nn.BatchNorm2d(64),
-        #     nn.ReLU(),
-        #     nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
-        #     nn.BatchNorm2d(64),
-        #     nn.ReLU(),
-        # )
-
-        # self.cross_attention_layer = CrossAttention(
-        #     dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-        # self.fc_mu = nn.Linear(self.flatten_dim, 128)
-        # self.fc_var = nn.Linear(self.flatten_dim, 128)
-
-        # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(3, 64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(64, 64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
         )
 
-    #     self.decoder_mlp = nn.Sequential(
-    #         nn.Linear(128, 256),
-    #         nn.BatchNorm1d(256),
-    #         nn.ReLU(),
-    #         nn.Linear(256, self.flatten_dim),
-    #         nn.Tanh(),
-    #     )
+        
 
-    #     self.decoder = nn.Sequential(
-    #         nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),
-    #         nn.BatchNorm2d(64),
-    #         nn.ReLU(),
-    #         nn.ConvTranspose2d(64, 3, kernel_size=3, stride=1, padding=1),
-    #         nn.Tanh(),
-    #     )
-
-    # def reparameterize(self, mu, logvar):
-    #     std = logvar.mul(0.5).exp_()
-    #     std = std.to(device)
-    #     # return torch.normal(mu, std)
-    #     esp = torch.randn(*mu.size())
-    #     esp = esp.to(device)
-    #     z = mu + std * esp
-    #     return z
-
-    # def bottleneck(self, h):
-    #     mu, logvar = self.fc_mu(h), self.fc_var(h)
-    #     z = self.reparameterize(mu, logvar)
-    #     return z, mu, logvar
-
-    def forward(self, x, positive, negative, reference):
-        # x = x.cuda(1)
-        # self.encoder = self.encoder.cuda(1)
-        # encoded_image = self.encoder(x)
-        # x = x.cuda(0)
-        # encoded_image = encoded_image.cuda(0)
-        # # encode the image with channel = 64
+    def forward(self, x, positive, negative):
+        x = x.cuda(0)
         encoded_noise = self.encoder_mlp(x)
         encoded_positive = self.encoder_mlp(positive)
         encoded_negative = self.encoder_mlp(negative)
-        # cross_attention_feature, mu, logvar = self.cross_attention_layer(
-        #     encoded_image, encoded_noise)
-
-        # cross_attention_feature = cross_attention_feature.view(
-        #     -1, self.dim, self.shape[0], self.shape[1])
-        # element wise addition of the noise feature and the cross attention feature
-
-        # encoded_noise_attention = torch.mul(
-        #     encoded_noise, cross_attention_feature)
-
-        # encoded_image = torch.cat(
-        #     (encoded_noise_attention, encoded_image), dim=1)
-        # encoded_image = torch.cat((encoded_noise, encoded_image), dim=1)
-
-        # decoded_image = self.decoder(encoded_image)
-
-        # self.base_model = self.base_model.cuda(1)
-        # decoded_image = decoded_image.cuda(1)
-        # reference = reference.cuda(1)
-
-        # resnet_out = self.base_model(decoded_image)
-        # resnet_out_encoded = self.base_model(reference)
         return encoded_noise, encoded_positive, encoded_negative
+
 
 # ===============================================
 # Prepare models
@@ -620,55 +550,34 @@ def prepare_model():
     return model
 
 
-
 # ====================================
 # Run training process
 # ====================================
 def run_train(retrain=False):
-    # torch.cuda.empty_cache()
-    
-    config = {
-        "margin": tune.choice([2, 4, 8, 16])}
-    
-    scheduler = ASHAScheduler(
-        metric="objective",
-        mode="min",
-        max_t=opt.num_epochs,
-        grace_period=1,
-        reduction_factor=2)
-    
-    reporter = CLIReporter(
-        parameter_columns=["margin"],
-        metric_columns=["loss", "training_iteration"])
+    torch.cuda.empty_cache()
+    model = prepare_model()
+    dataloaders = prepare_data()
+    optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9)
+    criterion = nn.CrossEntropyLoss()  # weight=weights
+    criterion_ae = nn.MSELoss()
+    # LR shceduler
+    scheduler = lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
+    # call main train loop
+    if retrain:
+        # train from a checkpoint
+        checkpoint_path = input("Please enter the checkpoint path:")
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        start_epoch = checkpoint["epoch"]
+        # loss = checkpoint["loss"]
+        acc = checkpoint["psnr"]
+        train_model(model, optimizer, criterion, criterion_ae, dataloaders,
+                    scheduler, best_acc=acc, start_epoch=start_epoch)
 
-        # analysis = tune.run(
-        #     train_model,
-        #     metric="margin",
-        #     mode="min",
-        #     config=config,
-        #     num_samples=5,
-        #     scheduler=scheduler,
-        #     progress_reporter=reporter,
-        #     name="tune_margin"
-        # )
-        # check the non-serializable variables error
-        
-        
-    result = tune.run(
-    train_model,
-    config=config,
-    num_samples=5,
-    scheduler=scheduler,
-    progress_reporter=reporter,
-)
-    
-    print("Best config: ", result.get_best_config(metric="loss", mode="min"))
-    # Get a dataframe for analyzing trial results.
-    df = result.results_df
-    print(df)
-    # save the dataframe
-    df.to_csv("tune_results.csv")
-    
+    else:
+        train_model(model, optimizer, criterion, criterion_ae, dataloaders,
+                    scheduler, best_acc=0.0, start_epoch=0)
 
 
 # =====================================
@@ -752,16 +661,6 @@ def test_model():
                 tsne_features.append(flatten_noise.cpu().numpy())
                 tsne_labels.append(anchor_label.cpu().numpy())
 
-                # if i % 100 == 0 or i == len(test_dataloader) - 1:
-                #     # save the features and labels for T-SNE to mat file
-                #     savemat(opt.mat_dir + "/tsne_features_{}.mat".format(i), {"tsne_features": np.concatenate(
-                #         tsne_features, axis=0), "tsne_labels": np.concatenate(tsne_labels, axis=0)})
-                #     gc.collect()
-
-                # print("tsne_features", np.concatenate(
-                #     tsne_features, axis=0).shape)
-
-                # empty cache to avoid memory leak
                 torch.cuda.empty_cache()
 
     # ====================================================================
@@ -1029,11 +928,11 @@ def inference():
 
 
 if __name__ == '__main__':
-    # print("Started data preparation")
-    # data_loaders = prepare_data()
-    # # print(vars(opt))
-    # print("=====================================")
-    # print("Data is ready")
+    print("Started data preparation")
+    data_loaders = prepare_data()
+    # print(vars(opt))
+    print("=====================================")
+    print("Data is ready")
 
     # Train or retrain or inference
     if opt.action == "train":
