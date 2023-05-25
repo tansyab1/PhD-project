@@ -18,21 +18,11 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import models, transforms
 # import TripletLoss as TripletLoss
-from sklearn.manifold import TSNE
-# from tsnecuda import TSNE
-import matplotlib.pyplot as plt
 # import gc
 import os
 # import copy
 import pandas as pd
 import numpy as np
-import itertools
-from einops import rearrange
-from einops.layers.torch import Rearrange
-from torch import einsum
-import psutil
-# import GPUtil
-# from scipy.io import savemat
 from torch.utils.tensorboard import SummaryWriter
 
 # from torchmetrics import StructuralSimilarityIndexMeasure
@@ -42,8 +32,6 @@ from torchsummary import summary
 from torch.autograd import Variable
 
 from utils.Dataloader_with_path_2labels_ref import ImageFolderWithPaths as dataset
-
-import string
 
 # inport davies bouldin index
 from sklearn.metrics import davies_bouldin_score
@@ -286,8 +274,8 @@ def train_model(model,
             tsne_features_in = []  # for tsne visualization
             tsne_labels_in = []  # for tsne visualization
             # put two list to the gpu
-            # tsne_features_in = torch.Tensor(tsne_features).to('cuda:2')
-            # tsne_labels_in = torch.Tensor(tsne_labels).to('cuda:2')
+            # tsne_features_in = torch.Tensor(tsne_features).to(device)
+            # tsne_labels_in = torch.Tensor(tsne_labels).to(device)
 
             for phase in ["train", "val"]:
 
@@ -302,7 +290,7 @@ def train_model(model,
                 # mse = 0.0
                 # ssim_batch = 0.0
                 # ssim = StructuralSimilarityIndexMeasure(
-                #     data_range=2.0).to('cuda:2')
+                #     data_range=2.0).to(device)
                 # num_batches = 0
 
                 for i, data in tqdm(enumerate(dataloader, 0)):
@@ -313,7 +301,7 @@ def train_model(model,
                     positive = positive.to(device)
                     negative = negative.to(device)
                     # reference = reference.to(device)
-                    anchor_label = anchor_label.to('cuda:2')
+                    anchor_label = anchor_label.to(device)
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
@@ -324,9 +312,9 @@ def train_model(model,
                         encoded_noise, encoded_positive, encoded_negative = model(
                             inputs, positive, negative)
 
-                        encoded_noise = encoded_noise.to('cuda:2')
-                        encoded_positive = encoded_positive.to('cuda:2')
-                        encoded_negative = encoded_negative.to('cuda:2')
+                        encoded_noise = encoded_noise.to(device)
+                        encoded_positive = encoded_positive.to(device)
+                        encoded_negative = encoded_negative.to(device)
 
                         loss_triplet = triplet_loss(
                             encoded_noise, encoded_positive, encoded_negative)
@@ -340,19 +328,8 @@ def train_model(model,
                             tsne_features_in.append(
                                 encoded_noise_flatten.cpu().numpy())
                             tsne_labels_in.append(anchor_label.cpu().numpy())
-                            # print(np.shape(tsne_features_in))
 
-                        # tsne_features = np.squeeze(tsne_features)
-                        # tsne_labels = np.squeeze(tsne_labels)
-
-                        # print(np.shape(tsne_features))
                         loss = loss_triplet
-                        # score = davies_bouldin_score(tsne_features, tsne_labels)
-                        # print(score)
-                        # print(tsne_features.shape)
-                        # tsne_features = tsne_features.cpu().detach().numpy()
-                        # tsne_labels = tsne_labels.cpu().detach().numpy()
-                        # backward + optimize only if in training phase
                         if phase == 'train':
                             loss.backward()
                             optimizer.step()
@@ -391,24 +368,11 @@ def train_model(model,
                         f.write("Epoch: %d, Davies Bouldin score: %.4f, Silhouette score: %.4f\n" % (
                             epoch, score_davies, score_silhouette))
 
-                # epoch_loss = running_loss / dataloaders["dataset_size"][phase]
-                # epoch_mse = mse / dataloaders["dataset_size"][phase]
-                # epoch_psnr = 10 * torch.log10(1 / epoch_mse)
-                # # calculate SSIM
-                # epoch_ssim = ssim_batch / num_batches
-
-                # # update tensorboard writer
-                # writer.add_scalars("Loss", {phase: epoch_loss}, epoch)
-                # writer.add_scalars("PSNR", {phase: epoch_psnr}, epoch)
-                # writer.add_scalars("mse", {phase: epoch_mse}, epoch)
-
-                # update the lr based on the epoch loss
-                # if phase == nv
-
-
 # ================================================
 # New architecture
 # ================================================
+
+
 class BaseNet(nn.Module):
     def __init__(self, num_out=14):
         super(BaseNet, self).__init__()
@@ -418,94 +382,6 @@ class BaseNet(nn.Module):
     def forward(self, x):
         x = self.module(x)
         return x
-
-# self.cross_attention_layer = CrossAttention(
-#           dim=self.attention_dim, heads=7, dim_head=32, dropout=0., patch_size_large=16, input_size=224, channels=64)
-
-
-class CrossAttention(nn.Module):
-    def __init__(self, dim=2048, heads=8, dim_head=256, dropout=0., patch_size_large=16, input_size=224, channels=128):
-        super().__init__()
-        inner_dim = dim_head * heads
-        project_out = not (heads == 1 and dim_head == dim)
-        self.heads = heads
-        self.scale = dim_head ** -0.5
-
-        self.to_k = nn.Linear(dim, inner_dim, bias=False)
-        self.to_v = nn.Linear(dim, inner_dim, bias=False)
-        self.to_q = nn.Linear(dim, inner_dim, bias=False)
-
-        num_patches_large = (input_size // patch_size_large)  # 14
-
-        self.to_patch_embedding_x = nn.Sequential(
-            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
-                      p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
-            nn.Linear(channels*patch_size_large*patch_size_large, dim),
-        )
-
-        self.to_patch_embedding_noise = nn.Sequential(
-            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
-                      p1=patch_size_large, p2=patch_size_large),  # 14x14 patches with c = 128
-            nn.Linear(channels*patch_size_large*patch_size_large, dim),
-        )
-
-        self.to_out = nn.Sequential(
-            nn.Linear(inner_dim, dim),
-            nn.Dropout(dropout)
-        ) if project_out else nn.Identity()
-
-        self.mlp_head = nn.Sequential(
-            nn.LayerNorm(dim),
-            nn.Linear(dim, channels*patch_size_large*patch_size_large),
-            Rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
-                      p1=patch_size_large,
-                      p2=patch_size_large,
-                      c=channels,
-                      h=num_patches_large),  # 14x14 patches with c = 128
-        )
-
-        self.matrix = nn.Linear(dim_head, num_patches_large*num_patches_large)
-
-    def reparameterize(self, mu, logvar):
-        std = logvar.mul(0.5).exp_()
-        std = std.to(device)
-        # return torch.normal(mu, std)
-        esp = torch.randn(*mu.size())
-        esp = esp.to(device)
-        z = mu + std * esp
-        return z
-
-    def forward(self, x_q, x_kv):
-        x_q = self.to_patch_embedding_x(x_q)
-        x_kv = self.to_patch_embedding_noise(x_kv)
-
-        b, n, _, h = *x_q.shape, self.heads
-
-        k = self.to_k(x_kv)
-        k = rearrange(k, 'b n (h d) -> b h n d', h=h, b=b, n=n)
-
-        v = self.to_v(x_kv)
-        v = rearrange(v, 'b n (h d) -> b h n d', h=h, b=b, n=n)
-
-        q = self.to_q(x_q)
-        q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
-
-        dots = self.reparameterize(q, k) * self.scale
-        dots = rearrange(dots, 'b h n d -> b (h n) d')
-        dots = self.matrix(dots)
-        dots = rearrange(dots, 'b (h i) d -> b h i d', b=b, h=h)
-        attn = dots.softmax(dim=-1)
-        out = einsum('b h i j, b h j d -> b h i d', attn, v)
-        out = rearrange(out, 'b h n d -> b n (h d)')
-        out = self.to_out(out)
-        out = self.mlp_head(out)
-        q = rearrange(q, 'b h n d -> b (h n d)')
-        k = rearrange(k, 'b h n d -> b (h n d)')
-
-        # normalize q and k
-        q = q / torch.norm(q, dim=1, keepdim=True)
-        k = k / torch.norm(k, dim=1, keepdim=True)
-        return out, q, k
 
 
 class MyNet(nn.Module):
@@ -604,90 +480,6 @@ def check_model_graph():
     dummy_input = Variable(torch.rand(13, 3, 224, 224))
     writer.add_graph(model, dummy_input)  # this need the model on CPU
 
-# ===============================================
-#  Model testing method
-# ===============================================
-
-
-def test_model():
-    print("hint: ./output/TCFA.py/checkpoints/TCFA_epoch:#.pt")
-    # test_model_checkpoint = input("Please enter the path of test model:")
-    test_model_checkpoint = "./output/TCFA.py/checkpoints/TCFA_epoch:0.pt"
-    checkpoint = torch.load(test_model_checkpoint)
-
-    model = prepare_model()
-    model.load_state_dict(checkpoint["model_state_dict"])
-    model.eval()
-    # total = 0
-    # running_mse = 0.0
-    tsne_features = []
-    tsne_labels = []
-
-    dataloaders = prepare_data()
-    test_dataloader = dataloaders["val"]
-    print("total ram: ", psutil.virtual_memory().total)
-
-    with torch.no_grad():
-        with tqdm(total=100, desc='cpu%', position=1) as cpubar, tqdm(total=100, desc='ram%', position=0) as rambar:
-            for i, data in tqdm(enumerate(test_dataloader, 0)):
-                rambar.n = psutil.virtual_memory().percent
-                cpubar.n = psutil.cpu_percent()
-                rambar.refresh()
-                cpubar.refresh()
-                # GPUtil.showUtilization()
-                inputs, labels, positive, negative, reference, anchor_label = data
-                inputs = inputs.to(device)
-                # labels = labels.to(device)
-                positive = positive.to(device)
-                negative = negative.to(device)
-                reference = reference.to(device)
-                anchor_label = anchor_label.to("cuda:2").type(torch.float16)
-                # total += labels.size(0)
-                _, _, _, encoded_noise, _, _, _, _ = model(
-                    inputs, positive, negative, reference)
-
-                flatten_noise = encoded_noise.view(
-                    encoded_noise.size(0), -1)
-
-                # convert it from float32 to unit8
-                flatten_noise = flatten_noise.type(torch.float16)
-
-                tsne_features.append(flatten_noise.cpu().numpy())
-                tsne_labels.append(anchor_label.cpu().numpy())
-
-                torch.cuda.empty_cache()
-
-    # ====================================================================
-    # Writing to a file
-    # =====================================================================
-
-    # np.set_printoptions(linewidth=np.inf)
-    # with open("%s/%s_evaluation.csv" % (opt.out_dir, py_file_name), "w") as f:
-    #     f.write("PSNR: %f\n" % psnr)
-    #     for noise_level_i, mse_i in mse_list:
-    #         f.write("MSE of noise level %d is %f\n" % (noise_level_i, mse_i))
-
-    # f.close()
-    # plot the results of the T-SNE embedding
-    plot_tsne(tsne_features, tsne_labels, epoch=0)
-
-    print("Report generated")
-
-
-def plot_tsne(features, labels, epoch):
-    features = np.concatenate(features, axis=0)
-    labels = np.concatenate(labels, axis=0)
-    tsne = TSNE(n_components=2, random_state=0)
-    X_2d = tsne.fit_transform(features)
-
-    plt.figure(figsize=(10, 10))
-    plt.scatter(X_2d[:, 0], X_2d[:, 1], c=labels,
-                cmap=plt.cm.get_cmap("jet", 10))
-    plt.colorbar(ticks=range(10))
-    plt.clim(-0.5, 9.5)
-    plt.savefig("tsne_epoch_{}.png".format(epoch))
-    plt.legend()
-    plt.close()
 
 # ==============================================
 # Prepare submission file with probabilities
@@ -756,170 +548,6 @@ def prepare_prediction_file():
 # Prepare submission file:
 # ===============================================
 
-def prepare_submission_file(image_names, predicted_labels, max_probability, time_per_image, submit_dir, data_classes):
-
-    predicted_label_names = []
-
-    for i in predicted_labels:
-        predicted_label_names = predicted_label_names + [data_classes[i]]
-
-    #  print(predicted_label_names)
-
-    submission_dataframe = pd.DataFrame(np.column_stack([image_names,
-                                                         predicted_label_names,
-                                                         max_probability,
-                                                         time_per_image]),
-                                        columns=['images', 'labels', 'PROB', 'time'])
-    # print("image names:{0}".format(image_names))
-
-    submission_dataframe.to_csv(os.path.join(
-        submit_dir, "method_3_test_output"), index=False)
-
-    print(submission_dataframe)
-    print("successfully created submission file")
-
-
-# ==============================================
-#  Ploting history and save plots to plots directory
-# ==============================================
-
-
-# ==============================================
-# Plot confusion matrix - method
-# ==============================================
-def plot_confusion_matrix(cm, classes,
-                          normalize=True,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues,
-                          plt_size=[15, 12]):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
-    plt.rcParams['figure.figsize'] = plt_size
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
-
-    print(cm)
-
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    LABEL_TO_LETTER = {
-        "Ampulla of vater": "A",
-        "Angiectasia": "B",
-        "Blood - fresh": "C",
-        "Blood - hematin": "D",
-        "Erosion": "E",
-        "Erythema": "F",
-        "Foreign body": "G",
-        "Ileocecal valve": "H",
-        "Lymphangiectasia": "I",
-        "Normal clean mucosa": "J",
-        "Polyp": "K",
-        "Pylorus": "L",
-        "Reduced mucosal view": "M",
-        "Ulcer": "N"
-    }
-    class_str = [LABEL_TO_LETTER[i] for i in classes]
-    plt.xticks(tick_marks, class_str, rotation=90)
-    plt.yticks(tick_marks, class_str)
-
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
-
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    fig_path = "%s/%s_matrix.png" % (opt.out_dir, py_file_name)
-    plt.savefig(fig_path)
-    figure = plt.gcf()
-    writer.add_figure("Confusion Matrix", figure)
-    print("Finished confusion matrix drawing...")
-
-
-# ========================================
-# Doing Inference for new data
-# =========================================
-
-
-def inference():
-    test_model_checkpoint = input("Please enter the path of test model:")
-    checkpoint = torch.load(test_model_checkpoint)
-
-    model = prepare_model()
-    model.load_state_dict(checkpoint["model_state_dict"])
-    model.eval()
-
-    trnsfm = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(256),
-        transforms.Resize(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-    ])
-
-    dataset_new = dataset(opt.data_to_inference, trnsfm)
-    dataloader_new = torch.utils.data.DataLoader(dataset_new,
-                                                 batch_size=opt.bs,
-                                                 shuffle=False,
-                                                 num_workers=opt.num_workers)
-
-    class_names = list(string.ascii_uppercase)[:14]
-    print(class_names)
-    print("lenth of dataloader:", len(dataloader_new))
-    df = pd.DataFrame(columns=["filename", "predicted-label"] + class_names)
-
-    with torch.no_grad():
-        for i, data in tqdm(enumerate(dataloader_new, 0)):
-
-            inputs, labels, paths = data
-
-            df_temp = pd.DataFrame(
-                columns=["filename", "predicted-label"] + class_names)
-
-            # print("paths:", paths)
-            filenames = []
-            for p in paths:
-                filenames = filenames + [list(p.split("/"))[-1]]
-
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-
-            outputs = model(inputs)
-            outputs = F.softmax(outputs, 1)
-
-            predicted_probability, predicted = torch.max(outputs.data, 1)
-            predicted = predicted.data.cpu().numpy()
-
-            df_temp["predicted-label"] = predicted
-            df_temp["filename"] = filenames
-
-            probabilities = outputs.cpu().squeeze()
-            probabilities = probabilities.tolist()
-            probabilities = np.around(probabilities, decimals=3)
-
-            df_temp[class_names] = probabilities
-            df = df.append(df_temp)
-            # break
-
-    print(df.head())
-    print("length of DF:", len(df))
-    prob_file_name = "%s/%s_inference.csv" % (opt.out_dir, py_file_name)
-    df.to_csv(prob_file_name, index=False)
-
-# ======================================
-# Main function to run the code
-# ======================================
-
 
 if __name__ == '__main__':
     print("Started data preparation")
@@ -939,22 +567,6 @@ if __name__ == '__main__':
         print("Retrainning process is started..!")
         run_train(retrain=True)
         # pass
-    elif opt.action == "test":
-        print("=====================================")
-        print("Inference process is started..!")
-        test_model()
-    elif opt.action == "check":
-        print("=====================================")
-        check_model_graph()
-        print("Check pass")
-    elif opt.action == "prepare":
-        print("=====================================")
-        prepare_prediction_file()
-        print("Probability file prepared..!")
-    elif opt.action == "inference":
-        print("=====================================")
-        inference()
-        print("Inference completed")
 
     # Finish tensorboard writer
     writer.close()
