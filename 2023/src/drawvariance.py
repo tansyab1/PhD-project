@@ -61,7 +61,7 @@ plt.hist(variance_list, color='orange', edgecolor='black', bins=50)
             # )
 # x-axis label
 
-<<<<<<< HEAD
+# <<<<<<< HEAD
 # draw violin plot of variance and entropy
 sns.set_theme(style="whitegrid")
 # plt.rc('xtick', labelsize=15)
@@ -71,7 +71,7 @@ sns.violinplot(x=variance_list, color='orange')
 sns.despine(left=True)
 plt.tight_layout()
 plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance_violin.eps', format='eps')
-=======
+# =======
 # rotate x-axis label to 45 degree
 # plt.xticks(rotation=45)
 # # set x-axis range
@@ -89,4 +89,4 @@ plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.eps',
 # plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/entropy.eps', format='eps')
->>>>>>> 7aa644fa66640a0e21d0005c05bd151f49c92389
+# >>>>>>> 7aa644fa66640a0e21d0005c05bd151f49c92389

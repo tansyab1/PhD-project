@@ -79,10 +79,12 @@ plt.plot([1 + barWidth*3, 2 + barWidth*3, 3 + barWidth*3, 4 + barWidth*3],
 plt.xticks([1 + 1.5*barWidth, 2 + 1.5*barWidth, 3 + 1.5*barWidth, 4 + barWidth*1.5], [
     'Level 1', 'Level 2', 'Level 3', 'Level 4'])
 
+plt.ylabel('MOS', fontsize=15)
+
 
 # show legend on the top right of plot
 plt.legend(loc='upper left')
 # tight layout
 plt.tight_layout()
 # save plot to file .eps
-plt.savefig('/Volumes/Macintosh HD - Data/These/PhD-project/2023/src/MOS.eps', format='eps')
+plt.savefig('2023/src/MOS.eps', format='eps')

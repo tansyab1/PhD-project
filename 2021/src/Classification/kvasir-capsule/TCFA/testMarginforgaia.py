@@ -266,117 +266,117 @@ def train_model(model,
 
     # best_model_wts = copy.deepcopy(model.state_dict())
     # init triplet loss
-    for margin in tqdm([1.0, 2, 4, 8, 16, 32, 64]):
-        triplet_loss = nn.TripletMarginLoss(margin=margin, p=2)
+    # for margin in tqdm([1.0, 2, 4, 8, 16, 32, 64]):
+    triplet_loss = nn.TripletMarginLoss(margin=criterion_ssim, p=2)
 
-        for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
-            # create two empty list to store the features and labels with array two dimensions
+    for epoch in tqdm(range(start_epoch, start_epoch + opt.num_epochs)):
+        # create two empty list to store the features and labels with array two dimensions
 
-            tsne_features_in = np.empty((19980, 193600))
-            tsne_labels_in = np.empty((19980, 1))
+        tsne_features_in = np.empty((19980, 193600))
+        tsne_labels_in = np.empty((19980, 1))
 
-            # tsne_features_in = torch.Tensor(tsne_features).to(device)
-            # tsne_labels_in = torch.Tensor(tsne_labels).to(device)
+        # tsne_features_in = torch.Tensor(tsne_features).to(device)
+        # tsne_labels_in = torch.Tensor(tsne_labels).to(device)
 
-            for phase in ["train", "val"]:
+        for phase in ["train", "val"]:
 
-                if phase == "train":
-                    model.train()
-                    dataloader = dataloaders["train"]
-                else:
-                    model.eval()
-                    dataloader = dataloaders["val"]
+            if phase == "train":
+                model.train()
+                dataloader = dataloaders["train"]
+            else:
+                model.eval()
+                dataloader = dataloaders["val"]
 
-                running_loss = 0.0
-                # mse = 0.0
-                # ssim_batch = 0.0
-                # ssim = StructuralSimilarityIndexMeasure(
-                #     data_range=2.0).to(device)
-                # num_batches = 0
+            running_loss = 0.0
+            # mse = 0.0
+            # ssim_batch = 0.0
+            # ssim = StructuralSimilarityIndexMeasure(
+            #     data_range=2.0).to(device)
+            # num_batches = 0
 
-                for i, data in tqdm(enumerate(dataloader, 0)):
+            for i, data in tqdm(enumerate(dataloader, 0)):
 
-                    inputs, labels, positive, negative, anchor_label = data
-                    inputs = inputs.to(device)
-                    labels = labels.to(device)
-                    positive = positive.to(device)
-                    negative = negative.to(device)
-                    # reference = reference.to(device)
-                    anchor_label = anchor_label.to(device)
+                inputs, labels, positive, negative, anchor_label = data
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                positive = positive.to(device)
+                negative = negative.to(device)
+                # reference = reference.to(device)
+                anchor_label = anchor_label.to(device)
 
-                    # zero the parameter gradients
-                    optimizer.zero_grad()
+                # zero the parameter gradients
+                optimizer.zero_grad()
 
-                    # forward
-                    # track history if only in train
-                    with torch.set_grad_enabled(phase == 'train'):
-                        encoded_noise, encoded_positive, encoded_negative = model(
-                            inputs, positive, negative)
+                # forward
+                # track history if only in train
+                with torch.set_grad_enabled(phase == 'train'):
+                    encoded_noise, encoded_positive, encoded_negative = model(
+                        inputs, positive, negative)
 
-                        encoded_noise = encoded_noise.to(device)
-                        encoded_positive = encoded_positive.to(device)
-                        encoded_negative = encoded_negative.to(device)
+                    encoded_noise = encoded_noise.to(device)
+                    encoded_positive = encoded_positive.to(device)
+                    encoded_negative = encoded_negative.to(device)
 
-                        num_elements = encoded_noise.shape[0]
+                    num_elements = encoded_noise.shape[0]
 
-                        loss_triplet = triplet_loss(
-                            encoded_noise, encoded_positive, encoded_negative)
+                    loss_triplet = triplet_loss(
+                        encoded_noise, encoded_positive, encoded_negative)
 
-                        # flatten the tensors encoded_noise over the batch dimension
-                        encoded_noise_flatten = encoded_noise.view(
-                            encoded_noise.shape[0], -1)
+                    # flatten the tensors encoded_noise over the batch dimension
+                    encoded_noise_flatten = encoded_noise.view(
+                        encoded_noise.shape[0], -1)
 
-                        # append the encoded_noise_flatten to the tsne_features to the new line
-                        if phase == 'val':
-                            if num_elements == opt.bs:
-                                tsne_features_in[i * opt.bs: (
-                                    i + 1) * opt.bs, :] = encoded_noise_flatten.cpu().detach().numpy()
-                                tsne_labels_in[i * opt.bs: (i + 1) * opt.bs,
-                                               :] = anchor_label.cpu().detach().numpy()
-                            else:
-                                tsne_features_in[i * opt.bs: i * opt.bs + num_elements,
-                                                 :] = encoded_noise_flatten.cpu().detach().numpy()
-                                tsne_labels_in[i * opt.bs: i * opt.bs + num_elements,
-                                               :] = anchor_label.cpu().detach().numpy()
+                    # append the encoded_noise_flatten to the tsne_features to the new line
+                    if phase == 'val':
+                        if num_elements == opt.bs:
+                            tsne_features_in[i * opt.bs: (
+                                i + 1) * opt.bs, :] = encoded_noise_flatten.cpu().detach().numpy()
+                            tsne_labels_in[i * opt.bs: (i + 1) * opt.bs,
+                                            :] = anchor_label.cpu().detach().numpy()
+                        else:
+                            tsne_features_in[i * opt.bs: i * opt.bs + num_elements,
+                                                :] = encoded_noise_flatten.cpu().detach().numpy()
+                            tsne_labels_in[i * opt.bs: i * opt.bs + num_elements,
+                                            :] = anchor_label.cpu().detach().numpy()
 
-                        loss = loss_triplet
-                        if phase == 'train':
-                            loss.backward()
-                            optimizer.step()
+                    loss = loss_triplet
+                    if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
 
-                    # statistics
-                    running_loss += loss.item() * inputs.size(0)
+                # statistics
+                running_loss += loss.item() * inputs.size(0)
 
-                    # break
+                # break
 
-                    # num_batches += 1
-                    torch.cuda.empty_cache()
+                # num_batches += 1
+                torch.cuda.empty_cache()
 
-                # calculate the davies bouldin score
-                if phase == 'val':
-                    print("Calculating the davies bouldin score")
-                    # print(tsne_features_in.shape)
-                    # tsne_features_cpu = np.reshape(
-                    #     tsne_features_in, (-1, 193600))
+            # calculate the davies bouldin score
+            if phase == 'val':
+                print("Calculating the davies bouldin score")
+                # print(tsne_features_in.shape)
+                # tsne_features_cpu = np.reshape(
+                #     tsne_features_in, (-1, 193600))
 
-                    # tsne_labels_cpu = np.reshape(tsne_labels_in, (-1, 1))
-                    tsne_features_cpu = np.squeeze(tsne_features_in)
-                    tsne_labels_cpu = np.squeeze(tsne_labels_in)
+                # tsne_labels_cpu = np.reshape(tsne_labels_in, (-1, 1))
+                tsne_features_cpu = np.squeeze(tsne_features_in)
+                tsne_labels_cpu = np.squeeze(tsne_labels_in)
 
-                    tsne_features_cpu = np.squeeze(tsne_features_cpu)
-                    tsne_labels_cpu = np.squeeze(tsne_labels_cpu)
+                tsne_features_cpu = np.squeeze(tsne_features_cpu)
+                tsne_labels_cpu = np.squeeze(tsne_labels_cpu)
 
-                    score_davies = davies_bouldin_score(
-                        tsne_features_cpu, tsne_labels_cpu)
+                score_davies = davies_bouldin_score(
+                    tsne_features_cpu, tsne_labels_cpu)
 
-                    # calculate the silhouette score
-                    score_silhouette = silhouette_score(
-                        tsne_features_cpu, tsne_labels_cpu)
+                # calculate the silhouette score
+                score_silhouette = silhouette_score(
+                    tsne_features_cpu, tsne_labels_cpu)
 
-                    # save epoch and score to the txt file
-                    with open('margin_{margin}.txt'.format(margin=margin), 'a') as f:
-                        f.write("Epoch: %d, Davies Bouldin score: %.4f, Silhouette score: %.4f\n" % (
-                            epoch, score_davies, score_silhouette))
+                # save epoch and score to the txt file
+                with open('margin_{margin}.txt'.format(margin=criterion_ssim), 'a') as f:
+                    f.write("Epoch: %d, Davies Bouldin score: %.4f, Silhouette score: %.4f\n" % (
+                        epoch, score_davies, score_silhouette))
 
 # ================================================
 # New architecture
@@ -434,30 +434,31 @@ def prepare_model():
 # Run training process
 # ====================================
 def run_train(retrain=False):
-    torch.cuda.empty_cache()
-    model = prepare_model()
-    dataloaders = prepare_data()
-    optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9)
-    criterion = nn.CrossEntropyLoss()  # weight=weights
-    criterion_ae = nn.MSELoss()
-    # LR shceduler
-    scheduler = lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
-    # call main train loop
-    if retrain:
-        # train from a checkpoint
-        checkpoint_path = input("Please enter the checkpoint path:")
-        checkpoint = torch.load(checkpoint_path)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        start_epoch = checkpoint["epoch"]
-        # loss = checkpoint["loss"]
-        acc = checkpoint["psnr"]
-        train_model(model, optimizer, criterion, criterion_ae, dataloaders,
-                    scheduler, best_acc=acc, start_epoch=start_epoch)
+    for margin in tqdm([2, 4, 8, 16, 32, 64]):
+        torch.cuda.empty_cache()
+        model = prepare_model()
+        dataloaders = prepare_data()
+        optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9)
+        criterion = nn.CrossEntropyLoss()  # weight=weights
+        criterion_ae = nn.MSELoss()
+        # LR shceduler
+        scheduler = lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode="min", factor=opt.lr_sch_factor, patience=opt.lr_sch_patience, verbose=True)
+        # call main train loop
+        if retrain:
+            # train from a checkpoint
+            checkpoint_path = input("Please enter the checkpoint path:")
+            checkpoint = torch.load(checkpoint_path)
+            model.load_state_dict(checkpoint["model_state_dict"])
+            start_epoch = checkpoint["epoch"]
+            # loss = checkpoint["loss"]
+            acc = checkpoint["psnr"]
+            train_model(model, optimizer, criterion, criterion_ae, dataloaders,
+                        scheduler, best_acc=acc, start_epoch=start_epoch)
 
-    else:
-        train_model(model, optimizer, criterion, criterion_ae, dataloaders,
-                    scheduler, best_acc=0.0, start_epoch=0)
+        else:
+            train_model(model, optimizer, margin, criterion_ae, dataloaders,
+                        scheduler, best_acc=0.0, start_epoch=0)
 
 
 # =====================================

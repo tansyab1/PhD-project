@@ -14,7 +14,7 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/final/imgs/'
+pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/Reference/imgs/'
 # for video in os.listdir(pathIn):
 #     if video.endswith(".mp4"):
 #         extractImages(pathIn + video, pathOut)
@@ -91,6 +91,10 @@ def TSNEvisualiza(inpath):
     # set font size of x-axis and y-axis
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
+    
+    # put the x label and y label
+    plt.xlabel('t-SNE dimension 1', fontsize=20)
+    plt.ylabel('t-SNE dimension 2', fontsize=20)
     
     # for i, txt in enumerate(img_names):
     #     plt.annotate(txt, (features[i, 0], features[i, 1]))
