@@ -15,25 +15,41 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import seaborn as sns
 from secondEntropy import secondEntropy
+from thirdentropy import thirdEntropy
 from tqdm import tqdm
 
-pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/Reference/imgs/'
+pathOut = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_videos/process/labelled_videos_process/main/KvasirCapsuleIQA/Reference'
 
-variance_list = []
+# variance_list = []
 entropy_list = []
 
 # read all image in folder and calculate variance and entropy of each image
 for image in tqdm(os.listdir(pathOut)):
-    if image.endswith(".jpg"):
-        # get image name
-        image_name = image.split('.')[0]
-        # load image
-        img = cv2.imread(pathOut + image, cv2.IMREAD_GRAYSCALE)
-        # calculate variance and entropy of image
-        entropy_list.append(secondEntropy(img))
-        # add variance and entropy to list
-        # variance_list.append(variance)
-        # entropy_list.append(entropy)
+    if image.endswith(".mp4"):
+        # read video
+        cap = cv2.VideoCapture(pathOut + '/' + image)
+        # get total frame of video
+        # check the first frame
+        ret, frame1 = cap.read()
+        
+        # print("shape of frame1: ", frame1.shape )
+        if ret == True:
+            frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+            while cap.isOpened():
+                # read grayscale image
+                ret, frame2 = cap.read()
+                
+                # calculate entropy of image
+                if ret == True:
+                    frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+                    # print("processing frame: ", cap.get(cv2.CAP_PROP_POS_FRAMES))
+                    entropy_list.append(thirdEntropy(frame1, frame2))
+                    frame1 = frame2
+                else:
+                    break
+        else:
+            break
+            
 
 # plot histogram of variance and entropy with mininumum border
 # set border top and bottom of histogram to 0
@@ -44,7 +60,7 @@ for image in tqdm(os.listdir(pathOut)):
 
 plt.rc('xtick', labelsize=15)
 plt.rc('ytick', labelsize=15)
-plt.hist(entropy_list, color='orange', edgecolor='black', bins=50)
+plt.hist(entropy_list, color='green', edgecolor='black', bins=50)
 # # save histogram to file .eps
 # plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/variance.png'
             # )
@@ -56,14 +72,14 @@ plt.hist(entropy_list, color='orange', edgecolor='black', bins=50)
 # # set x-axis range
 # plt.xticks(np.arange(0, 5000, 500))
 # plt.yticks(np.arange(0, 8, 1))
-plt.xlabel('Second-Order Entropy')
+plt.xlabel('Third-Order Entropy')
 # frequency label
 plt.ylabel('Frequency')
 
 # save to tight layout
 plt.tight_layout()
 # save histogram to file .eps
-plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/secondentropy.eps',
+plt.savefig('/home/nguyentansy/DATA/PhD-work/PhD-project/2023/src/thirdentropy.eps',
             format='eps')
 # plt.hist(entropy_list, color='red', edgecolor='black', bins=50)
 # # save histogram to file .eps
