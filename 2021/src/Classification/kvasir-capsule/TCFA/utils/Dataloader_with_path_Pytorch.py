@@ -12,10 +12,10 @@ class ImageFolderWithPaths(datasets.ImageFolder):
         # this is what ImageFolder normally returns
         original_tuple = super(ImageFolderWithPaths, self).__getitem__(index)
         # the image file path
-        path = self.imgs[index][0]
+        basename = self.imgs[index][0].split("/")[-1]
 
         # make a new tuple that includes original and the path
-        tuple_with_path = (original_tuple + (path,))
+        tuple_with_path = (original_tuple + (basename,))
         return tuple_with_path
 
 
