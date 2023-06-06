@@ -1328,7 +1328,7 @@ class Uformer(nn.Module):
                                                 use_checkpoint=use_checkpoint,
                                                 token_projection=token_projection, token_mlp=token_mlp, shift_flag=shift_flag,
                                                 modulator=modulator, cross_modulator=cross_modulator)
-        self.upsample_3 = upsample(embed_dim*2, embed_dim)
+        self.upsample_3 = upsample(embed_dim*4, embed_dim)
         self.decoderlayer_3 = BasicUformerLayer(dim=embed_dim*2,
                                                 output_dim=embed_dim*2,
                                                 input_resolution=(img_size,
@@ -1375,31 +1375,30 @@ class Uformer(nn.Module):
         # Encoder
         conv0 = self.encoderlayer_0(y, mask=mask)
         pool0 = self.dowsample_0(conv0)
-        # conv1 = self.encoderlayer_1(pool0, mask=mask)
-        # pool1 = self.dowsample_1(conv1)
-        # conv2 = self.encoderlayer_2(pool1, mask=mask)
-        # pool2 = self.dowsample_2(conv2)
-        # conv3 = self.encoderlayer_3(pool2, mask=mask)
-        # pool3 = self.dowsample_3(conv3)
+        conv1 = self.encoderlayer_1(pool0, mask=mask)
+        pool1 = self.dowsample_1(conv1)
+        conv2 = self.encoderlayer_2(pool1, mask=mask)
+        pool2 = self.dowsample_2(conv2)
+        conv3 = self.encoderlayer_3(pool2, mask=mask)
+        pool3 = self.dowsample_3(conv3)
 
         # Bottleneck
-        conv4 = self.encoderlayer_1(pool0, mask=mask)
+        conv4 = self.conv(pool3, mask=mask)
 
         # Decoder
-        # up0 = self.upsample_0(conv4)
-        # deconv0 = torch.cat([up0, conv3], -1)
-        # deconv0 = self.decoderlayer_0(deconv0, mask=mask)
+        up0 = self.upsample_0(conv4)
+        deconv0 = torch.cat([up0, conv3], -1)
+        deconv0 = self.decoderlayer_0(deconv0, mask=mask)
 
-        # up1 = self.upsample_1(deconv0)
-        # deconv1 = torch.cat([up1, conv2], -1)
-        # deconv1 = self.decoderlayer_1(deconv1, mask=mask)
+        up1 = self.upsample_1(deconv0)
+        deconv1 = torch.cat([up1, conv2], -1)
+        deconv1 = self.decoderlayer_1(deconv1, mask=mask)
 
-        # up2 = self.upsample_2(deconv1)
-        # deconv2 = torch.cat([up2, conv1], -1)
-        # deconv2 = self.decoderlayer_2(deconv2, mask=mask)
+        up2 = self.upsample_2(deconv1)
+        deconv2 = torch.cat([up2, conv1], -1)
+        deconv2 = self.decoderlayer_2(deconv2, mask=mask)
 
-        up3 = self.upsample_3(conv4)
-        # print(up3.shape, conv0.shape)
+        up3 = self.upsample_3(deconv2)
         deconv3 = torch.cat([up3, conv0], -1)
         deconv3 = self.decoderlayer_3(deconv3, mask=mask)
 

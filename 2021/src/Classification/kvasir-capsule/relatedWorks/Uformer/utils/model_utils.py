@@ -75,7 +75,7 @@ def get_arch(opt):
             depths=[1, 2, 8, 8, 2, 8, 8, 2, 1],modulator=True)  
     elif arch == 'Uformer_B':
         model_restoration = Uformer(img_size=opt.train_ps,embed_dim=32,win_size=8,token_projection='linear',token_mlp='leff',
-            depths=[1, 2, 8, 8, 2, 8, 8, 2, 1],modulator=True,dd_in=opt.dd_in)  
+            depths=[1, 2, 8, 8, 2, 8, 8, 2, 1],modulator=False,dd_in=opt.dd_in)  
     else:
         raise Exception("Arch error!")
 
