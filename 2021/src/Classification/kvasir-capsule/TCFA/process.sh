@@ -1,10 +1,10 @@
-python3 testMargin.py \
+python3 TCFA.py \
     --data_root ./dataForVisualization/UI_var/ \
     --ref_root ./dataForVisualization/Ref/ \
     --pkl_root ./dataForVisualization/UI_var/ui_dict.pkl \
-    --out_dir ./outputpaper/ \
-    --mat_dir ./outputpaper/mat/epoch0/ \
-    --tensorboard_dir ./tensorboardv2/ \
+    --out_dir ./outputStudy/ \
+    --mat_dir ./outputStudy/mat/ \
+    --tensorboard_dir ./tensorboardStudy/ \
     --num_workers 12 \
     --bs 32 \
     --num_epochs 10 \

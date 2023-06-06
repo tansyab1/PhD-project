@@ -23,14 +23,14 @@ class MyNet(nn.Module):
         for param in self.base_model.parameters():
             param.requires_grad = False
 
-        self.training = training
+        # self.training = training
 
         # create an autoencoder block for input size 224*224*3 containing 2 conv layers
         self.encoder = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=2),
+            nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=2),
+            nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
         )
@@ -40,43 +40,45 @@ class MyNet(nn.Module):
             heads=8,
             dim_head=64,
             dropout=0.,
-            patch_size_large=16,
-            input_size=56,
+            patch_size_large=14,
+            input_size=84,
             channels=64)
 
-        self.self_attention_layer = selfImagEmbedder(
+        self.self_attention_layer = SelfAttention(
             dim=self.attention_dim,
             heads=8,
             dim_head=64,
             dropout=0.,
-            patch_size_large=16,
-            input_size=56,
+            patch_size_large=14,
+            input_size=84,
             channels=64)
 
-        self.self_attention_layer2 = selfImagEmbedder(
+        self.self_attention_layer2 = SelfAttention(
             dim=self.attention_dim,
             heads=8,
             dim_head=64,
             dropout=0.,
-            patch_size_large=16,
-            input_size=56,
+            patch_size_large=14,
+            input_size=84,
             channels=64)
 
         # MLP to encode the image to extract the noise level
         self.encoder_mlp = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=2),
+            nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=2),
+            nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2),
+            nn.ConvTranspose2d(128, 64, kernel_size=3,
+                               stride=2, padding=1, output_padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.ConvTranspose2d(64, 3, kernel_size=3, stride=2),
+            nn.ConvTranspose2d(64, 3, kernel_size=3, stride=2,
+                               padding=1, output_padding=1),
             nn.Tanh(),
         )
 
@@ -97,9 +99,6 @@ class MyNet(nn.Module):
         cross_attention_feature, mu, logvar = self.cross_attention_layer(
             encoded_image, encoded_noise)
 
-        cross_attention_feature = cross_attention_feature.reshape(
-            -1, self.dim, self.shape[0], self.shape[1])
-
         encoded_noise_attention = torch.mul(
             encoded_noise, cross_attention_feature)
 
@@ -113,17 +112,8 @@ class MyNet(nn.Module):
         reference = reference.to('cuda:1')
 
         resnet_out = self.base_model(decoded_image)
-        if self.training:
-            resnet_out_encoded = self.base_model(reference)
-            return (resnet_out,
-                    resnet_out_encoded,
-                    decoded_image, encoded_noise,
-                    encoded_positive,
-                    encoded_negative,
-                    mu,
-                    logvar)
-        else:
-            return decoded_image
+        resnet_out_encoded = self.base_model(reference)
+        return resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar
 
 
 class BaseNet(nn.Module):
@@ -156,7 +146,7 @@ class ImageEmbedder(nn.Module):
             nn.Linear(channels*patch_size*patch_size, dim),
         )
 
-        self.pos_embedding = nn.Parameter(torch.randn(1, num_patches+1, dim))
+        self.pos_embedding = nn.Parameter(torch.randn(1, num_patches, dim))
 
     def forward(self, x_q, x_kv):
         x_q = self.to_patch_embedding_x(x_q)
@@ -170,14 +160,15 @@ class ImageEmbedder(nn.Module):
 
 class selfImagEmbedder(nn.Module):
     def __init__(self, dim, image_size, patch_size, channels):
-        super(ImageEmbedder, self).__init__()
+        super(selfImagEmbedder, self).__init__()
         num_patches = (image_size // patch_size) ** 2
+        # print("num_patches", num_patches)
         self.to_patch_embedding_x = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)',
                       p1=patch_size, p2=patch_size),
             nn.Linear(channels*patch_size*patch_size, dim),
         )
-        self.pos_embedding = nn.Parameter(torch.randn(1, num_patches+1, dim))
+        self.pos_embedding = nn.Parameter(torch.randn(1, num_patches, dim))
 
     def forward(self, x_q):
         x_q = self.to_patch_embedding_x(x_q)
@@ -192,7 +183,7 @@ class SelfAttention(nn.Module):
                  dim_head=256,
                  dropout=0.,
                  patch_size_large=7,
-                 input_size=56,
+                 input_size=84,
                  channels=128):
         super().__init__()
         inner_dim = dim_head * heads
@@ -200,17 +191,18 @@ class SelfAttention(nn.Module):
         self.heads = heads
         self.scale = dim_head ** -0.5
 
-        self.image_embedder = ImageEmbedder(
+        self.image_embedder = selfImagEmbedder(
             dim=dim,
             image_size=input_size,
             patch_size=patch_size_large,
-            channels=channels)
+            channels=channels
+        )
 
         self.to_k = nn.Linear(dim, inner_dim, bias=False)
         self.to_v = nn.Linear(dim, inner_dim, bias=False)
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
-        num_patches_large = (input_size // patch_size_large) ** 2
+        # num_patches_large = (input_size // patch_size_large) ** 2
 
         self.to_out = nn.Sequential(
             nn.Linear(inner_dim, dim),
@@ -220,22 +212,25 @@ class SelfAttention(nn.Module):
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(dim),
             nn.Linear(dim, channels*patch_size_large*patch_size_large),
-            Rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
+            Rearrange('b n (p1 p2 c) -> b c (n p1 p2)',
                       p1=patch_size_large,
                       p2=patch_size_large,
-                      c=channels,
-                      h=num_patches_large),  # 14x14 patches with c = 128
+                      c=channels,),  # 14x14 patches with c = 128
         )
 
-        self.matrix = nn.Linear(dim_head, num_patches_large*num_patches_large)
+        self.matrix = nn.Sequential(
+            nn.Linear(2*input_size*input_size, input_size*input_size),
+            Rearrange('b c (p1 p2) -> b c p1 p2',
+                      p1=input_size,
+                      p2=input_size,),  # 14x14 patches with c = 128
+        )
 
     def forward(self, x_q):
-        x_q, x_kv = self.image_embedder(x_q, x_q)
+        x_q = self.image_embedder(x_q)
         b, n_q, _ = x_q.shape
-        b, n_kv, _ = x_kv.shape
 
-        k = self.to_k(x_kv)
-        v = self.to_v(x_kv)
+        k = self.to_k(x_q)
+        v = self.to_v(x_q)
         q = self.to_q(x_q)
 
         k = rearrange(k, 'b n (h d) -> b h n d', h=self.heads)
@@ -244,12 +239,14 @@ class SelfAttention(nn.Module):
 
         sim = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
         attn = sim.softmax(dim=-1)
-
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)', h=self.heads)
         out = self.to_out(out)
+        # print("out", out.shape)
         out = self.mlp_head(out)
+        # print("out mlp", out.shape)
         out = self.matrix(out)
+        # print("out matrix", out.shape)
         return out
 
 
@@ -259,7 +256,7 @@ class CrossAttention(nn.Module):
                  dim_head=256,
                  dropout=0.,
                  patch_size_large=7,
-                 input_size=56,
+                 input_size=84,
                  channels=128):
         super().__init__()
         inner_dim = dim_head * heads
@@ -278,6 +275,7 @@ class CrossAttention(nn.Module):
         self.to_q = nn.Linear(dim, inner_dim, bias=False)
 
         num_patches_large = (input_size // patch_size_large) ** 2
+        self.h = input_size // patch_size_large
 
         self.to_out = nn.Sequential(
             nn.Linear(inner_dim, dim),
@@ -287,14 +285,19 @@ class CrossAttention(nn.Module):
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(dim),
             nn.Linear(dim, channels*patch_size_large*patch_size_large),
+            # transpose channel 2 and 3
+            Rearrange('b n v -> b v n'),
+            nn.Linear(2*num_patches_large, num_patches_large),
+            # transpose channel 2 and 3
+            Rearrange('b v n -> b n v'),
             Rearrange('b (h w) (p1 p2 c) -> b c (h p1) (w p2)',
                       p1=patch_size_large,
                       p2=patch_size_large,
                       c=channels,
-                      h=num_patches_large),  # 14x14 patches with c = 128
+                      h=self.h,)
         )
 
-        self.matrix = nn.Linear(dim_head, num_patches_large*num_patches_large)
+        self.matrix = nn.Linear(dim_head, 2*num_patches_large)
 
     def reparameterize(self, mu, logvar):
         std = logvar.mul(0.5).exp_()
@@ -308,21 +311,21 @@ class CrossAttention(nn.Module):
     def forward(self, x_q, x_kv):
         x_q_token, x_kv_token = self.image_embedder(x_q, x_kv)
 
-        b, n, _, h = *x_q.shape, self.heads
+        # b, n, _, h = *x_q.shape, self.heads
 
         k = self.to_k(x_kv_token)
-        k = rearrange(k, 'b n (h d) -> b h n d', h=h, b=b, n=n)
+        k = rearrange(k, 'b n (h d) -> b h n d', h=self.heads)
 
         v = self.to_v(x_kv_token)
-        v = rearrange(v, 'b n (h d) -> b h n d', h=h, b=b, n=n)
+        v = rearrange(v, 'b n (h d) -> b h n d', h=self.heads)
 
         q = self.to_q(x_q_token)
-        q = rearrange(q, 'b n (h d) -> b h n d', h=h, b=b, n=n)
+        q = rearrange(q, 'b n (h d) -> b h n d', h=self.heads)
 
         dots = self.reparameterize(k, q) * self.scale
         dots = rearrange(dots, 'b h n d -> b (h n) d')
         dots = self.matrix(dots)
-        dots = rearrange(dots, 'b (h i) d -> b h i d', b=b, h=h)
+        dots = rearrange(dots, 'b (h i) d -> b h i d', h=self.heads)
         attn = dots.softmax(dim=-1)
         out = einsum('b h i j, b h j d -> b h i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')

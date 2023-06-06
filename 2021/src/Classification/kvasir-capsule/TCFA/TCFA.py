@@ -18,6 +18,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torchvision import transforms
 import cv2
+import GPUtil
 # import TripletLoss as TripletLoss
 # from sklearn.manifold import TSNE
 # from tsnecuda import TSNE
@@ -308,23 +309,22 @@ def train_model(model,
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    (resnet_out,
-                     resnet_out_encoded,
-                     decoded_image,
-                     encoded_noise,
-                     encoded_positive,
-                     encoded_negative,
-                     mu,
-                     logvar) = model(inputs, positive, negative, reference)
+                    resnet_out, resnet_out_encoded, decoded_image, encoded_noise, encoded_positive, encoded_negative, mu, logvar = model(
+                        inputs, positive, negative, reference)
 
+                    devide2 = torch.device("cpu")
                     # put all data to cpu
-                    resnet_out = resnet_out.to('cuda:2')
-                    resnet_out_encoded = resnet_out_encoded.to('cuda:2')
-                    decoded_image = decoded_image.to('cuda:2')
-                    encoded_noise = encoded_noise.to('cuda:2')
-                    encoded_negative = encoded_negative.to('cuda:2')
-                    encoded_positive = encoded_positive.to('cuda:2')
-                    reference = reference.to('cuda:2')
+                    resnet_out = resnet_out.to(devide2)
+                    resnet_out_encoded = resnet_out_encoded.to(devide2)
+                    decoded_image = decoded_image.to(devide2)
+                    encoded_noise = encoded_noise.to(devide2)
+                    encoded_positive = encoded_positive.to(devide2)
+                    encoded_negative = encoded_negative.to(devide2)
+                    reference = reference.to(devide2)
+                    mu = mu.to(devide2)
+                    logvar = logvar.to(devide2)
+
+                    # calculate the loss
 
                     loss_feature = criterion_ae(resnet_out, resnet_out_encoded)
                     loss_ae = criterion_ae(decoded_image, reference)
@@ -334,6 +334,7 @@ def train_model(model,
                         torch.sum(mu ** 2 + torch.exp(logvar) - logvar - 1)
 
                     loss = loss_ae + loss_triplet + loss_feature + loss_KL
+
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
@@ -349,6 +350,19 @@ def train_model(model,
                 # empty cache
                 num_batches += 1
                 torch.cuda.empty_cache()
+                # show gpu usage in cuda:2
+                # GPUtil.showUtilization()
+
+                # release memory of the variables
+                del resnet_out
+                del resnet_out_encoded
+                del decoded_image
+                del encoded_noise
+                del encoded_negative
+                del encoded_positive
+                del reference
+                del logvar
+                del mu
             epoch_loss = running_loss / dataloaders["dataset_size"][phase]
             epoch_mse = mse / dataloaders["dataset_size"][phase]
             epoch_psnr = 10 * torch.log10(1 / epoch_mse)
