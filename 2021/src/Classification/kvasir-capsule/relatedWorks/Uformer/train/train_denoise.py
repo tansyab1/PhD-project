@@ -12,7 +12,7 @@ import argparse
 import options
 ######### parser ###########
 opt = options.Options().init(argparse.ArgumentParser(description='Image denoising')).parse_args()
-print(opt)
+# print(opt)
 
 import utils
 from dataset.dataset_denoise import *
@@ -150,7 +150,7 @@ with torch.no_grad():
         target = data_val[0].cuda()
         input_ = data_val[1].cuda()
         with torch.cuda.amp.autocast():
-            restored = model_restoration(input_)
+            restored, atten_mask = model_restoration(input_)
             restored = torch.clamp(restored,0,1)  
         psnr_dataset.append(utils.batch_PSNR(input_, target, False).item())
         psnr_model_init.append(utils.batch_PSNR(restored, target, False).item())
@@ -183,7 +183,7 @@ for epoch in range(start_epoch, opt.nepoch + 1):
         if epoch>5:
             target, input_ = utils.MixUp_AUG().aug(target, input_)
         with torch.cuda.amp.autocast():
-            restored = model_restoration(input_)
+            restored, atten_mask = model_restoration(input_)
             loss = criterion(restored, target)
         loss_scaler(
                 loss, optimizer,parameters=model_restoration.parameters())
@@ -199,7 +199,7 @@ for epoch in range(start_epoch, opt.nepoch + 1):
                     input_ = data_val[1].cuda()
                     filenames = data_val[2]
                     with torch.cuda.amp.autocast():
-                        restored = model_restoration(input_)
+                        restored, atten_mask = model_restoration(input_)
                     restored = torch.clamp(restored,0,1)  
                     psnr_val_rgb.append(utils.batch_PSNR(restored, target, False).item())
 

@@ -98,16 +98,33 @@ with torch.no_grad():
         rgb_noisy, mask = expand2square(data_test[1].cuda(), factor=128) 
         filenames = data_test[2]
 
-        rgb_restored = model_restoration(rgb_noisy)
+        rgb_restored, atten_mask = model_restoration(rgb_noisy)
+        # print(rgb_restored.shape, atten_mask.shape)
+        B, L, C = atten_mask.shape
+        H = int(math.sqrt(L))
+        W = int(math.sqrt(L))
+        atten_mask = atten_mask.transpose(1, 2).view(B, C, H, W)
+        
         rgb_restored = torch.masked_select(rgb_restored,mask.bool()).reshape(1,3,rgb_gt.shape[0],rgb_gt.shape[1])
         rgb_restored = torch.clamp(rgb_restored,0,1).cpu().numpy().squeeze().transpose((1,2,0))
+        
+        atten_mask = torch.masked_select(atten_mask,mask.bool()).reshape(1,1,rgb_gt.shape[0],rgb_gt.shape[1])
+        # print(atten_mask.shape)
+        # atten_mask = torch.clamp(atten_mask,0,1).cpu().numpy().squeeze(0).transpose((1,2,0))
+        # normalize attention map from 0 to 1
+        atten_mask = (atten_mask - atten_mask.min())/(atten_mask.max() - atten_mask.min())*255
+        # print(atten_mask.min(), atten_mask.max())
+        atten_mask = atten_mask.cpu().numpy().squeeze(0).transpose((1,2,0))
 
         psnr = psnr_loss(rgb_restored, rgb_gt)
-        ssim = ssim_loss(rgb_restored, rgb_gt, multichannel=True)
+        ssim = ssim_loss(rgb_restored, rgb_gt, channel_axis=2)
         psnr_val_rgb.append(psnr)
         ssim_val_rgb.append(ssim)
-        print("PSNR:",psnr,", SSIM:", ssim, filenames[0], rgb_restored.shape)
+        # print("PSNR:",psnr,", SSIM:", ssim, filenames[0], rgb_restored.shape)
         utils.save_img(os.path.join(args.result_dir,filenames[0]+'.PNG'), img_as_ubyte(rgb_restored))
+        # save attention map as gray image
+        # print("vmin:",atten_mask.min(),"vmax:",atten_mask.max())
+        utils.save_img_gray(os.path.join(args.result_dir,filenames[0]+'_atten.PNG'), atten_mask)
         with open(os.path.join(args.result_dir,'psnr_ssim.txt'),'a') as f:
             f.write(filenames[0]+'.PNG ---->'+"PSNR: %.4f, SSIM: %.4f] "% (psnr, ssim)+'\n')
 psnr_val_rgb = sum(psnr_val_rgb)/len(test_dataset)

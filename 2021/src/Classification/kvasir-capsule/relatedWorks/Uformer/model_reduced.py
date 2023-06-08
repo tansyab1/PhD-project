@@ -124,21 +124,21 @@ class UNet(nn.Module):
         self.pool2 = nn.Conv2d(
             dim*2, dim*2, kernel_size=4, stride=2, padding=1)
 
-        # self.ConvBlock3 = block(dim*2, dim*4, strides=1)
-        # self.pool3 = nn.Conv2d(
-        #     dim*4, dim*4, kernel_size=4, stride=2, padding=1)
+        self.ConvBlock3 = block(dim*2, dim*4, strides=1)
+        self.pool3 = nn.Conv2d(
+            dim*4, dim*4, kernel_size=4, stride=2, padding=1)
 
-        # self.ConvBlock4 = block(dim*4, dim*8, strides=1)
-        # self.pool4 = nn.Conv2d(
-        #     dim*8, dim*8, kernel_size=4, stride=2, padding=1)
+        self.ConvBlock4 = block(dim*4, dim*8, strides=1)
+        self.pool4 = nn.Conv2d(
+            dim*8, dim*8, kernel_size=4, stride=2, padding=1)
 
-        self.ConvBlock5 = block(dim*2, dim*4, strides=1)
+        self.ConvBlock5 = block(dim*8, dim*16, strides=1)
 
-        # self.upv6 = nn.ConvTranspose2d(dim*16, dim*8, 2, stride=2)
-        # self.ConvBlock6 = block(dim*16, dim*8, strides=1)
+        self.upv6 = nn.ConvTranspose2d(dim*16, dim*8, 2, stride=2)
+        self.ConvBlock6 = block(dim*16, dim*8, strides=1)
 
-        # self.upv7 = nn.ConvTranspose2d(dim*8, dim*4, 2, stride=2)
-        # self.ConvBlock7 = block(dim*8, dim*4, strides=1)
+        self.upv7 = nn.ConvTranspose2d(dim*8, dim*4, 2, stride=2)
+        self.ConvBlock7 = block(dim*8, dim*4, strides=1)
 
         self.upv8 = nn.ConvTranspose2d(dim*4, dim*2, 2, stride=2)
         self.ConvBlock8 = block(dim*4, dim*2, strides=1)
@@ -155,23 +155,23 @@ class UNet(nn.Module):
         conv2 = self.ConvBlock2(pool1)
         pool2 = self.pool2(conv2)
 
-        # conv3 = self.ConvBlock3(pool2)
-        # pool3 = self.pool3(conv3)
+        conv3 = self.ConvBlock3(pool2)
+        pool3 = self.pool3(conv3)
 
-        # conv4 = self.ConvBlock4(pool3)
-        # pool4 = self.pool4(conv4)
+        conv4 = self.ConvBlock4(pool3)
+        pool4 = self.pool4(conv4)
 
-        conv5 = self.ConvBlock5(pool2)
+        conv5 = self.ConvBlock5(pool4)
 
-        # up6 = self.upv6(conv5)
-        # up6 = torch.cat([up6, conv4], 1)
-        # conv6 = self.ConvBlock6(up6)
+        up6 = self.upv6(conv5)
+        up6 = torch.cat([up6, conv4], 1)
+        conv6 = self.ConvBlock6(up6)
 
-        # up7 = self.upv7(conv6)
-        # up7 = torch.cat([up7, conv3], 1)
-        # conv7 = self.ConvBlock7(up7)
+        up7 = self.upv7(conv6)
+        up7 = torch.cat([up7, conv3], 1)
+        conv7 = self.ConvBlock7(up7)
 
-        up8 = self.upv8(conv5)
+        up8 = self.upv8(conv7)
         up8 = torch.cat([up8, conv2], 1)
         conv8 = self.ConvBlock8(up8)
 
@@ -182,7 +182,7 @@ class UNet(nn.Module):
         conv10 = self.conv10(conv9)
         out = x + conv10
 
-        return out, conv10
+        return out
 
     def flops(self, H, W):
         flops = 0
@@ -190,17 +190,17 @@ class UNet(nn.Module):
         flops += H/2*W/2*self.dim*self.dim*4*4
         flops += self.ConvBlock2.flops(H/2, W/2)
         flops += H/4*W/4*self.dim*2*self.dim*2*4*4
-        # flops += self.ConvBlock3.flops(H/4, W/4)
-        # flops += H/8*W/8*self.dim*4*self.dim*4*4*4
-        # flops += self.ConvBlock4.flops(H/8, W/8)
-        # flops += H/16*W/16*self.dim*8*self.dim*8*4*4
+        flops += self.ConvBlock3.flops(H/4, W/4)
+        flops += H/8*W/8*self.dim*4*self.dim*4*4*4
+        flops += self.ConvBlock4.flops(H/8, W/8)
+        flops += H/16*W/16*self.dim*8*self.dim*8*4*4
 
         flops += self.ConvBlock5.flops(H/16, W/16)
 
-        # flops += H/8*W/8*self.dim*16*self.dim*8*2*2
-        # flops += self.ConvBlock6.flops(H/8, W/8)
-        # flops += H/4*W/4*self.dim*8*self.dim*4*2*2
-        # flops += self.ConvBlock7.flops(H/4, W/4)
+        flops += H/8*W/8*self.dim*16*self.dim*8*2*2
+        flops += self.ConvBlock6.flops(H/8, W/8)
+        flops += H/4*W/4*self.dim*8*self.dim*4*2*2
+        flops += self.ConvBlock7.flops(H/4, W/4)
         flops += H/2*W/2*self.dim*4*self.dim*2*2*2
         flops += self.ConvBlock8.flops(H/2, W/2)
         flops += H*W*self.dim*2*self.dim*2*2
@@ -530,8 +530,6 @@ class WindowAttention(nn.Module):
 
     def forward(self, x, attn_kv=None, mask=None):
         B_, N, C = x.shape
-        
-        # print(x.shape)
         q, k, v = self.qkv(x, attn_kv)
         q = q * self.scale
         attn = (q @ k.transpose(-2, -1))
@@ -557,21 +555,11 @@ class WindowAttention(nn.Module):
             attn = self.softmax(attn)
 
         attn = self.attn_drop(attn)
-        # get attention score
-        attn_score = attn.detach().mean(dim=1).view(B_, N, N*ratio)
-        
-        # normalize attention score
-        attn_score = attn_score / attn_score.sum(dim=-1, keepdim=True)
-        
-        # print(attn_score)
-        attn_score_final = attn_score[:, :, 0].view(B_, N)
-        # print("max score: ", attn_score_final.max())
-        # print("min score: ", attn_score_final.min())
+
         x = (attn @ v).transpose(1, 2).reshape(B_, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
-        # self.score = attn_score
-        return x, attn_score_final
+        return x
 
     def extra_repr(self) -> str:
         return f'dim={self.dim}, win_size={self.win_size}, num_heads={self.num_heads}'
@@ -1012,7 +1000,6 @@ class LeWinTransformerBlock(nn.Module):
             attn_mask = None
 
         # shift mask
-        # print("shift_size:", self.shift_size)
         if self.shift_size > 0:
             # calculate attention mask for SW-MSA
             shift_mask = torch.zeros((1, H, W, 1)).type_as(x)
@@ -1069,51 +1056,30 @@ class LeWinTransformerBlock(nn.Module):
 
         # W-MSA/SW-MSA
         # nW*B, win_size*win_size, C
-        attn_windows, scores = self.attn(wmsa_in, mask=attn_mask)
-        # print("max:", torch.max(scores), "min:", torch.min(scores))
-        # scores = self.attn.scores
-        
-        # print("attn_windows:", attn_windows.shape)
-        # print("scores:", scores.shape)
+        attn_windows = self.attn(wmsa_in, mask=attn_mask)
 
         # merge windows
-        # print("1:", attn_windows.shape, "atten_scores:", scores.shape)
-        
         attn_windows = attn_windows.view(-1, self.win_size, self.win_size, C)
         shifted_x = window_reverse(
             attn_windows, self.win_size, H, W)  # B H' W' C
-        atten_scores = scores.view(-1, self.win_size, self.win_size, 1)
-        atten_scores = window_reverse(
-            atten_scores, self.win_size, H, W)  # B H' W' C
 
         # reverse cyclic shift
-        # print("before shift_size:", self.shift_size)
-        
         if self.shift_size > 0:
             x = torch.roll(shifted_x, shifts=(
                 self.shift_size, self.shift_size), dims=(1, 2))
-            atten_scores_x = torch.roll(atten_scores, shifts=(
-                self.shift_size, self.shift_size), dims=(1, 2))
         else:
             x = shifted_x
-            atten_scores_x = atten_scores
-            # atten_scores = atten_scores
-        
-        # print("x:", x.shape, "atten_scores:", atten_scores_x.shape)
         x = x.view(B, H * W, C)
-        atten_scores_x = atten_scores_x.view(B, H * W, 1)
-        
-        # print("x:", x.shape)
-        # print("atten_scores:", atten_scores.shape)
 
         # FFN
         x = shortcut + self.drop_path(x)
         x = x + self.drop_path(self.mlp(self.norm2(x)))
-        # !del attn_mask
-        # !return x
-        # print("x:", x.shape, "atten_scores:", atten_scores_x.shape)
-        
-        return x, atten_scores_x
+        del attn_mask
+        # convert the attention mask back to the original size and return
+        # if attn_mask is not None:
+        #     attn_mask = attn_mask.view(-1, H, W, H, W)
+        # return x, attn_mask
+        return x
 
     def flops(self):
         flops = 0
@@ -1184,10 +1150,10 @@ class BasicUformerLayer(nn.Module):
     def forward(self, x, mask=None):
         for blk in self.blocks:
             if self.use_checkpoint:
-                x, atten_mask = checkpoint.checkpoint(blk, x)
+                x = checkpoint.checkpoint(blk, x)
             else:
-                x, atten_mask = blk(x, mask)
-        return x, atten_mask
+                x = blk(x, mask)
+        return x
 
     def flops(self):
         flops = 0
@@ -1411,7 +1377,7 @@ class Uformer(nn.Module):
         y = self.input_proj(x)
         y = self.pos_drop(y)
         # Encoder
-        conv0, att = self.encoderlayer_0(y, mask=mask)
+        conv0 = self.encoderlayer_0(y, mask=mask)
         pool0 = self.dowsample_0(conv0)
         # conv1 = self.encoderlayer_1(pool0, mask=mask)
         # pool1 = self.dowsample_1(conv1)
@@ -1421,7 +1387,7 @@ class Uformer(nn.Module):
         # pool3 = self.dowsample_3(conv3)
 
         # Bottleneck
-        conv4, att = self.encoderlayer_1(pool0, mask=mask)
+        conv4 = self.encoderlayer_1(pool0, mask=mask)
 
         # Decoder
         # up0 = self.upsample_0(conv4)
@@ -1439,17 +1405,11 @@ class Uformer(nn.Module):
         up3 = self.upsample_3(conv4)
         # print(up3.shape, conv0.shape)
         deconv3 = torch.cat([up3, conv0], -1)
-        deconv3, atten_mask = self.decoderlayer_3(deconv3, mask=mask)
-        
+        deconv3 = self.decoderlayer_3(deconv3, mask=mask)
+
         # Output Projection
         y = self.output_proj(deconv3)
-        if self.dd_in == 3:
-            # print('dd_in', self.dd_in)
-            return x + y, atten_mask
-        else:
-            # print('no')
-            return y, atten_mask
-        # return x + y if self.dd_in == 3 else y, atten_mask
+        return x + y if self.dd_in == 3 else y
 
     def flops(self):
         flops = 0

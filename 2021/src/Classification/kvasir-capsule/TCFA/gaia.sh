@@ -1,7 +1,7 @@
 python3 testMarginforgaia.py \
-    --data_root ./UI_var/ \
+    --data_root ./Noise_var/ \
     --ref_root ./dataForVisualization/Ref/ \
-    --pkl_root ./UI_var/ui_dict.pkl \
+    --pkl_root ./Noise_var/noise_dict.pkl \
     --out_dir ./outputpaper/ \
     --mat_dir ./outputpaper/mat/epoch0/ \
     --tensorboard_dir ./tensorboardv2/ \
