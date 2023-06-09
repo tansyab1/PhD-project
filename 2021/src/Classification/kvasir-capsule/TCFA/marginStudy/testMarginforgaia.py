@@ -332,12 +332,12 @@ def train_model(model,
                             tsne_features_in[i * opt.bs: (
                                 i + 1) * opt.bs, :] = encoded_noise_flatten.cpu().detach().numpy()
                             tsne_labels_in[i * opt.bs: (i + 1) * opt.bs,
-                                            :] = anchor_label.cpu().detach().numpy()
+                                            :] = anchor_label.reshape(-1, 1).cpu().detach().numpy()
                         else:
                             tsne_features_in[i * opt.bs: i * opt.bs + num_elements,
                                                 :] = encoded_noise_flatten.cpu().detach().numpy()
                             tsne_labels_in[i * opt.bs: i * opt.bs + num_elements,
-                                            :] = anchor_label.cpu().detach().numpy()
+                                            :] = anchor_label.reshape(-1, 1).cpu().detach().numpy()
 
                     loss = loss_triplet
                     if phase == 'train':
@@ -434,7 +434,7 @@ def prepare_model():
 # Run training process
 # ====================================
 def run_train(retrain=False):
-    for margin in tqdm([2, 4, 8, 16, 32, 64]):
+    for margin in tqdm([1, 2, 4, 8, 16, 32, 64]):
         torch.cuda.empty_cache()
         model = prepare_model()
         dataloaders = prepare_data()
