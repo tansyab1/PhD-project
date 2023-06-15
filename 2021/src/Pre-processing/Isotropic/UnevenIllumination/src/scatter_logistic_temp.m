@@ -1,5 +1,5 @@
-mos = xlsread('C:\Zohaib\Metrics\brisque/brisque_mos_order.xlsx');
-metric = xlsread('C:\Zohaib\Metrics\brisque/brisque_score.xlsx'); %metric = metric';
+mos = xlsread('C:\tansy.nguyen\Metrics\brisque/brisque_mos_order.xlsx');
+metric = xlsread('C:\tansy.nguyen\Metrics\brisque/brisque_score.xlsx'); %metric = metric';
 
 scatter(metric,mos,100,'+','MarkerEdgeColor','b','MarkerFaceColor','b','LineWidth',1.5)
 
