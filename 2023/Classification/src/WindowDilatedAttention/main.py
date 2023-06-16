@@ -26,13 +26,15 @@ from data import build_loader
 from lr_scheduler import build_scheduler
 from optimizer import build_optimizer
 from logger import create_logger
-from utils import load_checkpoint, load_pretrained, save_checkpoint, NativeScalerWithGradNormCount, auto_resume_helper, \
-    reduce_tensor
+from utils import load_checkpoint, load_pretrained, save_checkpoint, \
+    NativeScalerWithGradNormCount, auto_resume_helper, reduce_tensor
 
 
 def parse_option():
-    parser = argparse.ArgumentParser('Swin Transformer training and evaluation script', add_help=False)
-    parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file', )
+    parser = argparse.ArgumentParser(
+        'Swin Transformer training and evaluation script', add_help=False)
+    parser.add_argument('--cfg', type=str, required=True,
+                        metavar="FILE", help='path to config file', )
     parser.add_argument(
         "--opts",
         help="Modify config options by adding 'KEY VALUE' pairs. ",
@@ -41,9 +43,11 @@ def parse_option():
     )
 
     # easy config modification
-    parser.add_argument('--batch-size', type=int, help="batch size for single GPU")
+    parser.add_argument('--batch-size', type=int,
+                        help="batch size for single GPU")
     parser.add_argument('--data-path', type=str, help='path to dataset')
-    parser.add_argument('--zip', action='store_true', help='use zipped dataset instead of folder dataset')
+    parser.add_argument('--zip', action='store_true',
+                        help='use zipped dataset instead of folder dataset')
     parser.add_argument('--cache-mode', type=str, default='part', choices=['no', 'full', 'part'],
                         help='no: no cache, '
                              'full: cache all data, '
@@ -51,26 +55,32 @@ def parse_option():
     parser.add_argument('--pretrained',
                         help='pretrained weight from checkpoint, could be imagenet22k pretrained weight')
     parser.add_argument('--resume', help='resume from checkpoint')
-    parser.add_argument('--accumulation-steps', type=int, help="gradient accumulation steps")
+    parser.add_argument('--accumulation-steps', type=int,
+                        help="gradient accumulation steps")
     parser.add_argument('--use-checkpoint', action='store_true',
                         help="whether to use gradient checkpointing to save memory")
-    parser.add_argument('--disable_amp', action='store_true', help='Disable pytorch amp')
+    parser.add_argument('--disable_amp', action='store_true',
+                        help='Disable pytorch amp')
     parser.add_argument('--amp-opt-level', type=str, choices=['O0', 'O1', 'O2'],
                         help='mixed precision opt level, if O0, no amp is used (deprecated!)')
     parser.add_argument('--output', default='output', type=str, metavar='PATH',
                         help='root of output folder, the full path is <output>/<model_name>/<tag> (default: output)')
     parser.add_argument('--tag', help='tag of experiment')
-    parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
-    parser.add_argument('--throughput', action='store_true', help='Test throughput only')
+    parser.add_argument('--eval', action='store_true',
+                        help='Perform evaluation only')
+    parser.add_argument('--throughput', action='store_true',
+                        help='Test throughput only')
 
     # distributed training
-    parser.add_argument("--local_rank", type=int, required=True, help='local rank for DistributedDataParallel')
+    parser.add_argument("--local_rank", type=int, required=True,
+                        help='local rank for DistributedDataParallel')
 
     # for acceleration
     parser.add_argument('--fused_window_process', action='store_true',
                         help='Fused window shift & window partition, similar for reversed part.')
-    parser.add_argument('--fused_layernorm', action='store_true', help='Use fused layernorm.')
-    ## overwrite optimizer in config (*.yaml) if specified, e.g., fused_adam/fused_lamb
+    parser.add_argument('--fused_layernorm',
+                        action='store_true', help='Use fused layernorm.')
+    # overwrite optimizer in config (*.yaml) if specified, e.g., fused_adam/fused_lamb
     parser.add_argument('--optim', type=str,
                         help='overwrite optimizer if provided, can be adamw/sgd/fused_adam/fused_lamb.')
 
@@ -82,13 +92,15 @@ def parse_option():
 
 
 def main(config):
-    dataset_train, dataset_val, data_loader_train, data_loader_val, mixup_fn = build_loader(config)
+    dataset_train, dataset_val, data_loader_train, data_loader_val, mixup_fn = build_loader(
+        config)
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     logger.info(str(model))
 
-    n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    n_parameters = sum(p.numel()
+                       for p in model.parameters() if p.requires_grad)
     logger.info(f"number of params: {n_parameters}")
     if hasattr(model, 'flops'):
         flops = model.flops()
@@ -98,19 +110,23 @@ def main(config):
     model_without_ddp = model
 
     optimizer = build_optimizer(config, model)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[config.LOCAL_RANK], broadcast_buffers=False)
+    model = torch.nn.parallel.DistributedDataParallel(
+        model, device_ids=[config.LOCAL_RANK], broadcast_buffers=False)
     loss_scaler = NativeScalerWithGradNormCount()
 
     if config.TRAIN.ACCUMULATION_STEPS > 1:
-        lr_scheduler = build_scheduler(config, optimizer, len(data_loader_train) // config.TRAIN.ACCUMULATION_STEPS)
+        lr_scheduler = build_scheduler(config, optimizer, len(
+            data_loader_train) // config.TRAIN.ACCUMULATION_STEPS)
     else:
-        lr_scheduler = build_scheduler(config, optimizer, len(data_loader_train))
+        lr_scheduler = build_scheduler(
+            config, optimizer, len(data_loader_train))
 
     if config.AUG.MIXUP > 0.:
         # smoothing is handled with mixup label transform
         criterion = SoftTargetCrossEntropy()
     elif config.MODEL.LABEL_SMOOTHING > 0.:
-        criterion = LabelSmoothingCrossEntropy(smoothing=config.MODEL.LABEL_SMOOTHING)
+        criterion = LabelSmoothingCrossEntropy(
+            smoothing=config.MODEL.LABEL_SMOOTHING)
     else:
         criterion = torch.nn.CrossEntropyLoss()
 
@@ -120,25 +136,30 @@ def main(config):
         resume_file = auto_resume_helper(config.OUTPUT)
         if resume_file:
             if config.MODEL.RESUME:
-                logger.warning(f"auto-resume changing resume file from {config.MODEL.RESUME} to {resume_file}")
+                logger.warning(
+                    f"auto-resume changing resume file from {config.MODEL.RESUME} to {resume_file}")
             config.defrost()
             config.MODEL.RESUME = resume_file
             config.freeze()
             logger.info(f'auto resuming from {resume_file}')
         else:
-            logger.info(f'no checkpoint found in {config.OUTPUT}, ignoring auto resume')
+            logger.info(
+                f'no checkpoint found in {config.OUTPUT}, ignoring auto resume')
 
     if config.MODEL.RESUME:
-        max_accuracy = load_checkpoint(config, model_without_ddp, optimizer, lr_scheduler, loss_scaler, logger)
+        max_accuracy = load_checkpoint(
+            config, model_without_ddp, optimizer, lr_scheduler, loss_scaler, logger)
         acc1, acc5, loss = validate(config, data_loader_val, model)
-        logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
+        logger.info(
+            f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
         if config.EVAL_MODE:
             return
 
     if config.MODEL.PRETRAINED and (not config.MODEL.RESUME):
         load_pretrained(config, model_without_ddp, logger)
         acc1, acc5, loss = validate(config, data_loader_val, model)
-        logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
+        logger.info(
+            f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
 
     if config.THROUGHPUT_MODE:
         throughput(data_loader_val, model, logger)
@@ -156,7 +177,8 @@ def main(config):
                             logger)
 
         acc1, acc5, loss = validate(config, data_loader_val, model)
-        logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
+        logger.info(
+            f"Accuracy of the network on the {len(dataset_val)} test images: {acc1:.1f}%")
         max_accuracy = max(max_accuracy, acc1)
         logger.info(f'Max accuracy: {max_accuracy:.2f}%')
 
@@ -190,13 +212,15 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
         loss = loss / config.TRAIN.ACCUMULATION_STEPS
 
         # this attribute is added by timm on one optimizer (adahessian)
-        is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
+        is_second_order = hasattr(
+            optimizer, 'is_second_order') and optimizer.is_second_order
         grad_norm = loss_scaler(loss, optimizer, clip_grad=config.TRAIN.CLIP_GRAD,
                                 parameters=model.parameters(), create_graph=is_second_order,
                                 update_grad=(idx + 1) % config.TRAIN.ACCUMULATION_STEPS == 0)
         if (idx + 1) % config.TRAIN.ACCUMULATION_STEPS == 0:
             optimizer.zero_grad()
-            lr_scheduler.step_update((epoch * num_steps + idx) // config.TRAIN.ACCUMULATION_STEPS)
+            lr_scheduler.step_update(
+                (epoch * num_steps + idx) // config.TRAIN.ACCUMULATION_STEPS)
         loss_scale_value = loss_scaler.state_dict()["scale"]
 
         torch.cuda.synchronize()
@@ -222,7 +246,8 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
                 f'loss_scale {scaler_meter.val:.4f} ({scaler_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
     epoch_time = time.time() - start
-    logger.info(f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}")
+    logger.info(
+        f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}")
 
 
 @torch.no_grad()
@@ -283,13 +308,14 @@ def throughput(data_loader, model, logger):
         for i in range(50):
             model(images)
         torch.cuda.synchronize()
-        logger.info(f"throughput averaged with 30 times")
+        logger.info(f"throughput averaged with 30 times for batch size {batch_size}")
         tic1 = time.time()
         for i in range(30):
             model(images)
         torch.cuda.synchronize()
         tic2 = time.time()
-        logger.info(f"batch_size {batch_size} throughput {30 * batch_size / (tic2 - tic1)}")
+        logger.info(
+            f"batch_size {batch_size} throughput {30 * batch_size / (tic2 - tic1)}")
         return
 
 
@@ -307,7 +333,8 @@ if __name__ == '__main__':
         rank = -1
         world_size = -1
     torch.cuda.set_device(config.LOCAL_RANK)
-    torch.distributed.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
+    torch.distributed.init_process_group(
+        backend='nccl', init_method='env://', world_size=world_size, rank=rank)
     torch.distributed.barrier()
 
     seed = config.SEED + dist.get_rank()
@@ -318,9 +345,12 @@ if __name__ == '__main__':
     cudnn.benchmark = True
 
     # linear scale the learning rate according to total batch size, may not be optimal
-    linear_scaled_lr = config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
-    linear_scaled_warmup_lr = config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
-    linear_scaled_min_lr = config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
+    linear_scaled_lr = config.TRAIN.BASE_LR * \
+        config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
+    linear_scaled_warmup_lr = config.TRAIN.WARMUP_LR * \
+        config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
+    linear_scaled_min_lr = config.TRAIN.MIN_LR * \
+        config.DATA.BATCH_SIZE * dist.get_world_size() / 512.0
     # gradient accumulation also need to scale the learning rate
     if config.TRAIN.ACCUMULATION_STEPS > 1:
         linear_scaled_lr = linear_scaled_lr * config.TRAIN.ACCUMULATION_STEPS
@@ -333,7 +363,8 @@ if __name__ == '__main__':
     config.freeze()
 
     os.makedirs(config.OUTPUT, exist_ok=True)
-    logger = create_logger(output_dir=config.OUTPUT, dist_rank=dist.get_rank(), name=f"{config.MODEL.NAME}")
+    logger = create_logger(output_dir=config.OUTPUT,
+                           dist_rank=dist.get_rank(), name=f"{config.MODEL.NAME}")
 
     if dist.get_rank() == 0:
         path = os.path.join(config.OUTPUT, "config.json")

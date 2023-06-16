@@ -5,7 +5,7 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
-from tutel import system
+# from tutel import system
 
 import os
 import time
@@ -86,7 +86,7 @@ def main(config):
 
     # For Tutel MoE
     for name, param in model.named_parameters():
-        if param.requires_grad == True and hasattr(param, 'skip_allreduce') and param.skip_allreduce is True:
+        if param.requires_grad is True and hasattr(param, 'skip_allreduce') and param.skip_allreduce is True:
             model.add_param_to_skip_allreduce(name)
             param.register_hook(partial(hook_scale_grad, dist.get_world_size()))
             logger.info(f"[rank{dist.get_rank()}] [{name}] skip all_reduce and div {dist.get_world_size()} for grad")
@@ -302,7 +302,7 @@ def throughput(data_loader, model, logger):
         for i in range(50):
             model(images)
         torch.cuda.synchronize()
-        logger.info(f"throughput averaged with 30 times")
+        logger.info(f"throughput averaged with 30 times with batch size {batch_size}")
         tic1 = time.time()
         for i in range(30):
             model(images)
