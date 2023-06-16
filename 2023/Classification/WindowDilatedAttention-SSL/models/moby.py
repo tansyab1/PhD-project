@@ -41,22 +41,24 @@ class MoBY(nn.Module):
                  pred_num_layers=2,
                  **kwargs):
         super().__init__()
-        
+
         self.cfg = cfg
-        
+
         self.encoder = encoder
         self.encoder_k = encoder_k
-        
+
         self.contrast_momentum = contrast_momentum
         self.contrast_temperature = contrast_temperature
         self.contrast_num_negative = contrast_num_negative
-        
+
         self.proj_num_layers = proj_num_layers
         self.pred_num_layers = pred_num_layers
 
-        self.projector = MoBYMLP(in_dim=self.encoder.num_features, num_layers=proj_num_layers)
-        self.projector_k = MoBYMLP(in_dim=self.encoder.num_features, num_layers=proj_num_layers)
-        self.predictor = MoBYMLP(num_layers=pred_num_layers)
+        self.projector = MoBYMLP(
+            in_dim=self.encoder.num_features, num_layers=proj_num_layers)
+        self.projector_k = MoBYMLP(
+            in_dim=self.encoder.num_features, num_layers=proj_num_layers)
+        # self.predictor = MoBYMLP(num_layers=pred_num_layers)
 
         for param_q, param_k in zip(self.encoder.parameters(), self.encoder_k.parameters()):
             param_k.data.copy_(param_q.data)  # initialize
@@ -72,14 +74,18 @@ class MoBY(nn.Module):
 
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector)
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector_k)
-        nn.SyncBatchNorm.convert_sync_batchnorm(self.predictor)
+        # nn.SyncBatchNorm.convert_sync_batchnorm(self.predictor)
 
-        self.K = int(self.cfg.DATA.TRAINING_IMAGES * 1. / dist.get_world_size() / self.cfg.DATA.BATCH_SIZE) * self.cfg.TRAIN.EPOCHS
-        self.k = int(self.cfg.DATA.TRAINING_IMAGES * 1. / dist.get_world_size() / self.cfg.DATA.BATCH_SIZE) * self.cfg.TRAIN.START_EPOCH
+        self.K = int(self.cfg.DATA.TRAINING_IMAGES * 1. / dist.get_world_size() /
+                     self.cfg.DATA.BATCH_SIZE) * self.cfg.TRAIN.EPOCHS
+        self.k = int(self.cfg.DATA.TRAINING_IMAGES * 1. / dist.get_world_size() /
+                     self.cfg.DATA.BATCH_SIZE) * self.cfg.TRAIN.START_EPOCH
 
         # create the queue
-        self.register_buffer("queue1", torch.randn(256, self.contrast_num_negative))
-        self.register_buffer("queue2", torch.randn(256, self.contrast_num_negative))
+        self.register_buffer("queue1", torch.randn(
+            256, self.contrast_num_negative))
+        self.register_buffer("queue2", torch.randn(
+            256, self.contrast_num_negative))
         self.queue1 = F.normalize(self.queue1, dim=0)
         self.queue2 = F.normalize(self.queue2, dim=0)
 
@@ -90,14 +96,18 @@ class MoBY(nn.Module):
         """
         Momentum update of the key encoder
         """
-        _contrast_momentum = 1. - (1. - self.contrast_momentum) * (np.cos(np.pi * self.k / self.K) + 1) / 2.
+        _contrast_momentum = 1. - \
+            (1. - self.contrast_momentum) * \
+            (np.cos(np.pi * self.k / self.K) + 1) / 2.
         self.k = self.k + 1
 
         for param_q, param_k in zip(self.encoder.parameters(), self.encoder_k.parameters()):
-            param_k.data = param_k.data * _contrast_momentum + param_q.data * (1. - _contrast_momentum)
+            param_k.data = param_k.data * _contrast_momentum + \
+                param_q.data * (1. - _contrast_momentum)
 
         for param_q, param_k in zip(self.projector.parameters(), self.projector_k.parameters()):
-            param_k.data = param_k.data * _contrast_momentum + param_q.data * (1. - _contrast_momentum)
+            param_k.data = param_k.data * _contrast_momentum + \
+                param_q.data * (1. - _contrast_momentum)
 
     @torch.no_grad()
     def _dequeue_and_enqueue(self, keys1, keys2):
@@ -165,21 +175,23 @@ class MoBY(nn.Module):
         self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
 
         return loss
-    
-    
+
+
 class MoBYMLP(nn.Module):
     def __init__(self, in_dim=256, inner_dim=4096, out_dim=256, num_layers=2):
         super(MoBYMLP, self).__init__()
-        
+
         # hidden layers
         linear_hidden = [nn.Identity()]
         for i in range(num_layers - 1):
-            linear_hidden.append(nn.Linear(in_dim if i == 0 else inner_dim, inner_dim))
+            linear_hidden.append(
+                nn.Linear(in_dim if i == 0 else inner_dim, inner_dim))
             linear_hidden.append(nn.BatchNorm1d(inner_dim))
             linear_hidden.append(nn.ReLU(inplace=True))
         self.linear_hidden = nn.Sequential(*linear_hidden)
 
-        self.linear_out = nn.Linear(in_dim if num_layers == 1 else inner_dim, out_dim) if num_layers >= 1 else nn.Identity()
+        self.linear_out = nn.Linear(
+            in_dim if num_layers == 1 else inner_dim, out_dim) if num_layers >= 1 else nn.Identity()
 
     def forward(self, x):
         x = self.linear_hidden(x)

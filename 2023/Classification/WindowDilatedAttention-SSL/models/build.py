@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# Swin Transformer
+# WDA Transformer
 # Copyright (c) 2021 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ze Liu
@@ -9,7 +9,7 @@
 from functools import partial
 from timm.models import vit_deit_small_patch16_224
 
-from .swin_transformer import SwinTransformer
+from .WDA_transformer import WDATransformer
 from .moby import MoBY
 
 vit_models = dict(
@@ -21,24 +21,24 @@ def build_model(config):
     model_type = config.MODEL.TYPE
     encoder_type = config.MODEL.MOBY.ENCODER
 
-    if encoder_type == 'swin':
+    if encoder_type == 'WDA':
         enc = partial(
-            SwinTransformer,
+            WDATransformer,
             img_size=config.DATA.IMG_SIZE,
-            patch_size=config.MODEL.SWIN.PATCH_SIZE,
-            in_chans=config.MODEL.SWIN.IN_CHANS,
-            embed_dim=config.MODEL.SWIN.EMBED_DIM,
-            depths=config.MODEL.SWIN.DEPTHS,
-            num_heads=config.MODEL.SWIN.NUM_HEADS,
-            window_size=config.MODEL.SWIN.WINDOW_SIZE,
-            mlp_ratio=config.MODEL.SWIN.MLP_RATIO,
-            qkv_bias=config.MODEL.SWIN.QKV_BIAS,
-            qk_scale=config.MODEL.SWIN.QK_SCALE,
+            patch_size=config.MODEL.WDA.PATCH_SIZE,
+            in_chans=config.MODEL.WDA.IN_CHANS,
+            embed_dim=config.MODEL.WDA.EMBED_DIM,
+            depths=config.MODEL.WDA.DEPTHS,
+            num_heads=config.MODEL.WDA.NUM_HEADS,
+            window_size=config.MODEL.WDA.WINDOW_SIZE,
+            mlp_ratio=config.MODEL.WDA.MLP_RATIO,
+            qkv_bias=config.MODEL.WDA.QKV_BIAS,
+            qk_scale=config.MODEL.WDA.QK_SCALE,
             drop_rate=config.MODEL.DROP_RATE,
-            ape=config.MODEL.SWIN.APE,
-            patch_norm=config.MODEL.SWIN.PATCH_NORM,
+            ape=config.MODEL.WDA.APE,
+            patch_norm=config.MODEL.WDA.PATCH_NORM,
             use_checkpoint=config.TRAIN.USE_CHECKPOINT,
-            norm_befor_mlp=config.MODEL.SWIN.NORM_BEFORE_MLP,
+            norm_befor_mlp=config.MODEL.WDA.NORM_BEFORE_MLP,
         )
     elif encoder_type.startswith('vit') or encoder_type.startswith('deit'):
         enc = vit_models[encoder_type]
