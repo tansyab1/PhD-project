@@ -15,88 +15,48 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-BRISQUE = [4426, 192, 36, 1, 50, 1111, 201, 98, 9918]
-DE = [12, 19, 1134, 150, 7634, 398, 47, 797, 5609]
-NIQE = [41, 81, 821, 77, 1093, 4, 1047, 19, 12817]
+# BRISQUE = [4426, 192, 36, 1, 50, 1111, 201, 98, 9918]
+# # DE = [12, 19, 1134, 150, 7634, 398, 47, 797, 5609]
+# NIQE = [41, 81, 821, 77, 1093, 4, 1047, 19, 12817]
 
 
-method = ['BM3D', 'CycleISP', 'DANet', 'DIPNet',
-          'VDNet', 'MPRNet', 'MIRNet', 'Uformer', 'TCFA']
+# method = ['BM3D', 'CycleISP', 'DANet', 'DIPNet',
+#           'VDNet', 'MPRNet', 'MIRNet', 'Uformer', 'TCFA']
 
-# BRISQUE2 = [6, 41, 1134, 26, 3217, 1502, 2157, 7917]
-# DE2 = [31, 525, 6, 505, 25, 14421, 64, 426]
-# NIQE2 = [15, 26, 73, 19, 23, 2456, 5160, 8228]
+BRISQUE2 = [6, 41, 1134, 26, 3217, 1502, 2157, 7917]
+DE2 = [31, 525, 6, 505, 25, 14421, 64, 426]
+NIQE2 = [15, 26, 73, 19, 23, 2456, 5160, 8228]
 
-# method2 = ['TV', 'DBGAN', 'DeblurGANv2', 'DMPHN',
-#            'MPRNet', 'MIRNet', 'Uformer', 'TCFA']
+method2 = ['TV', 'DBGAN', 'DeblurGANv2', 'DMPHN',
+           'MPRNet', 'MIRNet', 'Uformer', 'TCFA']
 
 
 # plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE of each method
 # set width of bar
 barWidth = 0.2
 
-# plot bars group1
-plt.bar([1, 2, 3, 4, 5, 6, 7, 8, 9], BRISQUE, color='grey',
-        width=barWidth,  label='BRISQUE')
-# plot bars group2
-plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth, 9 + barWidth], DE, color='orange',
-        width=barWidth,  label='DE')
-# plot bars group3
-plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2, 9 + barWidth * 2], NIQE, color='green',
-        width=barWidth,  label='NIQE')
-# # draw vertical line after each bar in group3
-for i in range(1, 10):
-    plt.axvline(x=i + barWidth * 2+ 0.125, color='black', linestyle='--', linewidth=0.5)
-
-# set the position of the x ticks
-plt.xticks([r + barWidth for r in range(1, 10)], method)
-# rotate labels 45 degree
-plt.xticks(rotation=45)
-# set y label
-plt.ylabel('number of images')
-
-# set title of plot
-plt.title('Denoising')
-# set x label
-plt.xlabel('Method')
-
-
-# show legend on the top right of plot
-plt.legend(loc='upper left')
-# tight layout
-plt.tight_layout()
-# save plot to file .eps
-plt.savefig('2023/src/denoising.eps', format='eps')
-
-# deblurring for method2
-
-# plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE of each method
-# set width of bar
-# barWidth = 0.2
-
 # # plot bars group1
-# plt.bar([1, 2, 3, 4, 5, 6, 7, 8], BRISQUE2, color='grey',
+# plt.bar([1, 2, 3, 4, 5, 6, 7, 8, 9], BRISQUE, color='grey',
 #         width=barWidth,  label='BRISQUE')
 # # plot bars group2
-# plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth], DE2, color='orange',
-#         width=barWidth,  label='DE')
-# # plot bars group3
-# plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2], NIQE2, color='green',
+# plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth, 9 + barWidth], NIQE, color='orange',
 #         width=barWidth,  label='NIQE')
-
-# # draw vertical line after each bar in group3
-# for i in range(1, 9):
+# # # plot bars group3
+# # plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2, 9 + barWidth * 2], NIQE, color='green',
+# #         width=barWidth,  label='NIQE')
+# # # draw vertical line after each bar in group3
+# for i in range(1, 10):
 #     plt.axvline(x=i + barWidth * 2+ 0.125, color='black', linestyle='--', linewidth=0.5)
 
 # # set the position of the x ticks
-# plt.xticks([r + barWidth for r in range(1, 9)], method2)
+# plt.xticks([r + barWidth*0.5 for r in range(1, 10)], method)
 # # rotate labels 45 degree
 # plt.xticks(rotation=45)
 # # set y label
 # plt.ylabel('number of images')
 
 # # set title of plot
-# plt.title('Deblurring')
+# plt.title('Denoising')
 # # set x label
 # plt.xlabel('Method')
 
@@ -106,7 +66,47 @@ plt.savefig('2023/src/denoising.eps', format='eps')
 # # tight layout
 # plt.tight_layout()
 # # save plot to file .eps
-# plt.savefig('2023/src/deblurring.eps', format='eps')
+# plt.savefig('2023/Enhancement/src/denoising-node.eps', format='eps')
+
+# deblurring for method2
+
+# plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE of each method
+# set width of bar
+barWidth = 0.2
+
+# plot bars group1
+plt.bar([1, 2, 3, 4, 5, 6, 7, 8], BRISQUE2, color='grey',
+        width=barWidth,  label='BRISQUE')
+# plot bars group2
+plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth], NIQE2, color='orange',
+        width=barWidth,  label='NIQE')
+# plot bars group3
+# plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2], NIQE2, color='green',
+#         width=barWidth,  label='NIQE')
+
+# draw vertical line after each bar in group3
+for i in range(1, 9):
+    plt.axvline(x=i + barWidth * 2+ 0.125, color='black', linestyle='--', linewidth=0.5)
+
+# set the position of the x ticks
+plt.xticks([r + barWidth*0.5 for r in range(1, 9)], method2)
+# rotate labels 45 degree
+plt.xticks(rotation=45)
+# set y label
+plt.ylabel('number of images')
+
+# set title of plot
+plt.title('Deblurring')
+# set x label
+plt.xlabel('Method')
+
+
+# show legend on the top right of plot
+plt.legend(loc='upper left')
+# tight layout
+plt.tight_layout()
+# save plot to file .eps
+plt.savefig('2023/Enhancement/src/deblurring-node.eps', format='eps')
 
 
 # BRISQUE3 = [145, 65, 78, 215, 3005, 3023, 2248, 3232, 3939]
