@@ -68,88 +68,35 @@ barWidth = 0.2
 # # save plot to file .eps
 # plt.savefig('2023/Enhancement/src/denoising-node.eps', format='eps')
 
-# deblurring for method2
+# # deblurring for method2
 
-# plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE of each method
-# set width of bar
-barWidth = 0.2
-
-# plot bars group1
-plt.bar([1, 2, 3, 4, 5, 6, 7, 8], BRISQUE2, color='grey',
-        width=barWidth,  label='BRISQUE')
-# plot bars group2
-plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth], NIQE2, color='orange',
-        width=barWidth,  label='NIQE')
-# plot bars group3
-# plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2], NIQE2, color='green',
-#         width=barWidth,  label='NIQE')
-
-# draw vertical line after each bar in group3
-for i in range(1, 9):
-    plt.axvline(x=i + barWidth * 2+ 0.125, color='black', linestyle='--', linewidth=0.5)
-
-# set the position of the x ticks
-plt.xticks([r + barWidth*0.5 for r in range(1, 9)], method2)
-# rotate labels 45 degree
-plt.xticks(rotation=45)
-# set y label
-plt.ylabel('number of images')
-
-# set title of plot
-plt.title('Deblurring')
-# set x label
-plt.xlabel('Method')
-
-
-# show legend on the top right of plot
-plt.legend(loc='upper left')
-# tight layout
-plt.tight_layout()
-# save plot to file .eps
-plt.savefig('2023/Enhancement/src/deblurring-node.eps', format='eps')
-
-
-# BRISQUE3 = [145, 65, 78, 215, 3005, 3023, 2248, 3232, 3939]
-# DE3 = [2210, 956, 5350, 307, 99, 125, 139, 1981, 4833]
-# NIQE3 = [510, 36, 20, 158, 18, 223, 2291, 1976, 10768]
-# LOE3 = [645, 15, 967, 310, 8852, 224, 1168, 784, 3035]
-
-# method3 = ['AFGT', 'FLM', 'LIME', 'RetinexNet',
-#            'EnlightenGAN', 'MIRNet', 'FCN', 'Uformer', 'TCFA']
-
-# # plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE, x4 is LOE of each method
+# # plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE of each method
 # # set width of bar
 # barWidth = 0.2
 
 # # plot bars group1
-# plt.bar([1, 2, 3, 4, 5, 6, 7, 8, 9], BRISQUE3, color='grey',
+# plt.bar([1, 2, 3, 4, 5, 6, 7, 8], BRISQUE2, color='grey',
 #         width=barWidth,  label='BRISQUE')
 # # plot bars group2
-# plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth, 9 + barWidth], DE3, color='orange',
-#         width=barWidth,  label='DE')
-# # plot bars group3
-# plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2, 9 + barWidth * 2], NIQE3, color='green',
+# plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth], NIQE2, color='orange',
 #         width=barWidth,  label='NIQE')
-# # plot bars group4
-# plt.bar([1 + barWidth * 3, 2 + barWidth * 3, 3 + barWidth * 3, 4 + barWidth * 3, 5 + barWidth * 3, 6 + barWidth * 3, 7 + barWidth * 3, 8 + barWidth * 3, 9 + barWidth * 3], LOE3, color='blue',
-#         width=barWidth,  label='LOE')
+# # plot bars group3
+# # plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2], NIQE2, color='green',
+# #         width=barWidth,  label='NIQE')
 
-# # draw vertical line after each bar in group4 
-# for i in range(1, 10):
-#         plt.axvline(x=i + barWidth * 3 + 0.125, color='black', linestyle='--', linewidth=0.5)
-
-                
-
+# # draw vertical line after each bar in group3
+# for i in range(1, 9):
+#     plt.axvline(x=i + barWidth * 2+ 0.125, color='black', linestyle='--', linewidth=0.5)
 
 # # set the position of the x ticks
-# plt.xticks([r + 1.5*barWidth for r in range(1, 10)], method3)
+# plt.xticks([r + barWidth*0.5 for r in range(1, 9)], method2)
 # # rotate labels 45 degree
 # plt.xticks(rotation=45)
 # # set y label
 # plt.ylabel('number of images')
 
 # # set title of plot
-# plt.title('Uneven Illumination Correction')
+# plt.title('Deblurring')
 # # set x label
 # plt.xlabel('Method')
 
@@ -159,7 +106,57 @@ plt.savefig('2023/Enhancement/src/deblurring-node.eps', format='eps')
 # # tight layout
 # plt.tight_layout()
 # # save plot to file .eps
-# plt.savefig('2023/src/uneven_illumination_correction.eps', format='eps')
+# plt.savefig('2023/Enhancement/src/deblurring-node.eps', format='eps')
 
 
+BRISQUE3 = [145, 65, 78, 215, 3005, 3023, 2248, 3232, 3939]
+# DE3 = [2210, 956, 5350, 307, 99, 125, 139, 1981, 4833]
+NIQE3 = [510, 36, 20, 158, 18, 223, 2291, 1976, 10768]
+LOE3 = [645, 15, 967, 310, 8852, 224, 1168, 784, 3035]
 
+method3 = ['AFGT', 'FLM', 'LIME', 'RetinexNet',
+           'EnlightenGAN', 'MIRNet', 'FCN', 'Uformer', 'TCFA']
+
+# plot group bar chart where x1 is BRISQUE, x2 is DE, x3 is NIQE, x4 is LOE of each method
+# set width of bar
+barWidth = 0.2
+
+# plot bars group1
+plt.bar([1, 2, 3, 4, 5, 6, 7, 8, 9], BRISQUE3, color='grey',
+        width=barWidth,  label='BRISQUE')
+# plot bars group2
+plt.bar([1 + barWidth, 2 + barWidth, 3 + barWidth, 4 + barWidth, 5 + barWidth, 6 + barWidth, 7 + barWidth, 8 + barWidth, 9 + barWidth], LOE3, color='orange',
+        width=barWidth,  label='LOE')
+# plot bars group3
+plt.bar([1 + barWidth * 2, 2 + barWidth * 2, 3 + barWidth * 2, 4 + barWidth * 2, 5 + barWidth * 2, 6 + barWidth * 2, 7 + barWidth * 2, 8 + barWidth * 2, 9 + barWidth * 2], NIQE3, color='green',
+        width=barWidth,  label='NIQE')
+# # plot bars group4
+# plt.bar([1 + barWidth * 3, 2 + barWidth * 3, 3 + barWidth * 3, 4 + barWidth * 3, 5 + barWidth * 3, 6 + barWidth * 3, 7 + barWidth * 3, 8 + barWidth * 3, 9 + barWidth * 3], LOE3, color='blue',
+#         width=barWidth,  label='LOE')
+
+# draw vertical line after each bar in group4 
+for i in range(1, 10):
+        plt.axvline(x=i + barWidth * 3 + 0.125, color='black', linestyle='--', linewidth=0.5)
+
+                
+
+
+# set the position of the x ticks
+plt.xticks([r + 1*barWidth for r in range(1, 10)], method3)
+# rotate labels 45 degree
+plt.xticks(rotation=45)
+# set y label
+plt.ylabel('number of images')
+
+# set title of plot
+plt.title('Uneven Illumination Correction')
+# set x label
+plt.xlabel('Method')
+
+
+# show legend on the top right of plot
+plt.legend(loc='upper left')
+# tight layout
+plt.tight_layout()
+# save plot to file .eps
+plt.savefig('2023/Enhancement/src/uneven-illumination-node.eps', format='eps')  
