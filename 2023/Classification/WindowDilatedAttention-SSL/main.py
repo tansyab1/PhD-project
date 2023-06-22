@@ -1,8 +1,8 @@
 # --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
+# WDA-SSL: Window-Dilated Attention for Self-Supervised Learning
+# Author: Tan Sy NGUYEN
 # Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
+# Written by Tan Sy NGUYEN
 # --------------------------------------------------------
 
 import os
@@ -35,7 +35,7 @@ except ImportError:
 
 def parse_option():
     parser = argparse.ArgumentParser(
-        'Swin Transformer training and evaluation script', add_help=False)
+        'WDA-SSL: Window-Dilated Attention for Self-Supervised Learning', add_help=False)
     parser.add_argument('--cfg', type=str, required=True,
                         metavar="FILE", help='path to config file', )
     parser.add_argument(

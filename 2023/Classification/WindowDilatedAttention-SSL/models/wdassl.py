@@ -29,7 +29,7 @@ def dist_collect(x):
     return torch.cat(out_list, dim=0).contiguous()
 
 
-class MoBY(nn.Module):
+class WDASSL(nn.Module):
     def __init__(self,
                  cfg,
                  encoder,
@@ -54,11 +54,11 @@ class MoBY(nn.Module):
         self.proj_num_layers = proj_num_layers
         self.pred_num_layers = pred_num_layers
 
-        self.projector = MoBYMLP(
+        self.projector = WdasslMLP(
             in_dim=self.encoder.num_features, num_layers=proj_num_layers)
-        self.projector_k = MoBYMLP(
+        self.projector_k = WdasslMLP(
             in_dim=self.encoder.num_features, num_layers=proj_num_layers)
-        # self.predictor = MoBYMLP(num_layers=pred_num_layers)
+        self.predictor = WdasslMLP(num_layers=pred_num_layers)
 
         for param_q, param_k in zip(self.encoder.parameters(), self.encoder_k.parameters()):
             param_k.data.copy_(param_q.data)  # initialize
@@ -74,7 +74,7 @@ class MoBY(nn.Module):
 
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector)
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector_k)
-        # nn.SyncBatchNorm.convert_sync_batchnorm(self.predictor)
+        nn.SyncBatchNorm.convert_sync_batchnorm(self.predictor)
 
         self.K = int(self.cfg.DATA.TRAINING_IMAGES * 1. / dist.get_world_size() /
                      self.cfg.DATA.BATCH_SIZE) * self.cfg.TRAIN.EPOCHS
@@ -145,6 +145,16 @@ class MoBY(nn.Module):
 
         return F.cross_entropy(logits, labels)
 
+    # TODO: define covariance contrastive loss function based on the paper of "TiCO: Transformation Invariance
+    # TODO: Contrastive Learning of Visual Representations"
+
+    def covariance_contrast_loss(self, q, k, queue):
+
+        # covariance matrix of query features and queue features
+
+        conv = torch.einsum('nc,ck->nk', [q, queue.clone().detach()])
+        return torch.mean(torch.abs(conv))
+
     def forward(self, im_1, im_2):
         feat_1 = self.encoder(im_1)  # queries: NxC
         proj_1 = self.projector(feat_1)
@@ -177,9 +187,9 @@ class MoBY(nn.Module):
         return loss
 
 
-class MoBYMLP(nn.Module):
+class WdasslMLP(nn.Module):
     def __init__(self, in_dim=256, inner_dim=4096, out_dim=256, num_layers=2):
-        super(MoBYMLP, self).__init__()
+        super(WdasslMLP, self).__init__()
 
         # hidden layers
         linear_hidden = [nn.Identity()]

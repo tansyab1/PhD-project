@@ -19,23 +19,27 @@ except ImportError:
 
 def load_pretrained(model, ckpt_path, logger):
     model_dict = model.state_dict()
-    
+
     state_dict = torch.load(ckpt_path, map_location='cpu')['model']
-    state_dict = {k.replace('encoder.', ''): v for k, v in state_dict.items() if 'encoder.' in k}
-    
+    state_dict = {k.replace('encoder.', ''): v for k,
+                  v in state_dict.items() if 'encoder.' in k}
+
     for k in model_dict.keys():
         if 'head' in k:
             state_dict[k] = model_dict[k]
-    
-    missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
-    
+
+    missing_keys, unexpected_keys = model.load_state_dict(
+        state_dict, strict=False)
+
     logger.info(f'loaded pretrained checkpoint from: {ckpt_path}')
     if len(missing_keys) > 0 or len(unexpected_keys) > 0:
-        logger.warning(f'Missing keys: {missing_keys}\nUnexpected keys: {unexpected_keys}')
+        logger.warning(
+            f'Missing keys: {missing_keys}\nUnexpected keys: {unexpected_keys}')
 
 
 def load_checkpoint(config, model, optimizer, lr_scheduler, logger):
-    logger.info(f"==============> Resuming form {config.MODEL.RESUME}....................")
+    logger.info(
+        f"==============> Resuming form {config.MODEL.RESUME}....................")
     if config.MODEL.RESUME.startswith('https'):
         checkpoint = torch.hub.load_state_dict_from_url(
             config.MODEL.RESUME, map_location='cpu', check_hash=True)
@@ -52,7 +56,8 @@ def load_checkpoint(config, model, optimizer, lr_scheduler, logger):
         config.freeze()
         if 'amp' in checkpoint and config.AMP_OPT_LEVEL != "O0" and checkpoint['config'].AMP_OPT_LEVEL != "O0":
             amp.load_state_dict(checkpoint['amp'])
-        logger.info(f"=> loaded successfully '{config.MODEL.RESUME}' (epoch {checkpoint['epoch']})")
+        logger.info(
+            f"=> loaded successfully '{config.MODEL.RESUME}' (epoch {checkpoint['epoch']})")
         if 'max_accuracy' in checkpoint:
             max_accuracy = checkpoint['max_accuracy']
 
@@ -94,12 +99,13 @@ def get_grad_norm(parameters, norm_type=2):
 def auto_resume_helper(output_dir):
     if os.path.exists(os.path.join(output_dir, 'checkpoint.pth')):
         return os.path.join(output_dir, 'checkpoint.pth')
-    
+
     checkpoints = os.listdir(output_dir)
     checkpoints = [ckpt for ckpt in checkpoints if ckpt.endswith('pth')]
     print(f"All checkpoints founded in {output_dir}: {checkpoints}")
     if len(checkpoints) > 0:
-        latest_checkpoint = max([os.path.join(output_dir, d) for d in checkpoints], key=os.path.getmtime)
+        latest_checkpoint = max([os.path.join(output_dir, d)
+                                for d in checkpoints], key=os.path.getmtime)
         print(f"The latest checkpoint founded: {latest_checkpoint}")
         resume_file = latest_checkpoint
     else:

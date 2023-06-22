@@ -10,7 +10,7 @@ from functools import partial
 from timm.models import vit_deit_small_patch16_224
 
 from .WDA_transformer import WDATransformer
-from .moby import MoBY
+from .wdassl import WDASSL
 
 vit_models = dict(
     deit_small=vit_deit_small_patch16_224,
@@ -54,7 +54,7 @@ def build_model(config):
             num_classes=0,
             drop_path_rate=config.MODEL.MOBY.TARGET_DROP_PATH_RATE,
         )
-        model = MoBY(
+        model = WDASSL(
             cfg=config,
             encoder=encoder,
             encoder_k=encoder_k,
