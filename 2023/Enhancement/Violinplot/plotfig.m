@@ -164,10 +164,15 @@ hAx = gca;
 hAx.FontName = 'Times';
 set(gca,'XMinorTick','off','TickDir','out');
 set(gca,'YMinorTick','on','TickDir','out');
-% add the mean value of each method
+
 hold on
+% plot number of outliers beside the box in the boxplot
+% get the number of outliers by using isoutlier function
+
 for i = 1:length(methods_noise)
-    plot(i, mean(ssim_noise.(methods_noise{i}).ssim_mat), 'r*')
+    number_outliers = sum(isoutlier(ssim_noise.(methods_noise{i}).ssim_mat));
+    % plot on the top of the boxplot
+    text(i-0.2, 0.9, num2str(number_outliers), 'FontSize', 12, 'Color', 'r')
 end
 %%
 % 
