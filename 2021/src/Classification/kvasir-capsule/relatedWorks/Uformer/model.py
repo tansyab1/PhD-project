@@ -759,8 +759,8 @@ class LeFF(nn.Module):
 ########### window operation#############
 def window_partition(x, win_size, dilation_rate=1):
     B, H, W, C = x.shape
-    # print(x.shape)
-    # print(win_size)
+    # print("window_partition:", B, H, W, C)
+    # print("win_size:", win_size)
     if dilation_rate != 1:
         x = x.permute(0, 3, 1, 2)  # B, C, H, W
 
@@ -868,9 +868,14 @@ class InputProj(nn.Module):
 
     def forward(self, x):
         B, C, H, W = x.shape
+        
+        # print("Input_proj:", x.shape)
+        
         x = self.proj(x).flatten(2).transpose(1, 2).contiguous()  # B H*W C
         if self.norm is not None:
             x = self.norm(x)
+            
+        # print("Input_proj_after:", x.shape)
         return x
 
     def flops(self, H, W):
@@ -995,6 +1000,8 @@ class LeWinTransformerBlock(nn.Module):
 
         H = int(math.sqrt(L))
         W = int(math.sqrt(L))
+        
+        # print("H,W",H,W)
 
         # input mask
         if mask != None:
@@ -1232,6 +1239,7 @@ class Uformer(nn.Module):
             in_channel=dd_in, out_channel=embed_dim, kernel_size=3, stride=1, act_layer=nn.LeakyReLU)
         self.output_proj = OutputProj(
             in_channel=2*embed_dim, out_channel=in_chans, kernel_size=3, stride=1)
+        
 
         # Encoder
         self.encoderlayer_0 = BasicUformerLayer(dim=embed_dim,
@@ -1409,6 +1417,8 @@ class Uformer(nn.Module):
     def forward(self, x, mask=None):
         # Input Projection
         y = self.input_proj(x)
+        
+        # print("x.shape", x.shape)
         y = self.pos_drop(y)
         # Encoder
         conv0, att = self.encoderlayer_0(y, mask=mask)

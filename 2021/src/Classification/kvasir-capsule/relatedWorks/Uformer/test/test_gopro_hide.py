@@ -97,6 +97,8 @@ with torch.no_grad():
         rgb_gt = data_test[0].numpy().squeeze().transpose((1,2,0))
         rgb_noisy, mask = expand2square(data_test[1].cuda(), factor=128) 
         filenames = data_test[2]
+        
+        print(rgb_gt.shape, rgb_noisy.shape, mask.shape)
 
         rgb_restored, atten_mask = model_restoration(rgb_noisy)
         # print(rgb_restored.shape, atten_mask.shape)
