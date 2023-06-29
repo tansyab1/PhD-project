@@ -445,13 +445,14 @@ class WDATransformerBlock(nn.Module):
 
         # FFN
         x = shortcut + self.drop_path(self.norm1(x))
-        # x_large_center = shortcut_large + self.drop_path(self.norm1(x_large_center))
+        x_large_center = shortcut + self.drop_path(self.norm1(x_large_center))
         x = x + self.drop_path(self.norm2(self.mlp(x)))
-        # x_large_center = x_large_center + self.drop_path(self.norm2(self.mlp(x_large_center)))
+        x_large_center = x_large_center + \
+            self.drop_path(self.norm2(self.mlp(x_large_center)))
 
         # x_final = torch.cat([x, x_large_center], dim=2)
 
-        return x
+        return x, x_large_center
 
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, num_heads={self.num_heads}, " \
@@ -576,12 +577,12 @@ class BasicLayer(nn.Module):
     def forward(self, x):
         for blk in self.blocks:
             if self.use_checkpoint:
-                x = checkpoint.checkpoint(blk, x)
+                x, x_large = checkpoint.checkpoint(blk, x)
             else:
-                x = blk(x)
+                x, x_large = blk(x)
         if self.downsample is not None:
             x = self.downsample(x)
-        return x
+        return x, x_large
 
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, depth={self.depth}"
@@ -760,17 +761,22 @@ class WDATransformer(nn.Module):
         x = self.pos_drop(x)
 
         for layer in self.layers:
-            x = layer(x)
+            x, x_large = layer(x)
 
         x = self.norm(x)  # B L C
         x = self.avgpool(x.transpose(1, 2))  # B C 1
         x = torch.flatten(x, 1)
-        return x
+
+        x_large = self.norm(x_large)
+        x_large = self.avgpool(x_large.transpose(1, 2))
+        x_large = torch.flatten(x_large, 1)
+        return x, x_large
 
     def forward(self, x):
-        x = self.forward_features(x)
+        x, x_large = self.forward_features(x)
         x = self.head(x)
-        return x
+        x_large = self.head(x_large)
+        return x, x_large
 
     def flops(self):
         flops = 0

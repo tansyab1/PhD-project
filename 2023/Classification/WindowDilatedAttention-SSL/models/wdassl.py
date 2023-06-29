@@ -90,6 +90,8 @@ class WDASSL(nn.Module):
         self.queue2 = F.normalize(self.queue2, dim=0)
 
         self.register_buffer("queue_ptr", torch.zeros(1, dtype=torch.long))
+        
+        self.C_prev = torch.Variable(torch.zeros(args.final_dim, args.final_dim), requires_grad=True)
 
     @torch.no_grad()
     def _momentum_update_key_encoder(self):
@@ -148,35 +150,61 @@ class WDASSL(nn.Module):
     # TODO: define covariance contrastive loss function based on the paper of "TiCO: Transformation Invariance
     # TODO: Contrastive Learning of Visual Representations"
 
-    def covariance_contrast_loss(self, q, k, queue):
+    class WDA_Loss(nn.Module):
+        def __init__(self, beta, rho, gamma):
+            super().__init__()
 
-        # covariance matrix of query features and queue features
+            self.beta = beta
+            self.rho = rho
+            self.gamma = gamma
 
-        conv = torch.einsum('nc,ck->nk', [q, queue.clone().detach()])
-        return torch.mean(torch.abs(conv))
+        def forward(self, C, q, k):
+            B = torch.mm(q.T, q)/q.shape[0]
+            C = self.beta * C + (1 - self.beta) * B
+            trans_inv = -(q.T @ k).sum(dim=1).mean() + self.rho * \
+                (torch.mm(k.T, C) @ k).sum(dim=1).mean()
+            return trans_inv, C
 
     def forward(self, im_1, im_2):
-        feat_1 = self.encoder(im_1)  # queries: NxC
+        feat_1, feat_1_large = self.encoder(im_1)  # queries: NxC
         proj_1 = self.projector(feat_1)
         pred_1 = self.predictor(proj_1)
         pred_1 = F.normalize(pred_1, dim=1)
 
-        feat_2 = self.encoder(im_2)
+        # for large window
+        proj_1_large = self.projector(feat_1_large)
+        pred_1_large = self.predictor(proj_1_large)
+        pred_1_large = F.normalize(pred_1_large, dim=1)
+
+        feat_2, feat_2_large = self.encoder(im_2)
         proj_2 = self.projector(feat_2)
         pred_2 = self.predictor(proj_2)
         pred_2 = F.normalize(pred_2, dim=1)
+
+        # for large window
+        proj_2_large = self.projector(feat_2_large)
+        pred_2_large = self.predictor(proj_2_large)
+        pred_2_large = F.normalize(pred_2_large, dim=1)
 
         # compute key features
         with torch.no_grad():  # no gradient to keys
             self._momentum_update_key_encoder()  # update the key encoder
 
-            feat_1_ng = self.encoder_k(im_1)  # keys: NxC
+            feat_1_ng, feat_1_ng_large = self.encoder_k(im_1)  # keys: NxC
             proj_1_ng = self.projector_k(feat_1_ng)
             proj_1_ng = F.normalize(proj_1_ng, dim=1)
 
-            feat_2_ng = self.encoder_k(im_2)
+            # for large window
+            proj_1_ng_large = self.projector_k(feat_1_ng_large)
+            proj_1_ng_large = F.normalize(proj_1_ng_large, dim=1)
+
+            feat_2_ng, feat_2_ng_large = self.encoder_k(im_2)
             proj_2_ng = self.projector_k(feat_2_ng)
             proj_2_ng = F.normalize(proj_2_ng, dim=1)
+
+            # for large window
+            proj_2_ng_large = self.projector_k(feat_2_ng_large)
+            proj_2_ng_large = F.normalize(proj_2_ng_large, dim=1)
 
         # compute loss
         loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
