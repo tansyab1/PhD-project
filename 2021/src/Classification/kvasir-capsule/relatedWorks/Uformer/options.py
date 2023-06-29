@@ -31,7 +31,7 @@ class Options():
         # args for Uformer
         parser.add_argument('--norm_layer', type=str, default ='nn.LayerNorm', help='normalize layer in transformer')
         parser.add_argument('--embed_dim', type=int, default=32, help='dim of emdeding features')
-        parser.add_argument('--win_size', type=int, default=8, help='window size of self-attention')
+        parser.add_argument('--win_size', type=int, default=14, help='window size of self-attention')
         parser.add_argument('--token_projection', type=str,default='linear', help='linear/conv token projection')
         parser.add_argument('--token_mlp', type=str,default='leff', help='ffn/leff token mlp')
         parser.add_argument('--att_se', action='store_true', default=False, help='se after sa')
