@@ -74,8 +74,10 @@ def get_arch(opt):
         model_restoration = Uformer(img_size=opt.train_ps,embed_dim=32,win_size=8,token_projection='linear',token_mlp='fastleff',
             depths=[1, 2, 8, 8, 2, 8, 8, 2, 1],modulator=True)  
     elif arch == 'Uformer_B':
-        model_restoration = Uformer(img_size=opt.train_ps,embed_dim=32,win_size=8,token_projection='linear',token_mlp='leff',
+        model_restoration = Uformer(img_size=opt.train_ps,embed_dim=32,win_size=opt.win_size,token_projection='linear',token_mlp='leff',
             depths=[1, 2, 8, 8, 2, 8, 8, 2, 1],modulator=False,dd_in=opt.dd_in)  
+        print('You choose '+arch+'...')
+        print("you choose win_size: ", opt.win_size)
     else:
         raise Exception("Arch error!")
 

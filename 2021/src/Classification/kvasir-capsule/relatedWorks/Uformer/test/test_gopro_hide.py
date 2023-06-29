@@ -95,7 +95,7 @@ with torch.no_grad():
     ssim_val_rgb = []
     for ii, data_test in enumerate(tqdm(test_loader), 0):
         rgb_gt = data_test[0].numpy().squeeze().transpose((1,2,0))
-        rgb_noisy, mask = expand2square(data_test[1].cuda(), factor=128) 
+        rgb_noisy, mask = expand2square(data_test[1].cuda(), factor=14) 
         filenames = data_test[2]
         
         print(rgb_gt.shape, rgb_noisy.shape, mask.shape)
