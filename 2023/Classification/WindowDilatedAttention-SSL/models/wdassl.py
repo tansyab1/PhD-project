@@ -29,6 +29,34 @@ def dist_collect(x):
     return torch.cat(out_list, dim=0).contiguous()
 
 
+# TODO: define covariance contrastive loss function based on the paper of "TiCO: Transformation Invariance
+# TODO: Contrastive Learning of Visual Representations"
+
+class WDA_Loss(nn.Module):
+    def __init__(self, beta, rho, gamma):
+        super().__init__()
+
+        self.beta = beta
+        self.rho = rho
+        self.gamma = gamma
+
+    def forward(self, C, q, k):
+        B = torch.mm(q.T, q)/q.shape[0]
+        C = self.beta * C + (1 - self.beta) * B
+        trans_inv = -(q.T @ k).sum(dim=1).mean() + self.rho * \
+            (torch.mm(k.T, C) @ k).sum(dim=1).mean()
+        return trans_inv, C
+
+
+class covariance_Loss(nn.Module):
+    def __init__(self, alpha):
+        super().__init__()
+        self.alpha = alpha
+
+    def forward(self, k, k_large):
+        return -1 * self.alpha * (k.T @ k_large).sum(dim=1).mean()
+
+
 class WDASSL(nn.Module):
     def __init__(self,
                  cfg,
@@ -90,8 +118,13 @@ class WDASSL(nn.Module):
         self.queue2 = F.normalize(self.queue2, dim=0)
 
         self.register_buffer("queue_ptr", torch.zeros(1, dtype=torch.long))
-        
-        self.C_prev = torch.Variable(torch.zeros(args.final_dim, args.final_dim), requires_grad=True)
+
+        self.C_prev = torch.Variable(torch.zeros(
+            self.predictor.out_dim, self.predictor.out_dim))
+        self.C_prev = self.C_prev.detach()
+
+        self.WDAloss = WDA_Loss(beta=0.99, rho=0.99, gamma=0.99)
+        self.covariance_loss = covariance_Loss(alpha=0.99)
 
     @torch.no_grad()
     def _momentum_update_key_encoder(self):
@@ -147,24 +180,6 @@ class WDASSL(nn.Module):
 
         return F.cross_entropy(logits, labels)
 
-    # TODO: define covariance contrastive loss function based on the paper of "TiCO: Transformation Invariance
-    # TODO: Contrastive Learning of Visual Representations"
-
-    class WDA_Loss(nn.Module):
-        def __init__(self, beta, rho, gamma):
-            super().__init__()
-
-            self.beta = beta
-            self.rho = rho
-            self.gamma = gamma
-
-        def forward(self, C, q, k):
-            B = torch.mm(q.T, q)/q.shape[0]
-            C = self.beta * C + (1 - self.beta) * B
-            trans_inv = -(q.T @ k).sum(dim=1).mean() + self.rho * \
-                (torch.mm(k.T, C) @ k).sum(dim=1).mean()
-            return trans_inv, C
-
     def forward(self, im_1, im_2):
         feat_1, feat_1_large = self.encoder(im_1)  # queries: NxC
         proj_1 = self.projector(feat_1)
@@ -207,10 +222,17 @@ class WDASSL(nn.Module):
             proj_2_ng_large = F.normalize(proj_2_ng_large, dim=1)
 
         # compute loss
-        loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
-            + self.contrastive_loss(pred_2, proj_1_ng, self.queue1)
+        wda_loss, C = self.WDAloss(self.C_prev, proj_1, proj_2)
+        self.C_prev = C.detach()
 
-        self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
+        covariance_loss = self.covariance_loss(pred_1_large, proj_2_ng_large) \
+            + self.covariance_loss(pred_2_large, proj_1_ng_large)
+
+        # loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
+        #     + self.contrastive_loss(pred_2, proj_1_ng, self.queue1) \
+        loss = wda_loss + covariance_loss
+
+        # self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
 
         return loss
 
