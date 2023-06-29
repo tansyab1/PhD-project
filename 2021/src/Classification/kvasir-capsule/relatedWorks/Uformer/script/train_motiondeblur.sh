@@ -10,6 +10,6 @@ python3 train/train_motiondeblur.py \
     --env _0706 \
     --save_dir ./logs_modified/ \
     --mode deblur \
-    --nepoch 10 \
+    --nepoch 20 \
     --dataset UI_var \
     --warmup
