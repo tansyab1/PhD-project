@@ -3,42 +3,23 @@
 # Copyright (c) 2021 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ze Liu
+# Modified by Zhenda Xie
 # --------------------------------------------------------
 
 import os
 import torch
 import numpy as np
+from PIL import ImageFilter, ImageOps
 import torch.distributed as dist
 from torchvision import datasets, transforms
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.data import Mixup
 from timm.data import create_transform
+from timm.data.transforms import _pil_interp
 
 from .cached_image_folder import CachedImageFolder
-from .imagenet22k_dataset import IN22KDATASET
+from .custom_image_folder import CustomImageFolder
 from .samplers import SubsetRandomSampler
-
-try:
-    from torchvision.transforms import InterpolationMode
-
-
-    def _pil_interp(method):
-        if method == 'bicubic':
-            return InterpolationMode.BICUBIC
-        elif method == 'lanczos':
-            return InterpolationMode.LANCZOS
-        elif method == 'hamming':
-            return InterpolationMode.HAMMING
-        else:
-            # default bilinear, do we want to allow nearest?
-            return InterpolationMode.BILINEAR
-
-
-    import timm.data.transforms as timm_transforms
-
-    timm_transforms._pil_interp = _pil_interp
-except:
-    from timm.data.transforms import _pil_interp
 
 
 def build_loader(config):
@@ -59,12 +40,8 @@ def build_loader(config):
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
 
-    if config.TEST.SEQUENTIAL:
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    else:
-        sampler_val = torch.utils.data.distributed.DistributedSampler(
-            dataset_val, shuffle=config.TEST.SHUFFLE
-        )
+    indices = np.arange(dist.get_rank(), len(dataset_val), dist.get_world_size())
+    sampler_val = SubsetRandomSampler(indices)
 
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -105,17 +82,10 @@ def build_dataset(is_train, config):
             dataset = CachedImageFolder(config.DATA.DATA_PATH, ann_file, prefix, transform,
                                         cache_mode=config.DATA.CACHE_MODE if is_train else 'part')
         else:
+            # ToDo: test custom_image_folder
             root = os.path.join(config.DATA.DATA_PATH, prefix)
-            dataset = datasets.ImageFolder(root, transform=transform)
+            dataset = CustomImageFolder(root, transform=transform)
         nb_classes = 1000
-    elif config.DATA.DATASET == 'imagenet22K':
-        prefix = 'ILSVRC2011fall_whole'
-        if is_train:
-            ann_file = prefix + "_map_train.txt"
-        else:
-            ann_file = prefix + "_map_val.txt"
-        dataset = IN22KDATASET(config.DATA.DATA_PATH, ann_file, transform)
-        nb_classes = 21841
     else:
         raise NotImplementedError("We only support ImageNet Now.")
 
@@ -123,6 +93,54 @@ def build_dataset(is_train, config):
 
 
 def build_transform(is_train, config):
+    if config.AUG.SSL_AUG:
+        if config.AUG.SSL_AUG_TYPE == 'byol':
+            normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            
+            transform_1 = transforms.Compose([
+                transforms.RandomResizedCrop(config.DATA.IMG_SIZE, scale=(config.AUG.SSL_AUG_CROP, 1.)),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.2, 0.1)], p=0.8),
+                transforms.RandomGrayscale(p=0.2),
+                transforms.RandomApply([GaussianBlur()], p=1.0),
+                transforms.ToTensor(),
+                normalize,
+            ])
+            transform_2 = transforms.Compose([
+                transforms.RandomResizedCrop(config.DATA.IMG_SIZE, scale=(config.AUG.SSL_AUG_CROP, 1.)),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.2, 0.1)], p=0.8),
+                transforms.RandomGrayscale(p=0.2),
+                transforms.RandomApply([GaussianBlur()], p=0.1),
+                transforms.RandomApply([ImageOps.solarize], p=0.2),
+                transforms.ToTensor(),
+                normalize,
+            ])
+            
+            transform = (transform_1, transform_2)
+            return transform
+        else:
+            raise NotImplementedError
+    
+    if config.AUG.SSL_LINEAR_AUG:
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        
+        if is_train:
+            transform = transforms.Compose([
+                transforms.RandomResizedCrop(config.DATA.IMG_SIZE),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                normalize,
+            ])
+        else:
+            transform = transforms.Compose([
+                transforms.Resize(config.DATA.IMG_SIZE + 32),
+                transforms.CenterCrop(config.DATA.IMG_SIZE),
+                transforms.ToTensor(),
+                normalize,
+            ])
+        return transform
+    
     resize_im = config.DATA.IMG_SIZE > 32
     if is_train:
         # this should always dispatch to transforms_imagenet_train
@@ -160,3 +178,12 @@ def build_transform(is_train, config):
     t.append(transforms.ToTensor())
     t.append(transforms.Normalize(IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD))
     return transforms.Compose(t)
+
+
+class GaussianBlur(object):
+    """Gaussian Blur version 2"""
+
+    def __call__(self, x):
+        sigma = np.random.uniform(0.1, 2.0)
+        x = x.filter(ImageFilter.GaussianBlur(radius=sigma))
+        return x
