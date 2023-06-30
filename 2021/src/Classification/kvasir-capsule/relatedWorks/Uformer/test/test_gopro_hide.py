@@ -36,7 +36,7 @@ parser.add_argument('--arch', default='Uformer_B', type=str, help='arch')
 parser.add_argument('--batch_size', default=1, type=int, help='Batch size for dataloader')
 parser.add_argument('--save_images', action='store_true', help='Save denoised images in result directory')
 parser.add_argument('--embed_dim', type=int, default=32, help='number of data loading workers')    
-parser.add_argument('--win_size', type=int, default=8, help='number of data loading workers')
+parser.add_argument('--win_size', type=int, default=14, help='number of data loading workers')
 parser.add_argument('--token_projection', type=str,default='linear', help='linear/conv token projection')
 parser.add_argument('--token_mlp', type=str,default='leff', help='ffn/leff token mlp')
 parser.add_argument('--query_embed', action='store_true', default=False, help='query embedding for the decoder')
@@ -52,7 +52,7 @@ parser.add_argument('--global_skip', action='store_true', default=False, help='g
 parser.add_argument('--local_skip', action='store_true', default=False, help='local skip connection')
 parser.add_argument('--vit_share', action='store_true', default=False, help='share vit module')
 
-parser.add_argument('--train_ps', type=int, default=128, help='patch size of training sample')
+parser.add_argument('--train_ps', type=int, default=336, help='patch size of training sample')
 args = parser.parse_args()
 
 
@@ -98,7 +98,7 @@ with torch.no_grad():
         rgb_noisy, mask = expand2square(data_test[1].cuda(), factor=14) 
         filenames = data_test[2]
         
-        print(rgb_gt.shape, rgb_noisy.shape, mask.shape)
+        # print(rgb_gt.shape, rgb_noisy.shape, mask.shape)
 
         rgb_restored, atten_mask = model_restoration(rgb_noisy)
         # print(rgb_restored.shape, atten_mask.shape)

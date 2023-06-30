@@ -24,7 +24,7 @@
 # test Noise latest model
 # python3 test/test_gopro_hide.py --input_dir ./datasets/denoising/Noise_var/test/ --result_dir ./results/modified/Noise_var/ --weights ./logs_modified/denoising/Noise_var/Uformer_B_0706/models/model_latest.pth
 # python3 test/test_gopro_hide.py --input_dir ./datasets/deblurring/Blur_var/test/ --result_dir ./results/modified/Blur_var/ --weights ./logs_modified/motiondeblur/Blur_var/Uformer_B_0706/models/model_latest.pth
-python3 test/test_gopro_hide.py --input_dir ./datasets/deblurring/UI_var/test/ --result_dir ./results/modified/UI_var/ --weights ./logs_modified/motiondeblur/UI_var/Uformer_B_0706/models/model_latest.pth
+python3 test/test_gopro_hide.py --input_dir ./datasets/deblurring/UI_var/test/ --result_dir ./results/modified/UI_var/ --weights ./logs_modified/motiondeblur/UI_var/Uformer_B_0706/models/model_latest.pth --win_size 14
 # # test Blur latest model
 # python3 test/test_gopro_hide.py --input_dir ./datasets/deblurring/Blur_var/test/ --result_dir ./results/deblurring/Blur_var/Uformer_B_latest/ --weights ./logs/motiondeblur/Blur_var/Uformer_B_0706/models/model_latest.pth
 
