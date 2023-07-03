@@ -69,12 +69,12 @@ parser.add_argument("--py_file", default=os.path.abspath(__file__))
 
 # Directories
 parser.add_argument("--data_root",
-                    default="/home/nguyentansy/PhD-work/Datasets/Image - Split 0-1",
+                    default="./dataset/Pseudo_folds",
                     help="Video data root with three subfolders (fold 1,2 and 3)")
 
 
 parser.add_argument("--data_to_inference",
-                    default="/home/nguyentansy/PhD-work/Datasets/hyper-kvasir/unlabeled-images/images",
+                    default="./dataset/Pseudo_folds",
                     help="Data folder with one subfolder which containes images to do inference")
 
 parser.add_argument("--out_dir",
@@ -82,7 +82,7 @@ parser.add_argument("--out_dir",
                     help="Main output dierectory")
 
 parser.add_argument("--tensorboard_dir",
-                    default="./Tensorboard-res",
+                    default="./tensorboard",
                     help="Folder to save output of tensorboard")
 
 # Hyper parameters
