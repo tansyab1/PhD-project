@@ -19,40 +19,41 @@ parser.add_argument("-o", "--output-file", type=str,
                     default="./confusion_matrix.pdf")
 
 INDEX_TO_LETTER = {
-    0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F", 6: "G", 7: "H", 8: "I", 9: "J", 10: "K", 11: "L", 12: "M", 13: "N"
+    0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F", 6: "G", 7: "H"
 }
 
 INDEX_TO_LABEL = {
-    0:  "Ampulla of vater",
-    1:  "Angiectasia",
-    2:  "Blood - fresh",
-    3:  "Blood - hematin",
-    4:  "Erosion",
-    5:  "Erythematous",
-    6:  "Foreign Bodies",
-    7:  "Ileo-cecal valve",
-    8:  "Lymphangiectasia",
-    9:  "Normal",
-    10:  "Polyp",
-    11:  "Pylorus",
-    12:  "Reduced Mucosal View",
-    13: "Ulcer",
+    # 0:  "Ampulla of vater", deprecated
+    0:  "Angiectasia",
+    1:  "Blood - fresh",
+    # 3:  "Blood - hematin", deprecated
+    2:  "Erosion",
+    3:  "Erythematous",
+    # 6:  "Foreign Bodies", deprecated
+    # 7:  "Ileo-cecal valve", deprecated
+    4:  "Lymphangiectasia",
+    5:  "Normal",
+    6:  "Polyp",
+    # 11:  "Pylorus", deprecated
+    # 12:  "Reduced Mucosal View", deprecated
+    7: "Ulcer",
 }
 
-# INDEX_TO_LABEL = {
-#     0: "barretts", 1: "bbps-0-1", 2: "bbps-2-3", 3: "dyed-lifted-polyps",
-#     4: "dyed-resection-margins", 5: "hemorroids", 6: "ileum", 7: "impacted-stool",
-#     8: "normal-cecum", 9: "normal-pylorus", 10: "normal-z-line", 11: "oesophagitis-a",
-#     12: "oesophagitis-b-d", 13: "polyp", 14: "retroflex-rectum", 15: "retroflex-stomach",
-#     16: "short-segment-barretts", 17: "ulcerative-colities-0-1", 18:"ulcerative-colities-1-2",
-#     19: "ulcerative-colities-2-3", 20: "ulcerative-colities-grade-1", 21: "ulcerative-colities-grade-2",
-#     22: "ulcerative-colities-grade-3"
-# }
-
 LABEL_TO_LETTER = {
-    "Ampulla of vater": "A", "Angiectasia": "B", "Blood - fresh": "C", "Blood - hematin": "D", "Erosion": "E",
-    "Erythematous": "F", "Foreign Bodies": "G", "Ileo-cecal valve": "H", "Lymphangiectasia": "I", "Normal": "J",
-    "Polyp": "K", "Pylorus": "L", "Reduced Mucosal View": "M", "Ulcer": "N"
+    # "Ampulla of vater": "A", deprecated
+    "Angiectasia": "A",
+    "Blood - fresh": "B",
+    # "Blood - hematin": "D", deprecated
+    "Erosion": "C",
+    "Erythematous": "D",
+    # "Foreign Bodies": "G", deprecated
+    # "Ileo-cecal valve": "H", deprecated
+    "Lymphangiectasia": "E",
+    "Normal": "F",
+    "Polyp": "G",
+    # "Pylorus": "L", deprecated
+    # "Reduced Mucosal View": "M", deprecated
+    "Ulcer": "H"
 }
 
 
@@ -107,11 +108,11 @@ def plot_confusion_matrix(y_true, y_pred, filename, labels, ymap=None, figsize=(
             p = cm_perc[i, j]
             if i == j:
                 s = cm_sum[i]
-                annot[i, j] = "%.1f%%" % (p)
+                annot[i, j] = "%.1f%%\n%d/%d" % (p, c, s)
             elif c == 0:
                 annot[i, j] = ""
             else:
-                annot[i, j] = "%.1f%%" % (p)
+                annot[i, j] = "%.1f%%\n%d" % (p, c)
 
     cm = pd.DataFrame(cm_perc, index=labels, columns=labels)
     cm.index.name = "Actual"
