@@ -9,9 +9,9 @@ parser = argparse.ArgumentParser(description="Split data into k folds.")
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
 parser.add_argument("-s", "--src_dir", type=str,
-                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/downstream")
+                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/Pseudo")
 parser.add_argument("-d", "--dest_dir", type=str,
-                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/folds")
+                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/Pseudo_folds")
 parser.add_argument("-f", "--number-of-folds", type=int, default=3)
 parser.add_argument("-e", "--exclude-classes", nargs='+', default=[])
 
