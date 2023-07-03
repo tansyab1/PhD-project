@@ -8,26 +8,27 @@ parser = argparse.ArgumentParser(description="Split data into k folds.")
 
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
-parser.add_argument("-s", "--src-dir", type=str,
-                    default="/home/nguyentansy/DATA/PhD-work/Datasets/Blur_var/")
-parser.add_argument("-d", "--dest-dir", type=str,
-                    default="/home/nguyentansy/DATA/PhD-work/Datasets/Blur_var")
+parser.add_argument("-s", "--src_dir", type=str,
+                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/downstream")
+parser.add_argument("-d", "--dest_dir", type=str,
+                    default="/Volumes/Macintosh HD - Data/These/vscode-workspace/Data/folds")
 parser.add_argument("-f", "--number-of-folds", type=int, default=3)
 parser.add_argument("-e", "--exclude-classes", nargs='+', default=[])
 
 
 def split_data_into_equal_parts(data, number_of_parts):
-    part_length = [len(data) // 2, len(data) // 10 * 4, len(data) // 10 * 1]
-    parts = []
-    for index in range(len(part_length)):
-        parts.append(data[:part_length[index]])
-        data = data[part_length[index]:]
-    return parts
+    part_length_train = len(data) // 2
+    part_length_val = len(data) // 4
+    data_train = data[:part_length_train]
+    data_val = data[part_length_train:part_length_train+part_length_val]
+    data_test = data[part_length_train+part_length_val:]
+    return [data_train, data_val, data_test]
 
 
 def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
-    split_file = open("%s_fold_split_Blur_var.csv" % str(number_of_folds), "w")
+    split_file = open("%s/%s_fold_split.csv" %
+                      (dest_dir, str(number_of_folds)), "w")
 
     split_file.write("file-name;class-name;split-index\n")
 
@@ -50,7 +51,7 @@ def split_images(src_dir, number_of_folds, dest_dir=None, exclude_classes=[]):
 
                 if dest_dir is not None:
 
-                    dest_class_path = os.path.join(dest_dir, str(split_index))
+                    dest_class_path = os.path.join(dest_dir, str(split_index), class_name)
 
                     if not os.path.exists(dest_class_path):
                         os.makedirs(dest_class_path)
@@ -68,8 +69,8 @@ if __name__ == "__main__":
     number_of_folds = args.number_of_folds
     exclude_classes = args.exclude_classes
 
-    if dest_dir is not None and os.path.exists(dest_dir):
-        raise Exception(
-            "%s already exists. Please delete it or choose another destination." % dest_dir)
+    # if dest_dir is not None and os.path.exists(dest_dir):
+    #     raise Exception(
+    #         "%s already exists. Please delete it or choose another destination." % dest_dir)
 
     split_images(src_dir, number_of_folds, dest_dir, exclude_classes)
