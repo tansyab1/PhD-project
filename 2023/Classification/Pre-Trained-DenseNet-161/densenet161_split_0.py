@@ -699,9 +699,9 @@ def plot_confusion_matrix(cm, classes,
 def inference():
     # experiment.add_label('inferencing')
 
-    # if opt.bs != 1:
-    #    print("Please run with bs = 1")
-    #   exit()
+    if opt.bs != 1:
+        print("Please run with bs = 1")
+        exit()
 
     test_model_checkpoint = input("Please enter the path of test model:")
     checkpoint = torch.load(test_model_checkpoint)
@@ -710,7 +710,7 @@ def inference():
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
 
-    trnsfm = transforms.Compose([
+    transform = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(256),
         transforms.Resize(224),
@@ -718,7 +718,7 @@ def inference():
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
 
-    dataset_new = dataset(opt.data_to_inference, trnsfm)
+    dataset_new = dataset(opt.data_to_inference, transform)
     dataloader_new = torch.utils.data.DataLoader(dataset_new, batch_size=opt.bs,
                                                  shuffle=False, num_workers=opt.num_workers)
 
@@ -738,51 +738,21 @@ def inference():
             # print("paths:", paths)
             filenames = []
             for p in paths:
-                # print(p)
-                # print([list(p.split("/"))[-1]])
                 filenames = filenames + [list(p.split("/"))[-1]]
-            # print("filenames:", filename)
-
-            # df_temp["filename"] = filename
-
-            # print("file names:", filenames)
             inputs = inputs.to(device)
             labels = labels.to(device)
 
             outputs = model(inputs)
             outputs = F.softmax(outputs, 1)
             predicted_probability, predicted = torch.max(outputs.data, 1)
-
             predicted = predicted.data.cpu().numpy()
-
-            # print("predicted items=", predicted)
-            # print("paths:", paths)
-
             df_temp["predicted-label"] = predicted
             df_temp["filename"] = filenames
-            # df_temp[2:-1] =
-
-            # print(df_temp)
-            # df_temp["actual-label"] = class_names[labels.item()]
-
-            # print("actual label:", labels.item())
-            # print("predicted label:", predicted.item())
-            # print("probabilities :", outputs.cpu())
 
             probabilities = outputs.cpu().squeeze()
             probabilities = probabilities.tolist()
             probabilities = np.around(probabilities, decimals=3)
-            # print(probabilities)
-
-            # print(probabilities)
             df_temp[class_names] = probabilities
-
-            # print(df_temp)
-
-            # record = record + [class_names[labels.item()]] + [class_names[predicted.item()]]
-
-            # print(record)
-            # print(df_temp.head())
             df = df.append(df_temp)
             # break
 
