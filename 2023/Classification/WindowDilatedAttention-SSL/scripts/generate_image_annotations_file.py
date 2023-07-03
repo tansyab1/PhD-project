@@ -1,20 +1,24 @@
 import glob
-import shutil
+# import shutil
 import os
 import argparse
 
 from PIL import Image
 
-parser = argparse.ArgumentParser(description="Generate a annotation file from a class file strucutre.")
+parser = argparse.ArgumentParser(
+    description="Generate a annotation file from a class file strucutre.")
 
 parser.add_argument("-d", "--data-dir", type=str)
-parser.add_argument("-o", "--output-file", type=str, default="hyper-kvasir-image-annotations-file.csv")
+parser.add_argument("-o", "--output-file", type=str,
+                    default="hyper-kvasir-image-annotations-file.csv")
+
 
 def gather_images(data_dir, output_file):
 
     with open(output_file, "w") as f:
 
-        file_paths = sorted(list(glob.glob("%s/*/*" % data_dir)), key=lambda x: x.split("/")[-2])
+        file_paths = sorted(list(glob.glob("%s/*/*" % data_dir)),
+                            key=lambda x: x.split("/")[-2])
 
         f.write("file-name;class-name;width;height;kilobytes\n")
 
@@ -26,9 +30,11 @@ def gather_images(data_dir, output_file):
 
             kilobytes = os.path.getsize(filepath) >> 10
 
-            image_width, image_height = image.size          
+            image_width, image_height = image.size
 
-            f.write("%s;%s;%s;%s;%s\n" % (file_name, class_name, image_width, image_height, kilobytes))
+            f.write("%s;%s;%s;%s;%s\n" % (file_name, class_name,
+                    image_width, image_height, kilobytes))
+
 
 if __name__ == "__main__":
 

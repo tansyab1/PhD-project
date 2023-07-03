@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 
 from sklearn import metrics
 
-parser = argparse.ArgumentParser(description="Generate confusion matrix based on given prediction file.")
+parser = argparse.ArgumentParser(
+    description="Generate confusion matrix based on given prediction file.")
 
 np.set_printoptions(linewidth=np.inf)
 
 parser.add_argument("-i", "--input-prediction-file", type=str, required=True)
-parser.add_argument("-o", "--output-file", type=str, default="./confusion_matrix.pdf")
+parser.add_argument("-o", "--output-file", type=str,
+                    default="./confusion_matrix.pdf")
 
 INDEX_TO_LETTER = {
     0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F", 6: "G", 7: "H", 8: "I", 9: "J", 10: "K", 11: "L", 12: "M", 13: "N"
@@ -53,6 +55,7 @@ LABEL_TO_LETTER = {
     "Polyp": "K", "Pylorus": "L", "Reduced Mucosal View": "M", "Ulcer": "N"
 }
 
+
 def read_prediction_file(file_path, index_to_label=None):
 
     y_true = []
@@ -70,10 +73,10 @@ def read_prediction_file(file_path, index_to_label=None):
             y_true_value = row[2]
             print(y_true_value)
 
-            if not index_to_label is None:
+            if index_to_label is not None:
                 y_true_value = index_to_label[int(y_true_value)]
                 y_pred_value = index_to_label[int(y_pred_value)]
-                
+
                 y_true_value = LABEL_TO_LETTER[y_true_value]
                 y_pred_value = LABEL_TO_LETTER[y_pred_value]
 
@@ -82,13 +85,14 @@ def read_prediction_file(file_path, index_to_label=None):
 
     return y_true, y_pred
 
+
 def plot_confusion_matrix(y_true, y_pred, filename, labels, ymap=None, figsize=(15, 10)):
 
     if ymap is not None:
-        y_pred = [ ymap[ yi ] for yi in y_pred ]
-        y_true = [ ymap[ yi ] for yi in y_true ]
-        labels = [ ymap[ yi ] for yi in labels ]
-        
+        y_pred = [ymap[yi] for yi in y_pred]
+        y_true = [ymap[yi] for yi in y_true]
+        labels = [ymap[yi] for yi in labels]
+
     cm = metrics.confusion_matrix(y_true, y_pred, labels=labels)
     cm_sum = np.sum(cm, axis=1, keepdims=True)
     cm_perc = cm / cm_sum.astype(float) * 100
@@ -99,22 +103,22 @@ def plot_confusion_matrix(y_true, y_pred, filename, labels, ymap=None, figsize=(
 
     for i in range(nrows):
         for j in range(ncols):
-            c = cm[ i, j ]
-            p = cm_perc[ i, j ]
+            c = cm[i, j]
+            p = cm_perc[i, j]
             if i == j:
-                s = cm_sum[ i ]
-                annot[ i, j ] = "%.1f%%" % (p)
+                s = cm_sum[i]
+                annot[i, j] = "%.1f%%" % (p)
             elif c == 0:
-                annot[ i, j ] = ""
+                annot[i, j] = ""
             else:
-                annot[ i, j ] = "%.1f%%" % (p)
+                annot[i, j] = "%.1f%%" % (p)
 
     cm = pd.DataFrame(cm_perc, index=labels, columns=labels)
     cm.index.name = "Actual"
     cm.columns.name = "Predicted"
 
     plt.rc("axes", labelsize=22)
-    plt.rc("xtick", labelsize=12) 
+    plt.rc("xtick", labelsize=12)
     plt.rc("ytick", labelsize=12)
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -130,13 +134,16 @@ def plot_confusion_matrix(y_true, y_pred, filename, labels, ymap=None, figsize=(
 
     plt.savefig(filename, dpi=500)
 
+
 if __name__ == "__main__":
 
     # args = parser.parse_args()
-    
-    input_prediction_file = '/home/nguyentansy/DATA/PhD-work/Datasets/kvasir_capsule/labelled_images/process/labelled_images/output/ref-blur/train-0_val-1/fine-tuned-kvasircapsule.py_evaluation.csv'
+
+    input_prediction_file = '/home/nguyentansy/DATA/PhD-work/Datasets/output/ref-blur/train-0_val-1/evaluation.csv'
     # output_file = args.output_file
 
-    y_true, y_pred = read_prediction_file(input_prediction_file, INDEX_TO_LABEL)
+    y_true, y_pred = read_prediction_file(
+        input_prediction_file, INDEX_TO_LABEL)
 
-    plot_confusion_matrix(y_true, y_pred, "%s.png" % os.path.basename(input_prediction_file), sorted(list(INDEX_TO_LETTER.values())))
+    plot_confusion_matrix(y_true, y_pred, "%s.png" % os.path.basename(
+        input_prediction_file), sorted(list(INDEX_TO_LETTER.values())))

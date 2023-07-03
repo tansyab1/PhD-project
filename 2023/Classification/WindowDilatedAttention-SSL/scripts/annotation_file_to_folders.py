@@ -1,14 +1,16 @@
-import glob
+# import glob
 import shutil
 import csv
 import os
 import argparse
 
-parser = argparse.ArgumentParser(description="Split images into folders based on given annotation file.")
+parser = argparse.ArgumentParser(
+    description="Split images into folders based on given annotation file.")
 
 parser.add_argument("-s", "--src-dir", type=str)
 parser.add_argument("-d", "--dest-dir", type=str)
 parser.add_argument("-a", "--annotation-path", type=str)
+
 
 def split_images(src_dir, dest_dir, annotation_path):
 
@@ -18,9 +20,9 @@ def split_images(src_dir, dest_dir, annotation_path):
 
         for row in rows:
 
-            file_name  = row[0]
+            file_name = row[0]
             class_name = row[1]
-            
+
             class_path = os.path.join(dest_dir, class_name)
 
             if not os.path.exists(class_path):
@@ -33,6 +35,7 @@ def split_images(src_dir, dest_dir, annotation_path):
                 continue
 
             shutil.copy(src_path, dest_path)
+
 
 if __name__ == "__main__":
 

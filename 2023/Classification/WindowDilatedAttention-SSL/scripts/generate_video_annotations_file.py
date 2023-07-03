@@ -5,11 +5,14 @@ import csv
 
 import cv2
 
-parser = argparse.ArgumentParser(description="Generate a video annotation file.")
+parser = argparse.ArgumentParser(
+    description="Generate a video annotation file.")
 
 parser.add_argument("-d", "--data-dir", type=str)
 parser.add_argument("-o", "--video-annotations", type=str)
-parser.add_argument("-o", "--output-file", type=str, default="hyper-kvasir-video-annotations-file.csv")
+parser.add_argument("-o", "--output-file", type=str,
+                    default="hyper-kvasir-video-annotations-file.csv")
+
 
 def gather_images(data_dir, video_annotations, output_file):
 
@@ -22,27 +25,29 @@ def gather_images(data_dir, video_annotations, output_file):
         next(reader)
 
         for line in reader:
-            
-            file_name = "%s.avi" %  line[0]
+
+            file_name = "%s.avi" % line[0]
             finding = line[1]
 
             annnotations[file_name] = finding
 
     with open(output_file, "w") as f:
 
-        file_paths = sorted(list(glob.glob("%s/*" % data_dir)), key=lambda x: x.split("/")[-2])
+        file_paths = sorted(list(glob.glob("%s/*" % data_dir)),
+                            key=lambda x: x.split("/")[-2])
 
-        f.write("file-name;main-finding;width;height;number-of-frames;fps;length;kilobytes\n")
+        f.write(
+            "file-name;main-finding;width;height;number-of-frames;fps;length;kilobytes\n")
 
         for file_path in file_paths:
 
             file_name = os.path.basename(file_path)
 
             video = cv2.VideoCapture(file_path)
-            
+
             number_of_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-            
-            video_width  = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+
+            video_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
             video_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
             if file_name in annnotations:
@@ -56,7 +61,8 @@ def gather_images(data_dir, video_annotations, output_file):
 
             kilobytes = os.path.getsize(file_path) >> 10
 
-            f.write("%s;%s;%s;%s;%s;%s;%s;%s\n" % (file_name, finding, video_width, video_height, number_of_frames, fps, length, kilobytes))
+            f.write("%s;%s;%s;%s;%s;%s;%s;%s\n" % (file_name, finding, video_width,
+                    video_height, number_of_frames, fps, length, kilobytes))
 
 
 if __name__ == "__main__":
