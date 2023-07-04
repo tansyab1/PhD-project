@@ -29,3 +29,4 @@ if __name__ == "__main__":
     # print(test.classes)
     # show the label corresponding to each class
     print(test.class_to_idx)
+    # data length of the inference dataset is 2785829

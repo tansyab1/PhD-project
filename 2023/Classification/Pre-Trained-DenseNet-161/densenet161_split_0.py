@@ -764,7 +764,9 @@ def inference():
             probabilities = probabilities.tolist()
             probabilities = np.around(probabilities, decimals=3)
             df_temp[class_names] = probabilities
-            df = df.append(df_temp)
+            # df = df.append(df_temp)
+            # use pandas.concat instead of append
+            df = pd.concat([df, df_temp], ignore_index=True)
             # break
 
     print(df.head())
@@ -777,7 +779,7 @@ def inference():
 
 if __name__ == '__main__':
     print("Started data preparation")
-    data_loaders = prepare_data()
+    # data_loaders = prepare_data()
     # print(vars(opt))
     print("Data is ready")
 
