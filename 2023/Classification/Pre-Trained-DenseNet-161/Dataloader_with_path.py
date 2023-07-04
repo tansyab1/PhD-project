@@ -21,7 +21,11 @@ class ImageFolderWithPaths(datasets.ImageFolder):
 
 if __name__ == "__main__":
 
-    root_path = "/work/vajira/data/kvasir_new_23_class/data/split_0"
+    root_path = "./dataset/Pseudo_folds/0/"
 
     test = ImageFolderWithPaths(root_path)
-    print(test[0][2].split("/"))
+
+    # show the name of each group in the dataset
+    # print(test.classes)
+    # show the label corresponding to each class
+    print(test.class_to_idx)

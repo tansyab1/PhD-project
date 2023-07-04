@@ -90,7 +90,7 @@ parser.add_argument("--tensorboard_dir",
 parser.add_argument("--bs", type=int, default=16, help="Mini batch size")
 parser.add_argument("--lr", type=float, default=0.001,
                     help="Learning rate for training")
-parser.add_argument("--num_workers", type=int, default=32,
+parser.add_argument("--num_workers", type=int, default=30,
                     help="Number of workers in dataloader")
 parser.add_argument("--weight_decay", type=float,
                     default=1e-5, help="weight decay of the optimizer")
@@ -323,7 +323,7 @@ def train_model(model, optimizer, criterion, dataloaders: dict, scheduler, best_
 def prepare_model():
     model = models.densenet161(pretrained=True)
     num_ftrs = model.classifier.in_features
-    model.classifier = nn.Linear(num_ftrs, 23)
+    model.classifier = nn.Linear(num_ftrs, 8)
     model = nn.DataParallel(model)
     model = model.to(device)
 
@@ -733,7 +733,7 @@ def inference():
     dataloader_new = torch.utils.data.DataLoader(dataset_new, batch_size=opt.bs,
                                                  shuffle=False, num_workers=opt.num_workers)
 
-    class_names = list(string.ascii_uppercase)[:23]
+    class_names = list(string.ascii_uppercase)[:8]
     print(class_names)
     print("lenth of dataloader:", len(dataloader_new))
     df = pd.DataFrame(columns=["filename", "predicted-label"] + class_names)
