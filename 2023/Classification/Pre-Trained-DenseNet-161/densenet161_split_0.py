@@ -771,7 +771,7 @@ def inference():
 
     print(df.head())
     print("length of DF:", len(df))
-    prob_file_name = "%s/%s_inference.csv" % (opt.out_dir, py_file_name)
+    prob_file_name = "%s/%s_inference_fold_%s.csv" % (opt.out_dir, py_file_name, opt.val_fold)
     df.to_csv(prob_file_name, index=False)
 
 # ======================================
