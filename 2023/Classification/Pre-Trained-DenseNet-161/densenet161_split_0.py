@@ -44,6 +44,7 @@ from torch.autograd import Variable
 from Dataloader_with_path import ImageFolderWithPaths as dataset
 
 import string
+import random
 # import deepkit
 
 # ======================================
@@ -59,8 +60,8 @@ import string
 parser = argparse.ArgumentParser()
 
 # Hardware
-parser.add_argument("--device", default="gpu", help="Device to run the code")
-parser.add_argument("--device_id", type=int, default=0, help="")
+parser.add_argument("--device", default="0,1,2", help="Device to run the code")
+# parser.add_argument("--device_id", type=int, default=0, help="")
 
 
 # store current python file
@@ -110,7 +111,7 @@ parser.add_argument("--action", type=str, help="Select an action to run",
 parser.add_argument("--checkpoint_interval", type=int,
                     default=25, help="Interval to save checkpoint models")
 parser.add_argument("--val_fold", type=str, default="0",
-                    help="Select the validation fold", choices=["fold_1", "fold_2", "fold_3"])
+                    help="Select the validation fold", choices=["0", "1", "2"])
 parser.add_argument(
     "--all_folds", default=["0", "1", "2"], help="list of all folds available in data folder")
 opt = parser.parse_args()
@@ -118,12 +119,20 @@ opt = parser.parse_args()
 # ==========================================
 # Device handling
 # ==========================================
-torch.cuda.set_device(opt.device_id)
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = opt.device
+# torch.cuda.set_device(opt.device_id)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.cuda.empty_cache()
 # ===========================================
 # Folder handling
 # ===========================================
+
+# ######### Set Seeds ###########
+random.seed(1234)
+np.random.seed(1234)
+torch.manual_seed(1234)
+torch.cuda.manual_seed_all(1234)
 
 # make output folder if not exist
 os.makedirs(opt.out_dir, exist_ok=True)
@@ -178,7 +187,8 @@ def prepare_data():
     }
 
     # Use selected fold for validation
-    train_folds = list(set(opt.all_folds) - set([opt.val_fold]))
+    # train_folds = list(set(opt.all_folds) - set([opt.val_fold]))
+    train_folds = opt.all_folds
     validation_fold = opt.val_fold
 
     # Train datasets
@@ -314,6 +324,7 @@ def prepare_model():
     model = models.densenet161(pretrained=True)
     num_ftrs = model.classifier.in_features
     model.classifier = nn.Linear(num_ftrs, 23)
+    model = nn.DataParallel(model)
     model = model.to(device)
 
     return model
