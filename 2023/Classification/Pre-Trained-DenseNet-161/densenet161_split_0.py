@@ -731,7 +731,7 @@ def inference():
 
     dataset_new = dataset(opt.data_to_inference, transform)
     dataloader_new = torch.utils.data.DataLoader(dataset_new, batch_size=opt.bs,
-                                                 shuffle=False, num_workers=opt.num_workers)
+                                                 shuffle=False, num_workers=16)
 
     class_names = list(string.ascii_uppercase)[:8]
     print(class_names)
