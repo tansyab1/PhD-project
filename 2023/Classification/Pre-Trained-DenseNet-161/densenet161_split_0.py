@@ -111,7 +111,7 @@ parser.add_argument("--action", type=str, help="Select an action to run",
 parser.add_argument("--checkpoint_interval", type=int,
                     default=25, help="Interval to save checkpoint models")
 parser.add_argument("--val_fold", type=str, default="0",
-                    help="Select the validation fold", choices=["0", "1", "2"])
+                    help="Select the validation fold")
 parser.add_argument(
     "--all_folds", default=["0", "1", "2"], help="list of all folds available in data folder")
 opt = parser.parse_args()
@@ -123,6 +123,8 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = opt.device
 # torch.cuda.set_device(opt.device_id)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if torch.cuda.is_available():
+    print("Using GPU: {}".format(opt.device))
 torch.cuda.empty_cache()
 # ===========================================
 # Folder handling
