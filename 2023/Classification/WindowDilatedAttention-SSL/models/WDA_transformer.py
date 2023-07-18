@@ -175,12 +175,16 @@ class WindowAttention(nn.Module):
 
         similarity_matrix = torch.cdist(
             q.transpose(-2, -1), k.transpose(-2, -1), p=2.0, compute_mode='donot_use_mm_for_euclid_dist')
+        
 
-        # cosine attention
-        attn = (F.normalize(q, dim=-1) @ similarity_matrix @
-                F.normalize(k, dim=-1).transpose(-2, -1))
+        # # cosine attention
+        # attn = (F.normalize(q, dim=-1) @ similarity_matrix @
+        #         F.normalize(k, dim=-1).transpose(-2, -1))
 
-        # soft cosine attention
+        # calculate the soft-cosine similarity between q and k
+        attn = similarity_matrix / \
+            (torch.norm(q, dim=-1, keepdim=True) *
+             torch.norm(k, dim=-1, keepdim=True).transpose(-2, -1))
 
         logit_scale = torch.clamp(
             self.logit_scale, max=torch.log(torch.tensor(1. / 0.01))).exp()

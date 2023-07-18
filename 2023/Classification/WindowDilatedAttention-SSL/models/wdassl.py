@@ -222,17 +222,17 @@ class WDASSL(nn.Module):
             proj_2_ng_large = F.normalize(proj_2_ng_large, dim=1)
 
         # compute loss
-        wda_loss, C = self.WDAloss(self.C_prev, proj_1, proj_2)
-        self.C_prev = C.detach()
+        # wda_loss, C = self.WDAloss(self.C_prev, proj_1, proj_2)
+        # self.C_prev = C.detach()
 
-        covariance_loss = self.covariance_loss(pred_1_large, proj_2_ng_large) \
-            + self.covariance_loss(pred_2_large, proj_1_ng_large)
+        # covariance_loss = self.covariance_loss(pred_1_large, proj_2_ng_large) \
+        #     + self.covariance_loss(pred_2_large, proj_1_ng_large)
 
-        # loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
-        #     + self.contrastive_loss(pred_2, proj_1_ng, self.queue1) \
-        loss = wda_loss + covariance_loss
+        loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
+            + self.contrastive_loss(pred_2, proj_1_ng, self.queue1) \
+            # loss = wda_loss + covariance_loss
 
-        # self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
+        self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
 
         return loss
 
