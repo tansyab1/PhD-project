@@ -119,12 +119,12 @@ class WDASSL(nn.Module):
 
         self.register_buffer("queue_ptr", torch.zeros(1, dtype=torch.long))
 
-        self.C_prev = torch.Variable(torch.zeros(
-            self.predictor.out_dim, self.predictor.out_dim))
-        self.C_prev = self.C_prev.detach()
+        # self.C_prev = torch.Variable(torch.zeros(
+        #     self.predictor.out_dim, self.predictor.out_dim))
+        # self.C_prev = self.C_prev.detach()
 
-        self.WDAloss = WDA_Loss(beta=0.99, rho=0.99, gamma=0.99)
-        self.covariance_loss = covariance_Loss(alpha=0.99)
+        # self.WDAloss = WDA_Loss(beta=0.99, rho=0.99, gamma=0.99)
+        # self.covariance_loss = covariance_Loss(alpha=0.99)
 
     @torch.no_grad()
     def _momentum_update_key_encoder(self):
@@ -221,16 +221,16 @@ class WDASSL(nn.Module):
             proj_2_ng_large = self.projector_k(feat_2_ng_large)
             proj_2_ng_large = F.normalize(proj_2_ng_large, dim=1)
 
-        # compute loss
-        # wda_loss, C = self.WDAloss(self.C_prev, proj_1, proj_2)
-        # self.C_prev = C.detach()
+            # normalize the key features with covariance matrix between pred_1_large and proj_2_ng_large
+            proj_1_ng = (torch.mm(pred_1_large, proj_2_ng_large.T) /
+                         torch.norm(torch.mm(pred_1_large, proj_2_ng_large.T), dim=1, keepdim=True)) * proj_1_ng
 
-        # covariance_loss = self.covariance_loss(pred_1_large, proj_2_ng_large) \
-        #     + self.covariance_loss(pred_2_large, proj_1_ng_large)
+            # normalize the key features with covariance matrix between pred_2_large and proj_1_ng_large
+            proj_2_ng = (torch.mm(pred_2_large, proj_1_ng_large.T) /
+                         torch.norm(torch.mm(pred_2_large, proj_1_ng_large.T), dim=1, keepdim=True)) * proj_2_ng
 
         loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
-            + self.contrastive_loss(pred_2, proj_1_ng, self.queue1) \
-            # loss = wda_loss + covariance_loss
+            + self.contrastive_loss(pred_2, proj_1_ng, self.queue1)
 
         self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
 

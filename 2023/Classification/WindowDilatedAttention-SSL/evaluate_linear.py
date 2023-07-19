@@ -225,7 +225,9 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
 
-        outputs = model(samples)
+        outputs, outputs2 = model(samples)
+        
+        outputs = outputs + config.MODEL.WDA.GAMMA * outputs2
 
         if config.TRAIN.ACCUMULATION_STEPS > 1:
             loss = criterion(outputs, targets)
@@ -297,7 +299,6 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
 def validate(config, data_loader, model):
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
-
     batch_time = AverageMeter()
     loss_meter = AverageMeter()
     acc1_meter = AverageMeter()
@@ -309,7 +310,9 @@ def validate(config, data_loader, model):
         target = target.cuda(non_blocking=True)
 
         # compute output
-        output = model(images)
+        output, output2 = model(images)
+
+        output = output + config.MODEL.WDA.GAMMA * output2
 
         # measure accuracy and record loss
         loss = criterion(output, target)

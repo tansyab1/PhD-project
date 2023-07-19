@@ -166,25 +166,21 @@ class WindowAttention(nn.Module):
         # make torchscript happy (cannot use tensor as tuple)
         q, k, v = qkv[0], qkv[1], qkv[2]
 
-        matrix_shape = q.shape[-1]
+        # matrix_shape = q.shape[-1]
 
         similarity_matrix = torch.zeros(
-            1, B_, self.num_heads, matrix_shape, matrix_shape)
+            1, B_, self.num_heads, N, N)
 
         # similarity_matrix between each column of q and each row of k
 
         similarity_matrix = torch.cdist(
-            q.transpose(-2, -1), k.transpose(-2, -1), p=2.0, compute_mode='donot_use_mm_for_euclid_dist')
-        
+            q, k, p=2.0, compute_mode='donot_use_mm_for_euclid_dist')
 
-        # # cosine attention
-        # attn = (F.normalize(q, dim=-1) @ similarity_matrix @
-        #         F.normalize(k, dim=-1).transpose(-2, -1))
-
-        # calculate the soft-cosine similarity between q and k
-        attn = similarity_matrix / \
-            (torch.norm(q, dim=-1, keepdim=True) *
-             torch.norm(k, dim=-1, keepdim=True).transpose(-2, -1))
+        # soft-cosine attention
+        attn_nummerator = similarity_matrix @ q @ k.transpose(-2, -1)
+        attn_denominator = torch.sqrt(similarity_matrix @ q @ q.transpose(-2, -1)) * \
+            torch.sqrt(similarity_matrix @ k @ k.transpose(-2, -1))
+        attn = attn_nummerator / attn_denominator
 
         logit_scale = torch.clamp(
             self.logit_scale, max=torch.log(torch.tensor(1. / 0.01))).exp()
@@ -283,9 +279,10 @@ class WDATransformerBlock(nn.Module):
             self.window_size = min(self.input_resolution)
         assert 0 <= self.shift_size < self.window_size, "shift_size must in 0-window_size"
 
-        # channel-wise convolution to reduce dimension
-        self.proj_window = depthwise_separable_conv(2*dim, 8, dim)
-
+        # channel-wise convolution to reduce dimension with number of kernels = 9
+        self.proj_window = depthwise_separable_conv(9*dim, 8, dim)
+        self.alpha = 1e-1
+        self.beta = 1e-1
         self.norm1 = norm_layer(dim)
         self.attn = WindowAttention(
             dim, window_size=to_2tuple(self.window_size), num_heads=num_heads,
@@ -439,17 +436,18 @@ class WDATransformerBlock(nn.Module):
             x = shifted_x
             x_large = shifted_x_large
         x = x.view(B, H * W, C)
-        x_large = x_large.view(B, 9*H, W, C)
-        x_large_center = x_large[:, 4*H:5*H, :, :].contiguous().view(B, H*W, C)
+        x_large = x_large.view(B, 9*C, H, W)
+        x_large_center = self.proj_window(x_large)
 
-        x = torch.cat([x, x_large_center], dim=2)
-        x = self.proj_windows(x)
+        x_norm1 = self.norm1(x)
+        x_norm1_large = self.norm1(x_large_center)
 
-        # shortcut_large = x_large_center
+        x = self.drop_path(x_norm1) + self.beta * x_norm1_large
 
         # FFN
-        x = shortcut + self.drop_path(self.norm1(x))
-        x_large_center = shortcut + self.drop_path(self.norm1(x_large_center))
+        x = shortcut + x
+        x_large_center = self.alpha * shortcut + self.drop_path(x_norm1_large)
+
         x = x + self.drop_path(self.norm2(self.mlp(x)))
         x_large_center = x_large_center + \
             self.drop_path(self.norm2(self.mlp(x_large_center)))
