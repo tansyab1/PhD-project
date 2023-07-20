@@ -30,3 +30,11 @@ if __name__ == "__main__":
     # show the label corresponding to each class
     print(test.class_to_idx)
     # data length of the inference dataset is 2785829
+    # {'Angiectasia': 0,
+    # 'Blood - fresh': 1,
+    # 'Erosion': 2,
+    # 'Erythema': 3,
+    # 'Lymphangiectasia': 4,
+    # 'Normal clean mucosa': 5,
+    # 'Polyp': 6,
+    # 'Ulcer': 7}
