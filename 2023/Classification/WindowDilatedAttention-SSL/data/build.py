@@ -90,7 +90,7 @@ def build_dataset(is_train, config):
             # ToDo: test custom_image_folder
             root = os.path.join(config.DATA.DATA_PATH, prefix)
             dataset = CustomImageFolder(root, transform=transform)
-        nb_classes = 1000
+        nb_classes = 8
     else:
         raise NotImplementedError("We only support ImageNet Now.")
 
