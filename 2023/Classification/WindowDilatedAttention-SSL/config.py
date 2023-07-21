@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# Swin Transformer
+# WDA Transformer
 # Copyright (c) 2021 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ze Liu
@@ -44,9 +44,9 @@ _C.DATA.NUM_WORKERS = 8
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 # Model type
-_C.MODEL.TYPE = 'swin'
+_C.MODEL.TYPE = 'WDA'
 # Model name
-_C.MODEL.NAME = 'swin_tiny_patch4_window7_224'
+_C.MODEL.NAME = 'WDA_tiny_patch4_window7_224'
 # Checkpoint to resume, could be overwritten by command line argument
 _C.MODEL.RESUME = ''
 # Number of classes, overwritten in data preparation
@@ -58,32 +58,32 @@ _C.MODEL.DROP_PATH_RATE = 0.1
 # Label Smoothing
 _C.MODEL.LABEL_SMOOTHING = 0.1
 
-# Swin Transformer parameters
-_C.MODEL.SWIN = CN()
-_C.MODEL.SWIN.PATCH_SIZE = 4
-_C.MODEL.SWIN.IN_CHANS = 3
-_C.MODEL.SWIN.EMBED_DIM = 96
-_C.MODEL.SWIN.DEPTHS = [2, 2, 6, 2]
-_C.MODEL.SWIN.NUM_HEADS = [3, 6, 12, 24]
-_C.MODEL.SWIN.WINDOW_SIZE = 7
-_C.MODEL.SWIN.MLP_RATIO = 4.
-_C.MODEL.SWIN.QKV_BIAS = True
-_C.MODEL.SWIN.QK_SCALE = None
-_C.MODEL.SWIN.APE = False
-_C.MODEL.SWIN.PATCH_NORM = True
-# Normalization layers in SwinTransformerBlock before MLP, default: 'ln', choice: ['ln', 'bn']
-_C.MODEL.SWIN.NORM_BEFORE_MLP = 'ln'
+# WDA Transformer parameters
+_C.MODEL.WDA = CN()
+_C.MODEL.WDA.PATCH_SIZE = 4
+_C.MODEL.WDA.IN_CHANS = 3
+_C.MODEL.WDA.EMBED_DIM = 96
+_C.MODEL.WDA.DEPTHS = [2, 2, 6, 2]
+_C.MODEL.WDA.NUM_HEADS = [3, 6, 12, 24]
+_C.MODEL.WDA.WINDOW_SIZE = 7
+_C.MODEL.WDA.MLP_RATIO = 4.
+_C.MODEL.WDA.QKV_BIAS = True
+_C.MODEL.WDA.QK_SCALE = None
+_C.MODEL.WDA.APE = False
+_C.MODEL.WDA.PATCH_NORM = True
+# Normalization layers in WDATransformerBlock before MLP, default: 'ln', choice: ['ln', 'bn']
+_C.MODEL.WDA.NORM_BEFORE_MLP = 'ln'
 
-# MoBY parameters
-_C.MODEL.MOBY = CN()
-_C.MODEL.MOBY.ENCODER = 'swin'
-_C.MODEL.MOBY.ONLINE_DROP_PATH_RATE = 0.1
-_C.MODEL.MOBY.TARGET_DROP_PATH_RATE = 0.0
-_C.MODEL.MOBY.CONTRAST_MOMENTUM = 0.99
-_C.MODEL.MOBY.CONTRAST_TEMPERATURE = 0.2
-_C.MODEL.MOBY.CONTRAST_NUM_NEGATIVE = 4096
-_C.MODEL.MOBY.PROJ_NUM_LAYERS = 2
-_C.MODEL.MOBY.PRED_NUM_LAYERS = 2
+# WDASSL parameters
+_C.MODEL.WDASSL = CN()
+_C.MODEL.WDASSL.ENCODER = 'WDA'
+_C.MODEL.WDASSL.ONLINE_DROP_PATH_RATE = 0.1
+_C.MODEL.WDASSL.TARGET_DROP_PATH_RATE = 0.0
+_C.MODEL.WDASSL.CONTRAST_MOMENTUM = 0.99
+_C.MODEL.WDASSL.CONTRAST_TEMPERATURE = 0.2
+_C.MODEL.WDASSL.CONTRAST_NUM_NEGATIVE = 4096
+_C.MODEL.WDASSL.PROJ_NUM_LAYERS = 2
+_C.MODEL.WDASSL.PRED_NUM_LAYERS = 2
 
 # -----------------------------------------------------------------------------
 # Training settings

@@ -6,15 +6,15 @@ TRAIN:
 AUG:
   SSL_AUG: True
 MODEL:
-  TYPE: moby
-  NAME: moby__swin_tiny__patch4_window7_224__odpr02_tdpr0_cm099_ct02_queue4096_proj2_pred2
-  SWIN:
+  TYPE: WDASSL
+  NAME: WDASSL__WDA_tiny__patch4_window7_224__odpr02_tdpr0_cm099_ct02_queue4096_proj2_pred2
+  WDA:
     EMBED_DIM: 96
     DEPTHS: [ 2, 2, 6, 2 ]
     NUM_HEADS: [ 3, 6, 12, 24 ]
     WINDOW_SIZE: 7
-  MOBY:
-    ENCODER: swin
+  WDASSL:
+    ENCODER: WDA
     ONLINE_DROP_PATH_RATE: 0.2
     TARGET_DROP_PATH_RATE: 0.0
     CONTRAST_MOMENTUM: 0.99
