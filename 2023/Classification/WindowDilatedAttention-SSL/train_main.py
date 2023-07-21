@@ -11,6 +11,7 @@ import time
 import argparse
 import datetime
 import numpy as np
+from tqdm import tqdm
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -25,11 +26,7 @@ from optimizer import build_optimizer
 from logger import create_logger
 from utils import load_checkpoint, save_checkpoint, get_grad_norm, auto_resume_helper
 
-try:
-    # noinspection PyUnresolvedReferences
-    from apex import amp
-except ImportError:
-    amp = None
+from torch.cuda.amp import autocast as autocast, GradScaler
 
 
 def parse_option():
@@ -94,10 +91,9 @@ def main(config):
 
     optimizer = build_optimizer(config, model)
     if config.AMP_OPT_LEVEL != "O0":
-        model, optimizer = amp.initialize(
-            model, optimizer, opt_level=config.AMP_OPT_LEVEL)
+        scaler = GradScaler()  # mixed precision
     model = torch.nn.parallel.DistributedDataParallel(
-        model, device_ids=[config.LOCAL_RANK], broadcast_buffers=False)
+        model, broadcast_buffers=False)
     model_without_ddp = model.module
 
     n_parameters = sum(p.numel()
@@ -129,11 +125,11 @@ def main(config):
 
     logger.info("Start self-supervised pre-training")
     start_time = time.time()
-    for epoch in range(config.TRAIN.START_EPOCH, config.TRAIN.EPOCHS):
+    for epoch in tqdm(range(config.TRAIN.START_EPOCH, config.TRAIN.EPOCHS)):
         data_loader_train.sampler.set_epoch(epoch)
 
         train_one_epoch(config, model, data_loader_train,
-                        optimizer, epoch, lr_scheduler)
+                        optimizer, epoch, lr_scheduler, scaler=scaler)
         if dist.get_rank() == 0 and (epoch % config.SAVE_FREQ == 0 or epoch == (config.TRAIN.EPOCHS - 1)):
             save_checkpoint(config, epoch, model_without_ddp,
                             0.0, optimizer, lr_scheduler, logger)
@@ -143,7 +139,7 @@ def main(config):
     logger.info('Training time {}'.format(total_time_str))
 
 
-def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
+def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler, scaler=None):
     model.train()
     optimizer.zero_grad()
 
@@ -154,22 +150,23 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
 
     start = time.time()
     end = time.time()
-    for idx, (samples_1, samples_2, targets) in enumerate(data_loader):
+    for idx, (samples_1, samples_2, targets) in tqdm(enumerate(data_loader)):
         samples_1 = samples_1.cuda(non_blocking=True)
         samples_2 = samples_2.cuda(non_blocking=True)
         targets = targets.cuda(non_blocking=True)
-
-        loss = model(samples_1, samples_2)
-
+        with autocast(enabled=config.AMP_OPT_LEVEL != "O0"):
+            print("start")
+            loss = model(samples_1, samples_2)
+            print("end")
         optimizer.zero_grad()
         if config.AMP_OPT_LEVEL != "O0":
-            with amp.scale_loss(loss, optimizer) as scaled_loss:
+            with scaler.scale(loss) as scaled_loss:
                 scaled_loss.backward()
             if config.TRAIN.CLIP_GRAD:
-                grad_norm = torch.nn.utils.clip_grad_norm_(
-                    amp.master_params(optimizer), config.TRAIN.CLIP_GRAD)
+                grad_norm = torch.nn.utils.clip_grad_norm_(scaler.scale(model.parameters()),
+                                                           config.TRAIN.CLIP_GRAD)
             else:
-                grad_norm = get_grad_norm(amp.master_params(optimizer))
+                grad_norm = get_grad_norm(scaler.scale(model.parameters()))
         else:
             loss.backward()
             if config.TRAIN.CLIP_GRAD:
@@ -177,7 +174,8 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
                     model.parameters(), config.TRAIN.CLIP_GRAD)
             else:
                 grad_norm = get_grad_norm(model.parameters())
-        optimizer.step()
+        scaler.step(optimizer)
+        scaler.update()
         lr_scheduler.step_update(epoch * num_steps + idx)
 
         torch.cuda.synchronize()
@@ -207,7 +205,7 @@ if __name__ == '__main__':
     _, config = parse_option()
 
     if config.AMP_OPT_LEVEL != "O0":
-        assert amp is not None, "amp not installed!"
+        assert torch.backends.cudnn.enabled, "Amp requires cudnn backend to be enabled."
 
     if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
         rank = int(os.environ["RANK"])
@@ -216,7 +214,9 @@ if __name__ == '__main__':
     else:
         rank = -1
         world_size = -1
-    torch.cuda.set_device(config.LOCAL_RANK)
+    # torch.cuda.set_device(config.LOCAL_RANK)
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
     torch.distributed.init_process_group(
         backend='nccl', init_method='env://', world_size=world_size, rank=rank)
     torch.distributed.barrier()

@@ -20,7 +20,7 @@ _C.BASE = ['']
 # -----------------------------------------------------------------------------
 _C.DATA = CN()
 # Batch size for a single GPU, could be overwritten by command line argument
-_C.DATA.BATCH_SIZE = 32
+_C.DATA.BATCH_SIZE = 8
 # Path to dataset, could be overwritten by command line argument
 _C.DATA.DATA_PATH = './SSL_data/'
 # Dataset name
@@ -178,9 +178,9 @@ _C.TEST.CROP = True
 # -----------------------------------------------------------------------------
 # Mixed precision opt level, if O0, no amp is used ('O0', 'O1', 'O2')
 # overwritten by command line argument
-_C.AMP_OPT_LEVEL = ''
+_C.AMP_OPT_LEVEL = 'O0'
 # Path to output folder, overwritten by command line argument
-_C.OUTPUT = ''
+_C.OUTPUT = './results/'
 # Tag of experiment, overwritten by command line argument
 _C.TAG = 'default'
 # Frequency to save checkpoint

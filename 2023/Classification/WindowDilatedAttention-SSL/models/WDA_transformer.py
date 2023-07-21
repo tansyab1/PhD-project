@@ -286,7 +286,7 @@ class WDATransformerBlock(nn.Module):
         self.norm1 = norm_layer(dim)
         self.attn = WindowAttention(
             dim, window_size=to_2tuple(self.window_size), num_heads=num_heads,
-            qkv_bias=qkv_bias, qk_scale=qk_scale, attn_drop=attn_drop, proj_drop=drop)
+            qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
 
         self.drop_path = DropPath(
             drop_path) if drop_path > 0. else nn.Identity()
@@ -336,7 +336,7 @@ class WDATransformerBlock(nn.Module):
                 img_mask, shifts=(-2*self.window_size, -2*self.window_size), dims=(1, 2))
 
             self.img_mask_windows = torch.cat([attn_mask_top_left, attn_mask_top, attn_mask_top_right,
-                                               attn_mask_left, self.attn_mask, attn_mask_right,
+                                               attn_mask_left, img_mask, attn_mask_right,
                                                attn_mask_bottom_left, attn_mask_bottom, attn_mask_bottom_right],
                                               dim=1)
 
@@ -362,8 +362,8 @@ class WDATransformerBlock(nn.Module):
             self.attn_mask = None
             self.attn_mask_windows = None
 
-        self.register_buffer("self.attn_mask", self.attn_mask)
-        self.register_buffer("self.attn_mask_windows", self.attn_mask_windows)
+        self.register_buffer("buffer_attn_mask", self.attn_mask)
+        self.register_buffer("buffer_attn_mask_windows", self.attn_mask_windows)
 
     def forward(self, x):
         H, W = self.input_resolution
@@ -381,19 +381,19 @@ class WDATransformerBlock(nn.Module):
         else:
             shifted_x = x
         # get all the related windows
-        x_top_left = torch.roll(x, shifts=(
+        x_top_left = torch.roll(shifted_x, shifts=(
             2*self.window_size, 2*self.window_size), dims=(1, 2))
-        x_top = torch.roll(x, shifts=(2*self.window_size, 0), dims=(1, 2))
-        x_top_right = torch.roll(x, shifts=(
+        x_top = torch.roll(shifted_x, shifts=(2*self.window_size, 0), dims=(1, 2))
+        x_top_right = torch.roll(shifted_x, shifts=(
             2*self.window_size, -2*self.window_size), dims=(1, 2))
-        x_left = torch.roll(x, shifts=(0, 2*self.window_size), dims=(1, 2))
-        x_right = torch.roll(x, shifts=(
+        x_left = torch.roll(shifted_x, shifts=(0, 2*self.window_size), dims=(1, 2))
+        x_right = torch.roll(shifted_x, shifts=(
             0, -2*self.window_size), dims=(1, 2))
-        x_bottom_left = torch.roll(x, shifts=(
+        x_bottom_left = torch.roll(shifted_x, shifts=(
             -2*self.window_size, 2*self.window_size), dims=(1, 2))
         x_bottom = torch.roll(
-            x, shifts=(-2*self.window_size, 0), dims=(1, 2))
-        x_bottom_right = torch.roll(x, shifts=(
+            shifted_x, shifts=(-2*self.window_size, 0), dims=(1, 2))
+        x_bottom_right = torch.roll(shifted_x, shifts=(
             -2*self.window_size, -2*self.window_size), dims=(1, 2))
 
         # concat 9 windows to a big window where shifted_x is the center window and others are surrounding windows
