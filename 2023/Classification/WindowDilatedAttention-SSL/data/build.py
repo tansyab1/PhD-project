@@ -11,7 +11,7 @@ import torch
 import numpy as np
 from PIL import ImageFilter, ImageOps
 import torch.distributed as dist
-from torchvision import datasets, transforms
+from torchvision import transforms
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.data import Mixup
 from timm.data import create_transform
@@ -90,7 +90,7 @@ def build_dataset(is_train, config):
             # ToDo: test custom_image_folder
             root = os.path.join(config.DATA.DATA_PATH, prefix)
             dataset = CustomImageFolder(root, transform=transform)
-        nb_classes = 8
+        nb_classes = config.MODEL.NUM_CLASSES
     else:
         raise NotImplementedError("We only support ImageNet Now.")
 

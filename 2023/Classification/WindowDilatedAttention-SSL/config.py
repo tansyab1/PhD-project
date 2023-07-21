@@ -20,9 +20,9 @@ _C.BASE = ['']
 # -----------------------------------------------------------------------------
 _C.DATA = CN()
 # Batch size for a single GPU, could be overwritten by command line argument
-_C.DATA.BATCH_SIZE = 64
+_C.DATA.BATCH_SIZE = 32
 # Path to dataset, could be overwritten by command line argument
-_C.DATA.DATA_PATH = ''
+_C.DATA.DATA_PATH = './SSL_data/'
 # Dataset name
 _C.DATA.DATASET = 'imagenet'
 # Input image size
@@ -50,7 +50,7 @@ _C.MODEL.NAME = 'WDA_tiny_patch4_window7_224'
 # Checkpoint to resume, could be overwritten by command line argument
 _C.MODEL.RESUME = ''
 # Number of classes, overwritten in data preparation
-_C.MODEL.NUM_CLASSES = 1000
+_C.MODEL.NUM_CLASSES = 8
 # Dropout rate
 _C.MODEL.DROP_RATE = 0.0
 # Drop path rate
@@ -193,8 +193,8 @@ _C.SEED = 0
 _C.EVAL_MODE = False
 # Test throughput only, overwritten by command line argument
 _C.THROUGHPUT_MODE = False
-# local rank for DistributedDataParallel, given by command line argument
-_C.LOCAL_RANK = 0
+# local rank for DistributedDataParallel, with 3 GPUs, set to 0, 1, 2
+_C.LOCAL_RANK = 0, 1, 2
 
 
 def _update_config_from_file(config, cfg_file):

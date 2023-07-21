@@ -34,7 +34,7 @@ except ImportError:
 
 def parse_option():
     parser = argparse.ArgumentParser(
-        'MoBY training and evaluation script', add_help=False)
+        'WDASSL training and evaluation script', add_help=False)
     parser.add_argument('--cfg', type=str, required=True,
                         metavar="FILE", help='path to config file', )
     parser.add_argument(
