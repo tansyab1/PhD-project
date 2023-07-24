@@ -14,16 +14,17 @@ from keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageCms
-import os, fnmatch
+import os
+import fnmatch
 from sklearn.model_selection import train_test_split
 
 
 # In[3]:
 
 
-input_shape = (36,36,3)
+input_shape = (36, 36, 3)
 nClasses = 2
-patch_dim = (10,10)
+patch_dim = (10, 10)
 im_h = 360
 im_w = 360
 h = int(im_h/patch_dim[0])
@@ -65,29 +66,28 @@ model.summary()
 
 def gen_patches(dtpath):
     data = Image.open(dtpath).convert("RGB")
-    
-    
+
     srgb_profile = ImageCms.createProfile("sRGB")
-    lab_profile  = ImageCms.createProfile("LAB")
-    
-    rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
+    lab_profile = ImageCms.createProfile("LAB")
+
+    rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
+        srgb_profile, lab_profile, "RGB", "LAB")
     lab_im_data = ImageCms.applyTransform(data, rgb2lab_transform)
-    
-    
-    im_h , im_w = data.size
+
+    im_h, im_w = data.size
     h = int(im_h/patch_dim[0])
     w = int(im_w/patch_dim[1])
-    #print(im_h,im_w,h,w)
+    # print(im_h,im_w,h,w)
     data_lst = []
     # c = 0
-    for i in range(0,im_h,h):
-        for j in range(0,im_w,w):
-    #         c+=1
-            box = (j,i,j+w,i+h)
+    for i in range(0, im_h, h):
+        for j in range(0, im_w, w):
+            #         c+=1
+            box = (j, i, j+w, i+h)
             a = lab_im_data.crop(box)
             a = np.array(a)
             norm = a/255.0
-            norm = norm.flatten().reshape(1,3888)
+            norm = norm.flatten().reshape(1, 3888)
             data_lst.append(norm)
     #         plt.figure(c)
     #         plt.imshow(a)
@@ -103,16 +103,16 @@ def gen_labels(annpath):
     anno = Image.open(annpath)
     anno_lst = []
 
-    for i in range(0,im_h,h):
-        for j in range(0,im_w,w):
-            box = (j,i,j+w,i+h)
+    for i in range(0, im_h, h):
+        for j in range(0, im_w, w):
+            box = (j, i, j+w, i+h)
             a = anno.crop(box)
             a = np.array(a)
             k = np.count_nonzero(a)
-            if k > int((w*h)/2):       #basically greater than 50% here(648)
-                lb = [0,1]
+            if k > int((w*h)/2):  # basically greater than 50% here(648)
+                lb = [0, 1]
             else:
-                lb = [1,0]
+                lb = [1, 0]
             anno_lst.append(lb)
     return anno_lst
 
@@ -123,14 +123,14 @@ def gen_labels(annpath):
 
 
 def lb_pth_frm_img_pth(dtpath):
-    
+
     pattern = os.path.splitext(os.path.basename(dtpath))[0]
     anpath = 'C:\\Users\\Shashank\\Desktop\\Endo_CNN\\Train\\annotations'
-    #adding exception for normal images since we have only one annotation(complete black) for all normal training images
-    
+    # adding exception for normal images since we have only one annotation(complete black) for all normal training images
+
     if pattern[:6] == 'normal':
         return 'C:\\Users\\Shashank\\Desktop\\Endo_CNN\\Train\\annotations\\normalm.png'
-    
+
     for root, dirs, files in os.walk(anpath):
         for name in files:
             r = os.path.splitext(name)[0][:-1]
@@ -144,7 +144,7 @@ def lb_pth_frm_img_pth(dtpath):
 train_path = 'C:\\Users\\Shashank\\Desktop\\Endo_CNN\\Train\\data'
 train_path_lst = []
 
-for dirpath,_,filenames in os.walk(train_path):
+for dirpath, _, filenames in os.walk(train_path):
     for f in filenames:
         train_path_lst.append(os.path.abspath(os.path.join(dirpath, f)))
 
@@ -175,15 +175,16 @@ final_labellist = np.asarray(final_labellist)
 # In[30]:
 
 
-X = final_patchlist.reshape((-1,36,36,3))
+X = final_patchlist.reshape((-1, 36, 36, 3))
 Y = final_labellist
-#X.shape
+# X.shape
 
 
 # In[31]:
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, Y, test_size=0.33, random_state=42)
 
 
 # In[37]:
@@ -197,5 +198,5 @@ model.compile(loss='categorical_crossentropy',
 # In[33]:
 
 
-model.fit(X_train,y_train,epochs=5,batch_size=20,verbose=1,validation_data=(X_test,y_test))
-
+model.fit(X_train, y_train, epochs=5, batch_size=20,
+          verbose=1, validation_data=(X_test, y_test))
