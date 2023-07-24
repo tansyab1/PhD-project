@@ -166,21 +166,21 @@ class WindowAttention(nn.Module):
         # make torchscript happy (cannot use tensor as tuple)
         q, k, v = qkv[0], qkv[1], qkv[2]
 
-        # matrix_shape = q.shape[-1]
+        # similarity_matrix = torch.zeros(
+        #     1, B_, self.num_heads, N, N)
 
-        similarity_matrix = torch.zeros(
-            1, B_, self.num_heads, N, N)
+        # # similarity_matrix between each column of q and each row of k
 
-        # similarity_matrix between each column of q and each row of k
+        # similarity_matrix = torch.cdist(
+        #     q, k, p=2.0, compute_mode='donot_use_mm_for_euclid_dist')
 
-        similarity_matrix = torch.cdist(
-            q, k, p=2.0, compute_mode='donot_use_mm_for_euclid_dist')
-
-        # soft-cosine attention
-        attn_nummerator = similarity_matrix @ q @ k.transpose(-2, -1)
-        attn_denominator = torch.sqrt(similarity_matrix @ q @ q.transpose(-2, -1)) * \
-            torch.sqrt(similarity_matrix @ k @ k.transpose(-2, -1))
-        attn = attn_nummerator / attn_denominator
+        # # soft-cosine attention
+        # attn_nummerator = similarity_matrix @ q @ k.transpose(-2, -1)
+        # attn_denominator = torch.sqrt(similarity_matrix @ q @ q.transpose(-2, -1)) * \
+        #     torch.sqrt(similarity_matrix @ k @ k.transpose(-2, -1))
+        # attn = attn_nummerator / attn_denominator
+        
+        attn = (F.normalize(q, dim=-1) @ F.normalize(k, dim=-1).transpose(-2, -1))
 
         logit_scale = torch.clamp(
             self.logit_scale, max=torch.log(torch.tensor(1. / 0.01))).exp()
@@ -198,7 +198,7 @@ class WindowAttention(nn.Module):
         if mask is not None:
             nW = mask.shape[0]
             attn = attn.view(B_ // nW, nW, self.num_heads, N,
-                             N) + mask.unsqueeze(1).unsqueeze(0)
+                             N) + mask.unsqueeze(1).unsqueeze(0).to(attn.device)
             attn = attn.view(-1, self.num_heads, N, N)
             attn = self.softmax(attn)
         else:
@@ -280,12 +280,16 @@ class WDATransformerBlock(nn.Module):
         assert 0 <= self.shift_size < self.window_size, "shift_size must in 0-window_size"
 
         # channel-wise convolution to reduce dimension with number of kernels = 9
-        self.proj_window = depthwise_separable_conv(9*dim, 8, dim)
+        self.proj_window = depthwise_separable_conv(4*dim, 4, dim)
         self.alpha = 1e-1
         self.beta = 1e-1
         self.norm1 = norm_layer(dim)
         self.attn = WindowAttention(
             dim, window_size=to_2tuple(self.window_size), num_heads=num_heads,
+            qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
+
+        self.attn2 = WindowAttention(
+            dim, window_size=to_2tuple(2*self.window_size), num_heads=num_heads,
             qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
 
         self.drop_path = DropPath(
@@ -320,36 +324,35 @@ class WDATransformerBlock(nn.Module):
             # create attention mask for 9 windows
             attn_mask_top_left = torch.roll(img_mask, shifts=(
                 2*self.window_size, 2*self.window_size), dims=(1, 2))
-            attn_mask_top = torch.roll(img_mask, shifts=(
-                2*self.window_size, 0), dims=(1, 2))
+            # attn_mask_top = torch.roll(img_mask, shifts=(
+            #     2*self.window_size, 0), dims=(1, 2))
             attn_mask_top_right = torch.roll(img_mask, shifts=(
                 2*self.window_size, -2*self.window_size), dims=(1, 2))
-            attn_mask_left = torch.roll(img_mask, shifts=(
-                0, 2*self.window_size), dims=(1, 2))
-            attn_mask_right = torch.roll(img_mask, shifts=(
-                0, -2*self.window_size), dims=(1, 2))
+            # attn_mask_left = torch.roll(img_mask, shifts=(
+            #     0, 2*self.window_size), dims=(1, 2))
+            # attn_mask_right = torch.roll(img_mask, shifts=(
+            #     0, -2*self.window_size), dims=(1, 2))
             attn_mask_bottom_left = torch.roll(
                 img_mask, shifts=(-2*self.window_size, 2*self.window_size), dims=(1, 2))
-            attn_mask_bottom = torch.roll(
-                img_mask, shifts=(-2*self.window_size, 0), dims=(1, 2))
+            # attn_mask_bottom = torch.roll(
+            #     img_mask, shifts=(-2*self.window_size, 0), dims=(1, 2))
             attn_mask_bottom_right = torch.roll(
                 img_mask, shifts=(-2*self.window_size, -2*self.window_size), dims=(1, 2))
 
-            self.img_mask_windows = torch.cat([attn_mask_top_left, attn_mask_top, attn_mask_top_right,
-                                               attn_mask_left, img_mask, attn_mask_right,
-                                               attn_mask_bottom_left, attn_mask_bottom, attn_mask_bottom_right],
+            self.img_mask_windows = torch.cat([attn_mask_top_left, attn_mask_top_right,
+                                               attn_mask_bottom_left, attn_mask_bottom_right],
                                               dim=1)
 
-            self.img_mask_windows = self.img_mask_windows.view(-1, 3*H, 3*W, 1)
+            self.img_mask_windows = self.img_mask_windows.view(-1, 2*H, 2*W, 1)
 
             # nW, window_size, window_size, 1
             mask_windows = window_partition(img_mask, self.window_size)
             mask_windows_large = window_partition(
-                self.img_mask_windows, 3*self.window_size)
+                self.img_mask_windows, 2*self.window_size)
             mask_windows = mask_windows.view(-1,
                                              self.window_size * self.window_size)
             mask_windows_large = mask_windows_large.view(
-                -1, 3*self.window_size * 3*self.window_size)
+                -1, 2*self.window_size * 2*self.window_size)
             self.attn_mask = mask_windows.unsqueeze(
                 1) - mask_windows.unsqueeze(2)
             self.attn_mask_windows = mask_windows_large.unsqueeze(
@@ -363,13 +366,15 @@ class WDATransformerBlock(nn.Module):
             self.attn_mask_windows = None
 
         self.register_buffer("buffer_attn_mask", self.attn_mask)
-        self.register_buffer("buffer_attn_mask_windows", self.attn_mask_windows)
+        self.register_buffer("buffer_attn_mask_windows",
+                             self.attn_mask_windows)
 
     def forward(self, x):
         H, W = self.input_resolution
         B, L, C = x.shape
         assert L == H * W, "input feature has wrong size"
-
+        # print the mark to know the processing time of each block
+        # print('WDA block start')
         shortcut = x
         # x = self.norm1(x)
         x = x.view(B, H, W, C)
@@ -383,49 +388,51 @@ class WDATransformerBlock(nn.Module):
         # get all the related windows
         x_top_left = torch.roll(shifted_x, shifts=(
             2*self.window_size, 2*self.window_size), dims=(1, 2))
-        x_top = torch.roll(shifted_x, shifts=(2*self.window_size, 0), dims=(1, 2))
+        # x_top = torch.roll(shifted_x, shifts=(
+        #     2*self.window_size, 0), dims=(1, 2))
         x_top_right = torch.roll(shifted_x, shifts=(
             2*self.window_size, -2*self.window_size), dims=(1, 2))
-        x_left = torch.roll(shifted_x, shifts=(0, 2*self.window_size), dims=(1, 2))
-        x_right = torch.roll(shifted_x, shifts=(
-            0, -2*self.window_size), dims=(1, 2))
+        # x_left = torch.roll(shifted_x, shifts=(
+        #     0, 2*self.window_size), dims=(1, 2))
+        # x_right = torch.roll(shifted_x, shifts=(
+        #     0, -2*self.window_size), dims=(1, 2))
         x_bottom_left = torch.roll(shifted_x, shifts=(
             -2*self.window_size, 2*self.window_size), dims=(1, 2))
-        x_bottom = torch.roll(
-            shifted_x, shifts=(-2*self.window_size, 0), dims=(1, 2))
+        # x_bottom = torch.roll(
+        #     shifted_x, shifts=(-2*self.window_size, 0), dims=(1, 2))
         x_bottom_right = torch.roll(shifted_x, shifts=(
             -2*self.window_size, -2*self.window_size), dims=(1, 2))
 
         # concat 9 windows to a big window where shifted_x is the center window and others are surrounding windows
-        x_large_windows = torch.cat([x_top_left, x_top, x_top_right, x_left,
-                                     shifted_x, x_right, x_bottom_left, x_bottom, x_bottom_right], dim=1)
-        x_large_windows = x_large_windows.view(B, 3*H, 3*W, C)
+        x_large_windows = torch.cat(
+            [x_top_left, x_top_right, x_bottom_left, x_bottom_right], dim=1)
+        x_large_windows = x_large_windows.view(B, 2*H, 2*W, C)
 
         # partition windows
         # nW*B, window_size, window_size, C
         x_windows = window_partition(shifted_x, self.window_size)
-        x_large_windows = window_partition(x_large_windows, 3*self.window_size)
+        x_large_windows = window_partition(x_large_windows, 2*self.window_size)
         # nW*B, window_size*window_size, C
         x_windows = x_windows.view(-1, self.window_size * self.window_size, C)
         x_large_windows = x_large_windows.view(-1,
-                                               9 * self.window_size * self.window_size, C)
+                                               4 * self.window_size * self.window_size, C)
         # W-MSA/SW-MSA
         # nW*B, window_size*window_size, C
         attn_windows = self.attn(x_windows, mask=self.attn_mask)
-        attn_windows_large = self.attn(
+        attn_windows_large = self.attn2(
             x_large_windows, mask=self.attn_mask_windows)
 
         # merge windows
         attn_windows = attn_windows.view(-1,
                                          self.window_size, self.window_size, C)
         attn_windows_large = attn_windows_large.view(-1,
-                                                     self.window_size*3, self.window_size*3, C)
+                                                     self.window_size*2, self.window_size*2, C)
 
         shifted_x = window_reverse(
             attn_windows, self.window_size, H, W)  # B H' W' C
         shifted_x_large = window_reverse(
-            attn_windows_large, 3*self.window_size, 3*H, 3*W)  # B H' W' C
-
+            attn_windows_large, 2*self.window_size, 2*H, 2*W)  # B H' W' C
+        # print('WDA block end')
         # reverse cyclic shift
         if self.shift_size > 0:
             x = torch.roll(shifted_x, shifts=(
@@ -436,13 +443,16 @@ class WDATransformerBlock(nn.Module):
             x = shifted_x
             x_large = shifted_x_large
         x = x.view(B, H * W, C)
-        x_large = x_large.view(B, 9*C, H, W)
+        x_large = x_large.view(B, 4*C, H, W)
         x_large_center = self.proj_window(x_large)
+
+        x_large_center = x_large_center.view(B, H * W, C)
 
         x_norm1 = self.norm1(x)
         x_norm1_large = self.norm1(x_large_center)
 
         x = self.drop_path(x_norm1) + self.beta * x_norm1_large
+        # print('WDA block end2')
 
         # FFN
         x = shortcut + x
@@ -453,6 +463,7 @@ class WDATransformerBlock(nn.Module):
             self.drop_path(self.norm2(self.mlp(x_large_center)))
 
         # x_final = torch.cat([x, x_large_center], dim=2)
+        # print('WDA block end3')
 
         return x, x_large_center
 

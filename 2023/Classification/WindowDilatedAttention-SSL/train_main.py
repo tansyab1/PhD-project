@@ -155,13 +155,12 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler, 
         samples_2 = samples_2.cuda(non_blocking=True)
         targets = targets.cuda(non_blocking=True)
         with autocast(enabled=config.AMP_OPT_LEVEL != "O0"):
-            print("start")
+            # print("start")
             loss = model(samples_1, samples_2)
-            print("end")
+            # print("end")
         optimizer.zero_grad()
         if config.AMP_OPT_LEVEL != "O0":
-            with scaler.scale(loss) as scaled_loss:
-                scaled_loss.backward()
+            scaler.scale(loss).backward()
             if config.TRAIN.CLIP_GRAD:
                 grad_norm = torch.nn.utils.clip_grad_norm_(scaler.scale(model.parameters()),
                                                            config.TRAIN.CLIP_GRAD)
@@ -214,9 +213,7 @@ if __name__ == '__main__':
     else:
         rank = -1
         world_size = -1
-    # torch.cuda.set_device(config.LOCAL_RANK)
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
+    torch.cuda.set_device(config.LOCAL_RANK)
     torch.distributed.init_process_group(
         backend='nccl', init_method='env://', world_size=world_size, rank=rank)
     torch.distributed.barrier()

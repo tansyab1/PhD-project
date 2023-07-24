@@ -206,6 +206,9 @@ class WDASSL(nn.Module):
             self._momentum_update_key_encoder()  # update the key encoder
 
             feat_1_ng, feat_1_ng_large = self.encoder_k(im_1)  # keys: NxC
+
+            # print(feat_1_ng)
+
             proj_1_ng = self.projector_k(feat_1_ng)
             proj_1_ng = F.normalize(proj_1_ng, dim=1)
 
@@ -220,14 +223,16 @@ class WDASSL(nn.Module):
             # for large window
             proj_2_ng_large = self.projector_k(feat_2_ng_large)
             proj_2_ng_large = F.normalize(proj_2_ng_large, dim=1)
+            # print((pred_1_large @ proj_2_ng_large.transpose(0, 1) /
+            #        torch.norm(pred_1_large @ proj_2_ng_large.transpose(0, 1), dim=1, keepdim=True)).shape)
 
             # normalize the key features with covariance matrix between pred_1_large and proj_2_ng_large
-            proj_1_ng = (torch.mm(pred_1_large, proj_2_ng_large.T) /
-                         torch.norm(torch.mm(pred_1_large, proj_2_ng_large.T), dim=1, keepdim=True)) * proj_1_ng
+            proj_1_ng = (pred_1_large @ proj_2_ng_large.transpose(0, 1) /
+                         torch.norm(pred_1_large @ proj_2_ng_large.transpose(0, 1), dim=1, keepdim=True)) @ proj_1_ng
 
             # normalize the key features with covariance matrix between pred_2_large and proj_1_ng_large
-            proj_2_ng = (torch.mm(pred_2_large, proj_1_ng_large.T) /
-                         torch.norm(torch.mm(pred_2_large, proj_1_ng_large.T), dim=1, keepdim=True)) * proj_2_ng
+            proj_2_ng = (pred_2_large @ proj_1_ng_large.transpose(0, 1) /
+                         torch.norm(pred_2_large @ proj_1_ng_large.transpose(0, 1), dim=1, keepdim=True)) @ proj_2_ng
 
         loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
             + self.contrastive_loss(pred_2, proj_1_ng, self.queue1)
