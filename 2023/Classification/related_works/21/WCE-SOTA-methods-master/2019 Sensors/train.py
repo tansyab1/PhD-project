@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import tensorflow as tf
-import  pandas as pd # used to write and read csv files.
+import pandas as pd  # used to write and read csv files.
 
 import data_provider
 from data_provider import get_image_label_batch
@@ -62,40 +62,44 @@ pred1 = tf.nn.softmax(logits1)
 # The second model is GoogleNet
 net2 = inception_v1
 logits2, end_points2 = net2.inception_v1(
-    inception_input, num_classes, is_training = True, dropout_keep_prob = keep_prob)
+    inception_input, num_classes, is_training=True, dropout_keep_prob=keep_prob)
 pred2 = tf.nn.softmax(logits2)
 
-print ("pred1:", pred1)
-print ("pred2:", pred2)
+print("pred1:", pred1)
+print("pred2:", pred2)
 
 # List of trainable variables of the layers we want to train
 var_list = [v for v in tf.trainable_variables()]
 
-loss_L2 = tf.add_n([tf.nn.l2_loss(v) for v in var_list if 'biases' not in v.name]) * 0.001
+loss_L2 = tf.add_n([tf.nn.l2_loss(v)
+                   for v in var_list if 'biases' not in v.name]) * 0.001
 
 # Op for calculating the loss
 with tf.name_scope("Loss1"):
-  loss1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits1, labels = y))  
-  
-with tf.name_scope("Loss2"):
-  loss2 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits2, labels = y))  
+    loss1 = tf.reduce_mean(
+        tf.nn.softmax_cross_entropy_with_logits(logits=logits1, labels=y))
 
-optimizer = tf.train.MomentumOptimizer(learning_rate, momentum = 0.9, use_nesterov = True)
+with tf.name_scope("Loss2"):
+    loss2 = tf.reduce_mean(
+        tf.nn.softmax_cross_entropy_with_logits(logits=logits2, labels=y))
+
+optimizer = tf.train.MomentumOptimizer(
+    learning_rate, momentum=0.9, use_nesterov=True)
 loss = loss1 + loss2
-train_op = optimizer.minimize(loss + loss_L2, var_list = var_list)
+train_op = optimizer.minimize(loss + loss_L2, var_list=var_list)
 
 
 # Evaluation op: Accuracy of the integrated model
 total_pred = (pred1 + pred2)/2.0
-print ("total_pred:", total_pred)
+print("total_pred:", total_pred)
 
 with tf.name_scope("accuracy"):
-  correct_pred = tf.equal(tf.argmax(total_pred, 1), tf.argmax(y, 1))
-  accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    correct_pred = tf.equal(tf.argmax(total_pred, 1), tf.argmax(y, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 
 # Start Tensorflow session
-config = tf.ConfigProto() 
+config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
@@ -110,7 +114,8 @@ def log_loss_accuracy(loss, accuracy, epoch, prefix, should_print=True):
 
     summary = tf.Summary(value=[
         tf.Summary.Value(tag='loss_%s' % prefix, simple_value=float(loss)),
-        tf.Summary.Value(tag='accuracy_%s' % prefix, simple_value=float(accuracy))
+        tf.Summary.Value(tag='accuracy_%s' %
+                         prefix, simple_value=float(accuracy))
     ])
     summary_writer.add_summary(summary, epoch)
 
@@ -122,6 +127,7 @@ def save_model(global_step=None):
         os.makedirs(save_path)
     save_path = os.path.join(save_path, 'model.chkpt')
     saver.save(sess, save_path, global_step=global_step)
+
 
 def load_model():
     saver = tf.train.Saver()
@@ -148,14 +154,16 @@ def train_all_epochs(learning_rate):
 
     best_acc = 0.0
 
-    train_image_batch, train_label_batch = get_image_label_batch(batch_size, shuffle=True, name='train')
-    test_image_batch, test_label_batch = get_image_label_batch(batch_size, shuffle=False, name='4aug_test')
+    train_image_batch, train_label_batch = get_image_label_batch(
+        batch_size, shuffle=True, name='train')
+    test_image_batch, test_label_batch = get_image_label_batch(
+        batch_size, shuffle=False, name='4aug_test')
 
     print('Train image shape:', train_image_batch.shape)
     print('label shape:', train_label_batch.shape)
 
     coord = tf.train.Coordinator()
-    threads = tf.train.start_queue_runners(sess, coord = coord)
+    threads = tf.train.start_queue_runners(sess, coord=coord)
 
     try:
 
@@ -174,7 +182,8 @@ def train_all_epochs(learning_rate):
             loss_all_epochs.append(loss)
 
             print("Validation...")
-            loss, acc, nr, br, ir, kappa = test(test_image_batch, test_label_batch)
+            loss, acc, nr, br, ir, kappa = test(
+                test_image_batch, test_label_batch)
             log_loss_accuracy(loss, acc, epoch, prefix='valid')
 
             acc_all_epochs.append(acc)
@@ -184,7 +193,6 @@ def train_all_epochs(learning_rate):
             ir_all_epochs.append(ir)
             kappa_all_epochs.append(kappa)
 
-
             time_per_epoch = time.time() - start_time
             seconds_left = int((n_epochs - epoch) * time_per_epoch)
             print("Time per epoch: %s, Est. complete in: %s" % (
@@ -192,25 +200,28 @@ def train_all_epochs(learning_rate):
                 str(timedelta(seconds=seconds_left))))
 
             if epoch >= 60 and epoch % 10 == 0:
-                save_model(global_step = epoch)
+                save_model(global_step=epoch)
             if acc > best_acc:
                 best_acc = acc
-                save_model(global_step = 1)
+                save_model(global_step=1)
 
-        dataframe = pd.DataFrame({'train_loss': loss_all_epochs, 'accuracy': acc_all_epochs, 
-            'normal_recall': nr_all_epochs, 'bleed_recall': br_all_epochs, 
-            'inflam_recall': ir_all_epochs, 'kappa': kappa_all_epochs,})
+        dataframe = pd.DataFrame({'train_loss': loss_all_epochs, 'accuracy': acc_all_epochs,
+                                  'normal_recall': nr_all_epochs, 'bleed_recall': br_all_epochs,
+                                  'inflam_recall': ir_all_epochs, 'kappa': kappa_all_epochs, })
 
-        dataframe.to_csv("./acc_results/split1_repeat.csv", index = True, sep = ',')
+        dataframe.to_csv("./acc_results/split1_repeat.csv",
+                         index=True, sep=',')
 
         total_training_time = time.time() - total_start_time
-        print("\nTotal training time: %s" % str(timedelta(seconds=total_training_time)))
+        print("\nTotal training time: %s" %
+              str(timedelta(seconds=total_training_time)))
 
     except tf.errors.OutOfRangeError:
         print("done!")
     finally:
         coord.request_stop()
         coord.join(threads)
+
 
 def train_one_epoch(train_image_batch, train_label_batch):
     total_loss = []
@@ -252,9 +263,10 @@ def test(test_image_batch, test_label_batch):
     total_loss = []
 
     for i in range(num_test // batch_size):
-        
-        test_images, test_labels = sess.run([test_image_batch, test_label_batch])
-        class_labels = np.argmax(test_labels, axis = 1).astype(np.int32)
+
+        test_images, test_labels = sess.run(
+            [test_image_batch, test_label_batch])
+        class_labels = np.argmax(test_labels, axis=1).astype(np.int32)
 
         feed_dict = {
             x: test_images,
@@ -263,30 +275,35 @@ def test(test_image_batch, test_label_batch):
             is_training: False,
         }
 
-        pred, sum_loss, acc = sess.run([total_pred, loss, accuracy], feed_dict=feed_dict)
+        pred, sum_loss, acc = sess.run(
+            [total_pred, loss, accuracy], feed_dict=feed_dict)
 
-        pred = np.argmax(pred, axis = 1)
-        labels = np.argmax(test_labels, axis = 1)
+        pred = np.argmax(pred, axis=1)
+        labels = np.argmax(test_labels, axis=1)
 
         total_preds.append(pred)
         total_labels.append(labels)
         total_loss.append(sum_loss)
 
         for index in range(batch_size):
-          img_index = i * batch_size + index
-          save_img(test_images[index], img_index, input_rgb, img_name = '.jpg', mode = "image")
+            img_index = i * batch_size + index
+            save_img(test_images[index], img_index,
+                     input_rgb, img_name='.jpg', mode="image")
 
     mean_loss = np.mean(total_loss)
 
-    overall_acc, normal_recall, bleed_recall, inflam_recall, kappa = get_accuracy(preds = total_preds, labels = total_labels)
+    overall_acc, normal_recall, bleed_recall, inflam_recall, kappa = get_accuracy(
+        preds=total_preds, labels=total_labels)
 
-    false_index = np.where(np.equal(np.reshape(total_preds, (-1)), np.reshape(total_labels, (-1))) == False)[0]
+    false_index = np.where(np.equal(np.reshape(
+        total_preds, (-1)), np.reshape(total_labels, (-1))) == False)[0]
 
     # print('====================show misclassified images==================')
     # print('the number of misclassified examples in Net1 is:', len(false_index1))
     # print false_index1
 
-    return mean_loss, overall_acc, normal_recall, bleed_recall, inflam_recall, kappa     
+    return mean_loss, overall_acc, normal_recall, bleed_recall, inflam_recall, kappa
+
 
 # load_model()
-train_all_epochs(learning_rate)   
+train_all_epochs(learning_rate)

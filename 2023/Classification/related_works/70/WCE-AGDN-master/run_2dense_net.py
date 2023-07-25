@@ -24,7 +24,8 @@ train_params = {
     'validation_set': True,
     'validation_split': None,  # None or float
     'shuffle': 'every_epoch',  # None, once_prior_train, every_epoch
-    'normalization': 'divide_255',  # None, divide_256, divide_255, divide_127.5, by_chanels
+    # None, divide_256, divide_255, divide_127.5, by_chanels
+    'normalization': 'divide_255',
 }
 
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         help='What type of model to use')
     parser.add_argument(
         '--growth_rate', '-k', type=int, choices=[12, 16, 24, 32, 40],
-        default= 12,
+        default=12,
         help='Grows rate for every layer, '
              'choices were restricted to used in paper')
     parser.add_argument(
@@ -141,22 +142,22 @@ if __name__ == '__main__':
         _, _, _, acc1, acc2, acc, nr1, br1, ir1, kappa1, nr2, br2, ir2, kappa2, \
             nr, br, ir, kappa = model.test(batch_size=8)
 
-        print ("Net1_accuracy:", acc1)
-        print ("Net2_accuracy:", acc2)
-        print ("Total_accuracy:", acc)
+        print("Net1_accuracy:", acc1)
+        print("Net2_accuracy:", acc2)
+        print("Total_accuracy:", acc)
 
-        print ("Net1_normal_recall:", nr1)
-        print ("Net2_normal_recall:", nr2)
-        print ("Total_normal_recall:", nr) 
+        print("Net1_normal_recall:", nr1)
+        print("Net2_normal_recall:", nr2)
+        print("Total_normal_recall:", nr)
 
-        print ("Net1_bleed_recall:", br1)
-        print ("Net2_bleed_recall:", br2)               
-        print ("Total_bleed_recall:", br)   
+        print("Net1_bleed_recall:", br1)
+        print("Net2_bleed_recall:", br2)
+        print("Total_bleed_recall:", br)
 
-        print ("Net1_inflam_recall:", ir1)  
-        print ("Net2_inflam_recall:", ir2)                                           
-        print ("Total_inflam_recall:", ir) 
+        print("Net1_inflam_recall:", ir1)
+        print("Net2_inflam_recall:", ir2)
+        print("Total_inflam_recall:", ir)
 
-        print ("Net1_kappa:", kappa1)  
-        print ("Net2_kappa:", kappa2)
-        print ("Total_kappa:", kappa)                                                                                                 
+        print("Net1_kappa:", kappa1)
+        print("Net2_kappa:", kappa2)
+        print("Total_kappa:", kappa)

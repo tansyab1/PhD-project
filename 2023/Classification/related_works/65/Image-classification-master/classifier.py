@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import time
-from sklearn.svm import LinearSVC 
+from sklearn.svm import LinearSVC
 from sklearn.externals import joblib
 from sklearn.cluster import MiniBatchKMeans
 # Local dependencies
@@ -16,6 +16,7 @@ class Classifier:
     """
     Class for making training and testing in image classification.
     """
+
     def __init__(self, dataset, log):
         """
         Initialize the classifier object.
@@ -42,19 +43,20 @@ class Classifier:
         Returns:
             cv2.SVM: The Support Vector Machine obtained in the training phase.
         """
-        isTrain= True
+        isTrain = True
         des_name = constants.ORB_FEAT_NAME if des_option == constants.ORB_FEAT_OPTION else constants.SIFT_FEAT_NAME
         x_filename = filenames.vlads_train(k, des_name)
         print("Getting global descriptors for the training set.")
         start = time.time()
-        x, y, cluster_model = self.get_data_and_labels(self.dataset.get_train_set(),None, k, des_name ,isTrain,des_option,isTrain)
+        x, y, cluster_model = self.get_data_and_labels(
+            self.dataset.get_train_set(), None, k, des_name, isTrain, des_option, isTrain)
         utils.save(x_filename, x)
         end = time.time()
         svm_filename = filenames.svm(k, des_name, svm_kernel)
         print("Calculating the Support Vector Machine for the training set...")
         return svm, cluster_model
 
-    def test(self, svm, cluster_model, k, des_option = constants.ORB_FEAT_OPTION, is_interactive=True):
+    def test(self, svm, cluster_model, k, des_option=constants.ORB_FEAT_OPTION, is_interactive=True):
         """
         Gets the descriptors for the testing set and use the svm given as a parameter to predict all the elements
 
@@ -72,7 +74,8 @@ class Classifier:
         des_name = constants.ORB_FEAT_NAME if des_option == constants.ORB_FEAT_OPTION else constants.SIFT_FEAT_NAME
         print("Getting global descriptors for the testing set...")
         start = time.time()
-        x, y, cluster_model= self.get_data_and_labels(self.dataset.get_test_set(), cluster_model, k, des_name,isTrain,des_option)
+        x, y, cluster_model = self.get_data_and_labels(
+            self.dataset.get_test_set(), cluster_model, k, des_name, isTrain, des_option)
         end = time.time()
         start = time.time()
         result = svm.predict(x)
@@ -84,7 +87,7 @@ class Classifier:
         self.log.accuracy(accuracy)
         return result, y
 
-    def get_data_and_labels(self, img_set, cluster_model, k, des_name, codebook,isTrain, des_option = constants.ORB_FEAT_OPTION):
+    def get_data_and_labels(self, img_set, cluster_model, k, des_name, codebook, isTrain, des_option=constants.ORB_FEAT_OPTION):
         """
         Calculates all the local descriptors for an image set and then uses a codebook to calculate the VLAD global
         descriptor for each image and stores the label with the class of the image.
@@ -100,23 +103,24 @@ class Classifier:
         y = []
         x = None
         img_descs = []
-        
+
         for class_number in range(len(img_set)):
             img_paths = img_set[class_number]
-            
+
             step = round(constants.STEP_PERCENTAGE * len(img_paths) / 100)
             for i in range(len(img_paths)):
                 if (step > 0) and (i % step == 0):
                     percentage = (100 * i) / len(img_paths)
                 img = cv2.imread(img_paths[i])
-                
-                des,y = descriptors.sift(img,img_descs,y,class_number)
+
+                des, y = descriptors.sift(img, img_descs, y, class_number)
         isTrain = int(isTrain)
         if isTrain == 1:
-            X, cluster_model = descriptors.cluster_features(des,cluster_model=MiniBatchKMeans(n_clusters=64))
+            X, cluster_model = descriptors.cluster_features(
+                des, cluster_model=MiniBatchKMeans(n_clusters=64))
         else:
-            X = descriptors.img_to_vect(des,cluster_model)
-        print('X',X.shape,X)
-        y = np.float32(y)[:,np.newaxis]
+            X = descriptors.img_to_vect(des, cluster_model)
+        print('X', X.shape, X)
+        y = np.float32(y)[:, np.newaxis]
         x = np.matrix(X)
         return x, y, cluster_model

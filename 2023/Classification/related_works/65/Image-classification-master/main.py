@@ -6,7 +6,7 @@ import os
 # Local dependencies
 from classifier import Classifier
 from dataset import Dataset
-import descriptors
+# import descriptors
 import constants
 import utils
 import filenames
@@ -28,20 +28,22 @@ def main(is_interactive=True, k=64, des_option=constants.ORB_FEAT_OPTION, svm_ke
         os.makedirs(constants.FILES_DIR_NAME)
 
     if is_interactive:
-        des_option = input("Enter [1] for using ORB features or [2] to use SIFT features.\n")
-        k = input("Enter the number of cluster centers you want for the codebook.\n")
-        svm_option = input("Enter [1] for using SVM kernel Linear or [2] to use RBF.\n")
+        des_option = input(
+            "Enter [1] for using ORB features or [2] to use SIFT features.\n")
+        k = input(
+            "Enter the number of cluster centers you want for the codebook.\n")
+        svm_option = input(
+            "Enter [1] for using SVM kernel Linear or [2] to use RBF.\n")
         svm_kernel = cv2.ml.SVM_LINEAR if svm_option == 1 else cv2.ml.SVM_RBF
 
     des_name = constants.ORB_FEAT_NAME if des_option == constants.ORB_FEAT_OPTION else constants.SIFT_FEAT_NAME
     print(des_name)
     log = Log(k, des_name, svm_kernel)
-    
 
     codebook_filename = filenames.codebook(k, des_name)
     print('codebook_filename')
     print(codebook_filename)
-    start = time.time()   
+    start = time.time()
     end = time.time()
     log.train_des_time(end - start)
     start = time.time()
@@ -49,11 +51,13 @@ def main(is_interactive=True, k=64, des_option=constants.ORB_FEAT_OPTION, svm_ke
     log.codebook_time(end - start)
     # Train and test the dataset
     classifier = Classifier(dataset, log)
-    svm, cluster_model = classifier.train(svm_kernel, k, des_name, des_option=des_option, is_interactive=is_interactive)
+    svm, cluster_model = classifier.train(
+        svm_kernel, k, des_name, des_option=des_option, is_interactive=is_interactive)
     print("Training ready. Now beginning with testing")
-    result, labels = classifier.test( svm,cluster_model, k, des_option=des_option, is_interactive=is_interactive)
+    result, labels = classifier.test(
+        svm, cluster_model, k, des_option=des_option, is_interactive=is_interactive)
     print('test result')
-    print(result,labels)
+    print(result, labels)
     # Store the results from the test
     classes = dataset.get_classes()
     log.classes(classes)
@@ -81,7 +85,8 @@ def main(is_interactive=True, k=64, des_option=constants.ORB_FEAT_OPTION, svm_ke
     else:
         # Show a plot of the confusion matrix on interactive mode
         utils.show_conf_mat(confusion_matrix)
-        #raw_input("Press [Enter] to exit ...")
+        # raw_input("Press [Enter] to exit ...")
+
 
 if __name__ == '__main__':
     main()

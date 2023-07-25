@@ -13,13 +13,14 @@ from tflearn.layers.conv import global_avg_pool
 
 def get_image_label_batch(batch_size, shuffle, name):
     with tf.name_scope('get_batch'):
-        Data = Data_set(batch_size = batch_size, shuffle=shuffle, name=name)
-        image_batch, label_batch = Data.read_processing_generate_image_label_batch(batch_size)
+        Data = Data_set(batch_size=batch_size, shuffle=shuffle, name=name)
+        image_batch, label_batch = Data.read_processing_generate_image_label_batch(
+            batch_size)
     return image_batch, label_batch
 
 
 class Data_set(object):
-    def   __init__(self, batch_size, shuffle, name):
+    def __init__(self, batch_size, shuffle, name):
         self.tfrecord_file = '/home/xxh/Documents/Journal/dataset/sum_train_test_only/split1/'
         self.min_after_dequeue = 100
         self.capacity = 200
@@ -31,9 +32,11 @@ class Data_set(object):
     def read_processing_generate_image_label_batch(self, batch_size):
         if self.name == 'train':
             # get filename list
-            tfrecord_filename = tf.gfile.Glob(self.tfrecord_file + '*%s*' % 'train')
+            tfrecord_filename = tf.gfile.Glob(
+                self.tfrecord_file + '*%s*' % 'train')
             print('tfrecord train filename', tfrecord_filename)
-            filename_queue = tf.train.string_input_producer(tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
+            filename_queue = tf.train.string_input_producer(
+                tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
             # get tensor of image/label
             image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(filename_queue,
                                                                                   self.original_size)
@@ -48,28 +51,31 @@ class Data_set(object):
 
         else:
             # get filename list
-            tfrecord_filename = tf.gfile.Glob(self.tfrecord_file + '*%s*' % self.name)
+            tfrecord_filename = tf.gfile.Glob(
+                self.tfrecord_file + '*%s*' % self.name)
             print('tfrecord test filename', tfrecord_filename)
             # The file name list generator
-            filename_queue = tf.train.string_input_producer(tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
+            filename_queue = tf.train.string_input_producer(
+                tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
             # get tensor of image/label
             image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(filename_queue,
                                                                                   self.original_size)
-            #image = channels_image_standardization(image)z
+            # image = channels_image_standardization(image)z
             image = image_standardization(image)
             image_batch, label_batch = tf.train.batch([image, label],
-                                                              batch_size=batch_size,
-                                                              capacity=self.capacity)
-                                                              # num_threads=self.num_threads)
-        image_batch = tf.image.resize_images(image_batch, [self.actual_image_size, self.actual_image_size])
+                                                      batch_size=batch_size,
+                                                      capacity=self.capacity)
+            # num_threads=self.num_threads)
+        image_batch = tf.image.resize_images(
+            image_batch, [self.actual_image_size, self.actual_image_size])
         return image_batch, label_batch
 
+
 def read_tfrecord_and_decode_into_image_label_pair_tensors(tfrecord_filenames_queue, size):
-    
+
     reader = tf.TFRecordReader()
 
     _, serialized_example = reader.read(tfrecord_filenames_queue)
-
 
     features = tf.parse_single_example(
         serialized_example,
@@ -89,9 +95,10 @@ def read_tfrecord_and_decode_into_image_label_pair_tensors(tfrecord_filenames_qu
     depth = tf.cast(features['image/depth'], tf.int64)
 
     image = tf.to_float(image)
-    image = tf.reshape(image, [size,size,3])   #height,width,depth
+    image = tf.reshape(image, [size, size, 3])  # height,width,depth
     label = tf.one_hot(label, 3)
     return image, label
+
 
 def image_standardization(image):
     out_image = image/255.0

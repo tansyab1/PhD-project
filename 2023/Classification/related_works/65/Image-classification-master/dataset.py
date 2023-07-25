@@ -37,17 +37,17 @@ class Dataset:
             void
         """
         dataset_classes = glob.glob(self.path + "/*")
-        i=0
+        i = 0
         for folder in dataset_classes:
-            
+
             path = folder.replace("\\", "/")
-            #print(path)
+            # print(path)
             if "/" in folder:
                 class_name = folder.split("/")[-1]
             else:
                 class_name = folder.split("\\")[-1]
             self.classes.append(class_name)
-            #print(class_name)
+            # print(class_name)
 #            train = glob.glob(path + "/train/*")
 #            print(train)
 #            test = glob.glob(path + "/test/*")
@@ -57,35 +57,32 @@ class Dataset:
                 imgList = image.replace("\\", "/")
                 self.imageList.append(imgList)
                 anotherList.append(imgList)
-            
-            
+
+
 #            self.imageList = np.random.rand(100, 5)
 #            np.random.shuffle(self.imageList)
             myarray = np.asarray(self.imageList)
-            
-            
+
             self.train_set[i] = anotherList[0:]
             self.test_set[i] = anotherList[:15]
-            print('len of train set',len(self.train_set[i]))
-            #print('self.test_set',self.test_set[i],i)
+            print('len of train set', len(self.train_set[i]))
+            # print('self.test_set',self.test_set[i],i)
             i = i+1
-            #mydict[''train' + str(class_name)'] = 'someval'
-            #"{0}_train_set".format(class_name),"{0}_test_set".format(class_name),b_train, b_test = train_test_split(self.imageList, self.classes, test_size=0.33, random_state=42)
-                       
+            # mydict[''train' + str(class_name)'] = 'someval'
+            # "{0}_train_set".format(class_name),"{0}_test_set".format(class_name),b_train, b_test = train_test_split(self.imageList, self.classes, test_size=0.33, random_state=42)
+
             #rasterList = rasterList.replace("\\", "/")
-        
-        #print(self.imageList)
+
+        # print(self.imageList)
         myarray = np.asarray(self.imageList)
         self.classes = np.asarray(self.classes)
-       
-        
-        
+
         print('traina dn test length')
         print(len(self.train_set))
         print(len(self.test_set))
         #self.train_set, self.test_set, b_train, b_test = train_test_split(myarray, self.classes, test_size=0.33, random_state=42)
-        
-        #print(self.train_set[20])
+
+        # print(self.train_set[20])
 #     self.train_set.append(train)
 #            self.test_set.append(test)
         self.classes_counts.append(0)
@@ -146,7 +143,7 @@ class Dataset:
         if len(my_set) == 0:
             self.generate_sets()
         for class_ID in range(len(my_set)):
-                y += [class_ID] * len(my_set[class_ID])
+            y += [class_ID] * len(my_set[class_ID])
         # Transform the list in to a vector
         y = np.float32(y)[:, np.newaxis]
         return y
@@ -212,8 +209,6 @@ class Dataset:
         Returns:
             void
         """
-        if(class_number == 0):
+        if (class_number == 0):
             self.classes_counts.pop(0)
         self.classes_counts.append(class_count)
-        
-   

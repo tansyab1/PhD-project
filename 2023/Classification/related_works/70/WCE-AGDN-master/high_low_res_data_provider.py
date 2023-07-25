@@ -18,15 +18,16 @@ from tensorflow.contrib.layers import batch_norm
 
 def get_image_label_batch(batch_size, which_split, shuffle, name):
     with tf.name_scope('get_batch'):
-        Data = Data_set(batch_size = batch_size, which_split = which_split, shuffle=shuffle, name=name)
+        Data = Data_set(batch_size=batch_size,
+                        which_split=which_split, shuffle=shuffle, name=name)
         high_res_image_batch, low_res_image_batch, label_batch = \
-                    Data.read_processing_generate_image_label_batch(batch_size)
-                    
+            Data.read_processing_generate_image_label_batch(batch_size)
+
     return high_res_image_batch, low_res_image_batch, label_batch
 
 
 class Data_set(object):
-    def   __init__(self, batch_size, which_split, shuffle, name):
+    def __init__(self, batch_size, which_split, shuffle, name):
         # self.tfrecord_file = '/home/xxh/Documents/Journal/dataset/make_tfrecords/tfrecords/sum_split2/'
         # self.tfrecord_file = '/home/xxh/Documents/Journal/dataset/sum_train_test_only/split2/'
         # self.tfrecord_file = '/mnt/group-ai-medical/private/xiaohanxing/datasets/images/split2/'
@@ -42,11 +43,14 @@ class Data_set(object):
     def read_processing_generate_image_label_batch(self, batch_size):
         if self.name == 'train':
             # get filename list
-            tfrecord_filename = tf.gfile.Glob(self.tfrecord_file + '*%s*' % 'train')
+            tfrecord_filename = tf.gfile.Glob(
+                self.tfrecord_file + '*%s*' % 'train')
             print('tfrecord train filename', tfrecord_filename)
-            filename_queue = tf.train.string_input_producer(tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
+            filename_queue = tf.train.string_input_producer(
+                tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
             # get tensor of image/label
-            image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(filename_queue, self.high_res)
+            image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(
+                filename_queue, self.high_res)
             #image = channels_image_standardization(image)
             image = image_standardization(image)
             #image = tf.image.random_flip_left_right(image)
@@ -58,20 +62,24 @@ class Data_set(object):
 
         else:
             # get filename list
-            tfrecord_filename = tf.gfile.Glob(self.tfrecord_file + '*%s*' % self.name)
+            tfrecord_filename = tf.gfile.Glob(
+                self.tfrecord_file + '*%s*' % self.name)
             print('tfrecord test filename', tfrecord_filename)
             # The file name list generator
-            filename_queue = tf.train.string_input_producer(tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
+            filename_queue = tf.train.string_input_producer(
+                tfrecord_filename, num_epochs=None, shuffle=self.shuffle)
             # get tensor of image/label
-            image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(filename_queue, self.high_res)
-            #image = channels_image_standardization(image)z
+            image, label = read_tfrecord_and_decode_into_image_label_pair_tensors(
+                filename_queue, self.high_res)
+            # image = channels_image_standardization(image)z
             image = image_standardization(image)
             image_batch, label_batch = tf.train.batch([image, label],
-                                                              batch_size=batch_size,
-                                                              capacity=self.capacity)
-                                                              # num_threads=self.num_threads)
+                                                      batch_size=batch_size,
+                                                      capacity=self.capacity)
+            # num_threads=self.num_threads)
         high_res_image_batch = image_batch
-        low_res_image_batch = tf.image.resize_images(image_batch, [self.low_res, self.low_res])
+        low_res_image_batch = tf.image.resize_images(
+            image_batch, [self.low_res, self.low_res])
 
         return high_res_image_batch, low_res_image_batch, label_batch
 
@@ -98,7 +106,6 @@ def read_tfrecord_and_decode_into_image_label_pair_tensors(tfrecord_filenames_qu
 
     _, serialized_example = reader.read(tfrecord_filenames_queue)
 
-
     features = tf.parse_single_example(
         serialized_example,
         features={
@@ -117,9 +124,10 @@ def read_tfrecord_and_decode_into_image_label_pair_tensors(tfrecord_filenames_qu
     depth = tf.cast(features['image/depth'], tf.int64)
 
     image = tf.to_float(image)
-    image = tf.reshape(image, [size,size,3]) 
+    image = tf.reshape(image, [size, size, 3])
     label = tf.one_hot(label, 3)
     return image, label
+
 
 def image_standardization(image):
     out_image = image/255.0
