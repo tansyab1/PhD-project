@@ -1,5 +1,5 @@
 import argparse
-import tensorflow as tf
+# import tensorflow as tf
 
 """
 you can change the following codes to decide which model to use.
@@ -139,25 +139,16 @@ if __name__ == '__main__':
             model.load_model()
         print("Testing...")
 
-        _, _, _, acc1, acc2, acc, nr1, br1, ir1, kappa1, nr2, br2, ir2, kappa2, \
-            nr, br, ir, kappa = model.test(batch_size=8)
+        total_pred1, total_pred2, total_pred, total_labels = model.test(
+            batch_size=8)
+        # save the prediction results for further analysis
+        import pickle
 
-        print("Net1_accuracy:", acc1)
-        print("Net2_accuracy:", acc2)
-        print("Total_accuracy:", acc)
-
-        print("Net1_normal_recall:", nr1)
-        print("Net2_normal_recall:", nr2)
-        print("Total_normal_recall:", nr)
-
-        print("Net1_bleed_recall:", br1)
-        print("Net2_bleed_recall:", br2)
-        print("Total_bleed_recall:", br)
-
-        print("Net1_inflam_recall:", ir1)
-        print("Net2_inflam_recall:", ir2)
-        print("Total_inflam_recall:", ir)
-
-        print("Net1_kappa:", kappa1)
-        print("Net2_kappa:", kappa2)
-        print("Total_kappa:", kappa)
+        with open('total_pred1.pkl', 'wb') as f:
+            pickle.dump(total_pred1, f)
+        with open('total_pred2.pkl', 'wb') as f:
+            pickle.dump(total_pred2, f)
+        with open('total_pred.pkl', 'wb') as f:
+            pickle.dump(total_pred, f)
+        with open('total_labels.pkl', 'wb') as f:
+            pickle.dump(total_labels, f)

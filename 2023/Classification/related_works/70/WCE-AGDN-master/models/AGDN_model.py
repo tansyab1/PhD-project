@@ -1,42 +1,18 @@
-"""
-This is the model utilized in the paper:
-Zoom in Lesions for Better Diagnosis: Attention Guided Deformation Network for WCE Image Classification.
 
-Each branch is composed of densenet69 and three TLFA modules following the transition layers.
-Get the attention map by taking average of the features maps in the last block of network1,
-then use attention guided deformation (AGD) module to convert the orginal image with size = 320 to input2 with size = 128.
-The weights of two networks are randomly initialized and independently trained.
-DAC loss regularize the deformation based attention consistency between two branches. 
-Total loss is the sum of three softmax losses, and two DAC losses.
-"""
 
-import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = "4, 5, 6, 7"  # assign the GPU.
-
-import cv2
-import time
-import shutil
-from ops import *
-from ops1 import *
-from skimage import io
-from datetime import timedelta
-import tensorflow.contrib.slim as slim
-
-import numpy as np
-import tensorflow as tf
-import pandas as pd  # used to write and read csv files.
-from skimage import io, data, color
-from matplotlib import pyplot as plt
-from scipy.misc import imread, imresize
-
-from tensorflow.python.framework import ops
-from tensorflow.python.ops import gen_nn_ops
-
-import high_low_res_data_provider
-from high_low_res_data_provider import get_image_label_batch
-
-import trainable_image_sampler
 from trainable_image_sampler import get_resampled_images
+from high_low_res_data_provider import get_image_label_batch
+# import pandas as pd  # used to write and read csv files.
+import tensorflow as tf
+import numpy as np
+from datetime import timedelta
+from ops1 import deform_con2v, conv, hw_flatten
+from ops import generate_seg
+import shutil
+import time
+# import cv2
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # assign the GPU.
 
 TF_VERSION = float('.'.join(tf.__version__.split('.')[:2]))
 
@@ -115,7 +91,7 @@ class DenseNet:
         config.gpu_options.allow_growth = True
         self.sess = tf.Session(config=config)
 
-        tf_ver = int(tf.__version__.split('.')[1])
+        # tf_ver = int(tf.__version__.split('.')[1])
         if TF_VERSION <= 0.10:
             self.sess.run(tf.initialize_all_variables())
             logswriter = tf.train.SummaryWriter
@@ -172,30 +148,16 @@ class DenseNet:
         self.saver.save(self.sess, self.save_path, global_step=global_step)
 
     def load_model(self):
-        try:
-            self.saver.restore(self.sess, self.save_path)
-        except Exception as e:
-            raise IOError("Failed to load model "
-                          "from save path: %s" % self.save_path)
         self.saver.restore(self.sess, self.save_path)
-
-        # load_fn = slim.assign_from_checkpoint_fn(
-        #     self.save_path, tf.global_variables(),ignore_missing_vars=True)
-        # load_fn(self.sess)
+        # assert cannot load the model.
+        if not os.path.exists(self.save_path + '.meta'):
+            print("The save path does not exist!")
+            return
 
         print("Successfully load model from save path: %s" % self.save_path)
 
-    def log_loss_accuracy(self, loss1, loss2, loss3, TE_loss, accuracy1, accuracy2, accuracy,
-                          epoch, prefix, should_print=True):
+    def log_loss_accuracy(self, loss1, loss2, loss3, TE_loss, epoch, prefix, should_print=True):
         if should_print:
-            print("mean cross_entropy1: %f, mean accuracy1: %f" %
-                  (loss1, accuracy1))
-            print('')
-            print("mean cross_entropy2: %f, mean accuracy2: %f" %
-                  (loss2, accuracy2))
-            print('')
-            print("mean loss in sum branch: %f, mean accuracy: %f" %
-                  (loss3, accuracy))
             print('')
             print("mean TE loss: %f" % (TE_loss))
 
@@ -204,10 +166,6 @@ class DenseNet:
                              prefix, simple_value=float(loss1)),
             tf.Summary.Value(tag='loss2_%s' %
                              prefix, simple_value=float(loss2)),
-            tf.Summary.Value(tag='accuracy1_%s' %
-                             prefix, simple_value=float(accuracy1)),
-            tf.Summary.Value(tag='accuracy2_%s' %
-                             prefix, simple_value=float(accuracy2))
         ])
 
         self.summary_writer.add_summary(summary, epoch)
@@ -511,13 +469,6 @@ class DenseNet:
         return select
 
     def network(self, _input):
-        """
-        Define the structure of the backbone network, 
-        this network will be used in both two branches.
-        Input: image,
-        Return: the feature vector of input image(batch_size, channels), 
-        predicted logits(batch_size, 3), predicted spatial probability(batch_size, h, w, 3).
-        """
         growth_rate = self.growth_rate
         layers_per_block = self.layers_per_block
 
@@ -573,7 +524,7 @@ class DenseNet:
 
     def _build_graph(self):
 
-        with tf.variable_scope("net1") as scope:
+        with tf.variable_scope("net1"):
             f_maps1, fmaps1_b2, fmaps1_b3, self.features1, logits1, spatial_pred1 = self.network(
                 self.images)
             self.pred1 = tf.nn.softmax(logits1)
@@ -584,23 +535,26 @@ class DenseNet:
             _, self.smaps1_b3 = self.compute_saliency(fmaps1_b3)
 
         self.input2 = tf.stop_gradient(get_resampled_images(
-            self.high_res_images, self.s_map1, self.batch_size, self.src_size, self.dst_size, padding_size=30, lamda=self.lamda))
+            self.high_res_images,
+            self.s_map1,
+            self.batch_size,
+            self.src_size,
+            self.dst_size,
+            padding_size=30,
+            lamda=self.lamda))
 
         # self.input2 = self.images
 
         self.resampled_s_map1 = get_resampled_images(
             self.s_map1, self.s_map1, self.batch_size, 31, 8, padding_size=30, lamda=self.lamda)
-        print(self.resampled_s_map1.shape)
-
-        self.resampled_gt = get_resampled_images(
-            self.gt_map, self.s_map1, self.batch_size, self.dst_size, self.dst_size, padding_size=30, lamda=self.lamda)
+        # print(self.resampled_s_map1.shape)
 
         resampled_saliency1 = tf.tile(self.resampled_s_map1, (1, 1, 1, 3))
         self.resampled_saliency1 = tf.image.resize_images(
             resampled_saliency1, (128, 128))  # (8, 128, 128, 3)
         self.resampled_seg_map1 = generate_seg(self.resampled_saliency1)
 
-        with tf.variable_scope("net2") as scope:
+        with tf.variable_scope("net2"):
             f_maps2, fmaps2_b2, fmaps2_b3, self.features2, logits2, spatial_pred2 = self.network(
                 self.input2)
             self.pred2 = tf.nn.softmax(logits2)
@@ -617,7 +571,7 @@ class DenseNet:
 
         total_fmaps = tf.concat(axis=3, values=(f_maps1, f_maps2))
 
-        with tf.variable_scope("Sum_branch") as scope:
+        with tf.variable_scope("Sum_branch"):
             _, logits, _ = self.transition_layer_to_classes(total_fmaps)
             self.pred = tf.nn.softmax(logits)
 
@@ -669,7 +623,7 @@ class DenseNet:
         print("gradients from sum loss to input2:", self.grad2)
 
         # regularize the variables that needs to be trained in Net1 or Net2.
-        var_list = [var for var in tf.trainable_variables()]
+        # var_list = [var for var in tf.trainable_variables()]
         var_list1 = [var for var in tf.trainable_variables(
         ) if var.name.split('/')[0] == 'net1']
         var_list2 = [var for var in tf.trainable_variables(
@@ -681,8 +635,8 @@ class DenseNet:
         # for var in tf.trainable_variables():
         #     print var.name.split('/')[0]
 
-        l2_loss = tf.add_n([tf.nn.l2_loss(var)
-                           for var in tf.trainable_variables()])
+        # l2_loss = tf.add_n([tf.nn.l2_loss(var)
+        #                    for var in tf.trainable_variables()])
 
         l2_loss1 = tf.add_n(
             [tf.nn.l2_loss(var) for var in tf.trainable_variables() if var.name.split('/')[0] == 'net1'])
@@ -747,21 +701,6 @@ class DenseNet:
         acc2_all_epochs = []
         acc_all_epochs = []
 
-        nr1_all_epochs = []
-        br1_all_epochs = []
-        ir1_all_epochs = []
-        kappa1_all_epochs = []
-
-        nr2_all_epochs = []
-        br2_all_epochs = []
-        ir2_all_epochs = []
-        kappa2_all_epochs = []
-
-        nr_all_epochs = []
-        br_all_epochs = []
-        ir_all_epochs = []
-        kappa_all_epochs = []
-
         """
         Only save the model with highest accuracy2
         """
@@ -792,7 +731,7 @@ class DenseNet:
 
                 print("Training...")
                 start_train = time.time()
-                loss1, loss2, loss3, TE_loss, rank_loss, acc1, acc2 = self.train_one_epoch(
+                loss1, loss2, loss3, TE_loss, rank_loss = self.train_one_epoch(
                     batch_size, learning_rate)
                 train_time = time.time() - start_train
                 total_train_time = int(n_epochs * train_time)
@@ -802,7 +741,7 @@ class DenseNet:
 
                 if self.should_save_logs:
                     self.log_loss_accuracy(
-                        loss1, loss2, loss3, TE_loss, acc1, acc2, acc2, epoch, prefix='train')
+                        loss1, loss2, loss3, TE_loss, epoch, prefix='train')
 
                 print("Rank loss:", rank_loss)
 
@@ -813,36 +752,24 @@ class DenseNet:
                 if train_params.get('validation_set', False):
                     print("Validation...")
                     start_val = time.time()
-                    loss1, loss2, loss3, TE_loss, acc1, acc2, acc, nr1, br1, ir1, kappa1, \
-                        nr2, br2, ir2, kappa2, nr, br, ir, kappa = self.test(
-                            batch_size)
+                    total_pred1, total_pred2, total_pred, total_labels = self.test(
+                        batch_size)
                     val_time_per_image = 1000 * \
                         (time.time() - start_val)/self.num_test
                     print("Validation time per image:", str(
                         timedelta(seconds=val_time_per_image)))
 
+                    acc1 = np.mean(total_pred1 == total_labels)
+                    acc2 = np.mean(total_pred2 == total_labels)
+                    acc = np.mean(total_pred == total_labels)
+
                     if self.should_save_logs:
                         self.log_loss_accuracy(
-                            loss1, loss2, loss3, TE_loss, acc1, acc2, acc, epoch, prefix='valid')
+                            loss1, loss2, loss3, TE_loss, epoch, prefix='valid')
 
                     acc1_all_epochs.append(acc1)
                     acc2_all_epochs.append(acc2)
                     acc_all_epochs.append(acc)
-
-                    nr1_all_epochs.append(nr1)
-                    br1_all_epochs.append(br1)
-                    ir1_all_epochs.append(ir1)
-                    kappa1_all_epochs.append(kappa1)
-
-                    nr2_all_epochs.append(nr2)
-                    br2_all_epochs.append(br2)
-                    ir2_all_epochs.append(ir2)
-                    kappa2_all_epochs.append(kappa2)
-
-                    nr_all_epochs.append(nr)
-                    br_all_epochs.append(br)
-                    ir_all_epochs.append(ir)
-                    kappa_all_epochs.append(kappa)
 
                 time_per_epoch = time.time() - start_time
                 seconds_left = int((n_epochs - epoch) * time_per_epoch)
@@ -854,20 +781,10 @@ class DenseNet:
                     if epoch >= 40 and epoch % 5 == 0:
                         self.save_model(global_step=epoch)
 
-                    if acc >= best_acc:
-                        best_acc = acc
-                        self.save_model(global_step=1)
-
-                    # self.save_model(global_step = 1)
-
-            dataframe = pd.DataFrame({'train_loss1': loss1_all_epochs, 'train_loss2': loss2_all_epochs, 'train_loss3': loss3_all_epochs, 'accuracy1': acc1_all_epochs,
-                                      'accuracy2': acc2_all_epochs, 'accuracy': acc_all_epochs, 'normal_recall_1': nr1_all_epochs, 'normal_recall_2': nr2_all_epochs,
-                                      'normal_recall': nr_all_epochs, 'bleed_recall_1': br1_all_epochs, 'bleed_recall_2': br2_all_epochs, 'bleed_recall': br_all_epochs,
-                                      'inflam_recall_1': ir1_all_epochs, 'inflam_recall_2': ir2_all_epochs, 'inflam_recall': ir_all_epochs,
-                                      'kappa1': kappa1_all_epochs, 'kappa2': kappa2_all_epochs, 'kappa': kappa_all_epochs, })
-
-            dataframe.to_csv("./acc_results/B2_CGG_fwhm13/" +
-                             self.which_split + ".csv", index=True, sep=',')
+                if acc > best_acc:
+                    best_acc = acc
+                    self.save_model(global_step=epoch)
+                    print("Save model at epoch %d" % epoch)
 
             total_training_time = time.time() - total_start_time
             print("\nTotal training time: %s" % str(timedelta(
@@ -904,7 +821,7 @@ class DenseNet:
             # the class_labels for features in Net1 are 0,1,2
             class_labels1 = np.argmax(labels, axis=1).astype(np.int32)
             # the class_labels for features in Net2 are 3,4,5
-            class_labels2 = class_labels1 + 3
+            class_labels2 = class_labels1 + 8
 
             feed_dict = {
                 self.images: low_images,
@@ -953,7 +870,7 @@ class DenseNet:
                 self.batches_step += 1
                 # save loss and accuracy into Summary
                 self.log_loss_accuracy(
-                    loss1, loss2, loss3, TE_loss, acc1, acc2, acc2, self.batches_step,
+                    loss1, loss2, loss3, TE_loss, self.batches_step,
                     prefix='per_batch', should_print=False)
 
         mean_loss1 = np.mean(total_loss1)
@@ -962,37 +879,10 @@ class DenseNet:
         mean_TE_loss = np.mean(total_TE_loss)
         mean_rank_loss = np.mean(total_rank_loss)
 
-        overall_acc_1, normal_recall_1, bleed_recall_1, inflam_recall_1, kappa_1 = get_accuracy(
-            preds=total_pred1, labels=total_labels1)
-        overall_acc_2, normal_recall_2, bleed_recall_2, inflam_recall_2, kappa_2 = get_accuracy(
-            preds=total_pred2, labels=total_labels1)
-
-        total_prob1 = np.reshape(total_prob1, (-1))
-        total_prob2 = np.reshape(total_prob2, (-1))
-        ratio = superior_net2(total_prob1, total_prob2)
-        print("The ratio of higher prob2 than prob1:", ratio)
-
-        # print total_features.shape, total_labels.shape
-        # np.savetxt(train_features_path, total_features)
-        # np.savetxt(train_labels_path, total_labels, fmt = "%d")
-
         return mean_loss1, mean_loss2, mean_loss3, mean_TE_loss, \
-            mean_rank_loss, overall_acc_1, overall_acc_2
+            mean_rank_loss
 
     def test(self, batch_size):
-
-        input_path = os.path.join("./visualization/input", self.which_split)
-        # saliency_path = "./visualize_conf_maps/saliency_save/B2 + 3TOA/split2/"
-        saliency_path = "./visualize_heatmaps/B2_3TLFA"
-        dst_gt_path = "/home/xxh/Documents/Journal/dataset/test_gt_128/"
-        # dilate_gt_path = "/home/xxh/Documents/Journal/dataset/test_gt_128_dilate/"
-        # resampled_gt_path = "/home/xxh/Documents/Journal/dataset/resampled_gt/"
-
-        if not os.path.exists(input_path):
-            os.makedirs(input_path)
-        if not os.path.exists(saliency_path):
-            os.makedirs(saliency_path)
-
         total_loss1 = []
         total_loss2 = []
         total_loss3 = []
@@ -1005,29 +895,16 @@ class DenseNet:
         total_pred2 = []
         total_pred = []
         total_labels = []
-
-        # Measure the relationship between the att_acc and the prob of the correct class.
-        # lesion_att_acc1 = []
-        # lesion_att_acc2 = []
-
-        # lesion_probs1 = []
-        # lesion_probs2 = []
-
         gt_batch = np.zeros((batch_size, 128, 128, 1))
-
-        # epsilon = 1e-8
-
-        # bleed_feature = np.zeros(201)
-        # inflam_feature = np.zeros(201)
 
         for i in range(self.num_test // batch_size):
             test_high_images, test_low_images, test_labels = self.sess.run([
                 self.test_high_image_batch, self.test_low_image_batch, self.test_label_batch])
 
-            if i > 24:
-                for num in range(batch_size):
-                    gt_batch[num] = np.expand_dims(
-                        cv2.imread(os.path.join(dst_gt_path, str(i * batch_size + num) + '.jpg'), 0), axis=-1)
+            # if i > 24:
+            #     for num in range(batch_size):
+            #         gt_batch[num] = np.expand_dims(
+            #             cv2.imread(os.path.join(dst_gt_path, str(i * batch_size + num) + '.jpg'), 0), axis=-1)
 
             feed_dict = {
                 self.images: test_low_images,
@@ -1037,8 +914,18 @@ class DenseNet:
                 self.gt_map: gt_batch,
             }
 
-            fetches = [self.input2, self.cross_entropy1, self.cross_entropy2, self.sum_loss, self.TE_loss, self.saliency1,
-                       self.saliency2, self.smaps1_b2, self.smaps1_b3, self.pred1, self.pred2, self.pred]
+            fetches = [self.input2,
+                       self.cross_entropy1,
+                       self.cross_entropy2,
+                       self.sum_loss,
+                       self.TE_loss,
+                       self.saliency1,
+                       self.saliency2,
+                       self.smaps1_b2,
+                       self.smaps1_b3,
+                       self.pred1,
+                       self.pred2,
+                       self.pred]
 
             input2, loss1, loss2, loss3, TE_loss, s_map1, s_map2, smap1_b2, smap1_b3, pred1, pred2, pred = \
                 self.sess.run(fetches, feed_dict=feed_dict)
@@ -1065,89 +952,4 @@ class DenseNet:
             total_pred.append(pred)
             total_labels.append(labels)
 
-            # bleed_index = np.expand_dims(np.where(labels == 1, 1, 0), axis=-1)
-            # inflam_index = np.expand_dims(np.where(labels == 2, 1, 0), axis=-1)
-
-            # bleed_feature += np.sum(bleed_index * f1, axis = 0) # [c_num]
-            # inflam_feature += np.sum(inflam_index * f1, axis = 0)
-
-            #
-            # for index in range(batch_size):
-            #     img_index = i * batch_size + index
-            #     # if labels[index] != 0:
-            #     save_img(s_map1[index], img_index, saliency_path,
-            #              img_name='_att1.jpg', split=self.which_split, mode="heatmap")
-            #     save_img(s_map2[index], img_index, saliency_path,
-            #              img_name='_att2.jpg', split=self.which_split, mode="heatmap")
-            #     save_img(test_low_images[index], img_index, saliency_path,
-            #              img_name='_input1.jpg', split=self.which_split, mode="image")
-            #     save_img(input2[index], img_index, saliency_path,
-            #              img_name='_input2.jpg', split=self.which_split, mode="image")
-
-                # save_img(s_map1[index], img_index, saliency_path, img_name = '_att_b4.jpg', mode = "image")
-                # save_img(smap1_b2[index], img_index, saliency_path, img_name = '_att_b2.jpg', mode = "image")
-                # save_img(smap1_b3[index], img_index, saliency_path, img_name = '_att_b3.jpg', mode = "image")
-
-        # print pred1, pred2, labels
-        mean_loss1 = np.mean(total_loss1)
-        mean_loss2 = np.mean(total_loss2)
-        mean_loss3 = np.mean(total_loss3)
-        mean_TE_loss = np.mean(total_TE_loss)
-
-        overall_acc_1, normal_recall_1, bleed_recall_1, inflam_recall_1, kappa_1 = get_accuracy(
-            preds=total_pred1, labels=total_labels)
-        overall_acc_2, normal_recall_2, bleed_recall_2, inflam_recall_2, kappa_2 = get_accuracy(
-            preds=total_pred2, labels=total_labels)
-        overall_acc, normal_recall, bleed_recall, inflam_recall, kappa = get_accuracy(
-            preds=total_pred, labels=total_labels)
-
-        # print ("========================Network1======================")
-        # print_scores(normal_recall_1, bleed_recall_1, inflam_recall_1, kappa_1)
-
-        # print ("========================Network2======================")
-        # print_scores(normal_recall_2, bleed_recall_2, inflam_recall_2, kappa_2)
-
-        # print ("=================Ensembled performance================")
-        # print_scores(normal_recall, bleed_recall, inflam_recall, kappa)
-
-        total_prob1 = np.reshape(total_prob1, (-1))
-        total_prob2 = np.reshape(total_prob2, (-1))
-        ratio = superior_net2(total_prob1 - 0.0, total_prob2)
-        print("The ratio of higher prob2 than prob1:", ratio)
-
-        false_index1 = np.where(np.equal(np.reshape(
-            total_pred1, (-1)), np.reshape(total_labels, (-1))) == False)[0]
-        false_index2 = np.where(np.equal(np.reshape(
-            total_pred2, (-1)), np.reshape(total_labels, (-1))) == False)[0]
-        false_index = np.where(np.equal(np.reshape(
-            total_pred, (-1)), np.reshape(total_labels, (-1))) == False)[0]
-
-        # mean_prob1 = np.mean(total_prob1)
-        # mean_prob2 = np.mean(total_prob2)
-        # print ("The mean prob of net1 and net2 are:", mean_prob1, mean_prob2)
-
-        print('====================show misclassified images==================')
-        print('the number of misclassified examples in Net1 is:', len(false_index1))
-        # print false_index1
-
-        total_pred1 = np.reshape(total_pred1, (-1))
-        for i in range(len(false_index1)):
-            print(false_index1[i], total_pred1[false_index1[i]])
-
-        print('the number of misclassified examples in Net2 is:', len(false_index2))
-        # print false_index2
-
-        total_pred2 = np.reshape(total_pred2, (-1))
-        for i in range(len(false_index2)):
-            print(false_index2[i], total_pred2[false_index2[i]])
-
-        print('the number of misclassified examples in final classifier is:', len(
-            false_index))
-
-        total_pred = np.reshape(total_pred, (-1))
-        for i in range(len(false_index)):
-            print(false_index[i], total_pred[false_index[i]])
-
-        return mean_loss1, mean_loss2, mean_loss3, mean_TE_loss, overall_acc_1, overall_acc_2, overall_acc, \
-            normal_recall_1, bleed_recall_1, inflam_recall_1, kappa_1, normal_recall_2, bleed_recall_2, \
-            inflam_recall_2, kappa_2, normal_recall, bleed_recall, inflam_recall, kappa
+            return total_pred1, total_pred2, total_pred, total_labels
