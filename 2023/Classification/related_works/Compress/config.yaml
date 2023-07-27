@@ -4,5 +4,6 @@ parameters:
   batch_size: 128
   image_resolution: 224
   MNIST: False
-  n_classes: 10
+  n_classes: 8
   optimizer: sgd
+  path: "./downstream_folds"

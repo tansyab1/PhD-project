@@ -1,17 +1,27 @@
-from os import TMP_MAX
+# from os import TMP_MAX
 import torch
 import torch.nn as nn
-import numpy as np
-from optimizer import optim 
+# import numpy as np
+from optimizer import optim
 from pathlib import Path
-from plot import trainTestPlot
+# from plot import trainTestPlot
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+
 class Training:
-    
-    def __init__(self, model, optimizer, learning_rate, train_dataloader, num_epochs, 
-                test_dataloader, eval=True, plot=True, model_name=None, model_save=False, checkpoint=False):
+
+    def __init__(self, model,
+                 optimizer,
+                 learning_rate,
+                 train_dataloader,
+                 num_epochs,
+                 test_dataloader,
+                 eval=True,
+                 plot=True,
+                 model_name=None,
+                 model_save=False,
+                 checkpoint=False):
         self.model = model
         self.learning_rate = learning_rate
         self.optim = optimizer
@@ -27,20 +37,33 @@ class Training:
     def runner(self):
         best_accuracy = float('-inf')
         criterion = nn.CrossEntropyLoss()
-        if self.model_name in ['alexnet', 'vit', 'mlpmixer', 'resmlp', 'squeezenet', 'senet', 'mobilenetv1', 'gmlp', 'efficientnetv2']:
-            self.optimizer, scheduler = optim(model_name=self.model_name, model=self.model, lr=self.learning_rate)
+        if self.model_name in ['alexnet',
+                               'vit',
+                               'mlpmixer',
+                               'resmlp',
+                               'squeezenet',
+                               'senet',
+                               'mobilenetv1',
+                               'gmlp',
+                               'efficientnetv2']:
+            self.optimizer, scheduler = optim(
+                model_name=self.model_name,
+                model=self.model,
+                lr=self.learning_rate)
 
         elif self.optim == 'sgd':
-            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
-            
+            self.optimizer = torch.optim.SGD(
+                self.model.parameters(), lr=self.learning_rate)
+
         elif self.optim == 'adam':
-            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
-            
+            self.optimizer = torch.optim.Adam(
+                self.model.parameters(), lr=self.learning_rate)
+
         else:
             pass
-        
-        train_losses = []
-        train_accu = []
+
+        # train_losses = []
+        # train_accu = []
         test_losses = []
         test_accu = []
         # Train the model
@@ -52,7 +75,7 @@ class Training:
             for i, (images, labels) in enumerate(self.train_dataloader):
                 images = images.to(device)
                 labels = labels.to(device)
-                
+
                 # Forward pass
                 outputs = self.model(images)
                 loss = criterion(outputs, labels)
@@ -66,13 +89,16 @@ class Training:
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
-                train_loss=running_loss/len(self.train_dataloader)
+                # train_loss = running_loss/len(self.train_dataloader)
                 train_accuracy = 100.*correct/total
                 if (i+1) % 100 == 0:
-                    print ('Epoch [{}/{}], Step [{}/{}], Accuracy: {:.3f}, Train Loss: {:.4f}'
-                    .format(epoch+1, self.num_epochs, i+1, total_step, train_accuracy, loss.item()))
-                
-                
+                    print('Epoch [{}/{}], Step [{}/{}], Accuracy: {:.3f}, Train Loss: {:.4f}'
+                          .format(epoch+1,
+                                  self.num_epochs,
+                                  i+1, total_step,
+                                  train_accuracy,
+                                  loss.item()))
+
             if self.eval:
                 self.model.eval()
                 with torch.no_grad():
@@ -83,28 +109,39 @@ class Training:
                         images = images.to(device)
                         labels = labels.to(device)
                         outputs = self.model(images)
-                        loss= criterion(outputs,labels)
-                        running_loss+=loss.item()
+                        loss = criterion(outputs, labels)
+                        running_loss += loss.item()
                         _, predicted = torch.max(outputs.data, 1)
                         total += labels.size(0)
                         correct += (predicted == labels).sum().item()
-                        test_loss=running_loss/len(self.test_dataloader)
+                        test_loss = running_loss/len(self.test_dataloader)
                         test_accuracy = (correct*100)/total
-                    print('Epoch: %.0f | Test Loss: %.3f | Accuracy: %.3f'%(epoch+1, test_loss, test_accuracy))
+
+                    print('Epoch: %.0f | Test Loss: %.3f | Accuracy: %.3f' %
+                          (epoch+1, test_loss, test_accuracy))
 
             if test_accuracy > best_accuracy and self.model_save:
                 Path('model_store/').mkdir(parents=True, exist_ok=True)
-                #torch.save(self.model, 'model_store/'+self.model_name+'_best-model.pt')
-                torch.save(self.model.state_dict(), 'model_store/'+self.model_name+'best-model-parameters.pt')
+                torch.save(self.model.state_dict(), 'model_store/' +
+                           self.model_name+'best-model-parameters.pt')
 
             for p in self.optimizer.param_groups:
-                    print(f"Epoch {epoch+1} Learning Rate: {p['lr']}")
+                print(f"Epoch {epoch+1} Learning Rate: {p['lr']}")
 
-            if self.model_name in ['alexnet', 'vit', 'mlpmixer', 'resmlp', 'squeezenet', 'senet', 'mobilenetv1', 'gmlp', 'efficientnetv2']:
+            if self.model_name in ['alexnet',
+                                   'vit',
+                                   'mlpmixer',
+                                   'resmlp',
+                                   'squeezenet',
+                                   'senet',
+                                   'mobilenetv1',
+                                   'gmlp',
+                                   'efficientnetv2']:
                 scheduler.step()
 
             if self.checkpoint:
-                path = 'checkpoints/checkpoint{:04d}.pth.tar'.format(epoch)
+                path = 'checkpoints/ '+self.model_name + \
+                    '/checkpoint{:04d}.pth.tar'.format(epoch)
                 Path('checkpoints/').mkdir(parents=True, exist_ok=True)
                 torch.save(
                     {
@@ -115,10 +152,10 @@ class Training:
                     }, path
                 )
 
-
-            train_accu.append(train_accuracy)
-            train_losses.append(train_loss)
+            # train_accu.append(train_accuracy)
+            # train_losses.append(train_loss)
             test_losses.append(test_loss)
             test_accu.append(test_accuracy)
-    
-        trainTestPlot(self.plot, train_accu, test_accu, train_losses, test_losses, self.model_name)
+
+        # trainTestPlot(self.plot, train_accu, test_accu,
+        #               train_losses, test_losses, self.model_name)
