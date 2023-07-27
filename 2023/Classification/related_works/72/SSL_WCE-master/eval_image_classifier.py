@@ -34,7 +34,6 @@ tf.app.flags.DEFINE_string('log_dir', './logs/',
                            'Directory name to save the logs')
 
 
-
 #########################
 #     Model Settings    #
 #########################
@@ -59,10 +58,10 @@ tf.app.flags.DEFINE_integer('batch_size', 45,
                             'The number of samples in each batch.')
 
 tf.app.flags.DEFINE_integer("dataset_size", 450,
-                     "the number of testing data in one epoch")
+                            "the number of testing data in one epoch")
 
 tf.app.flags.DEFINE_integer("train_image_size", 128,
-                     "train_image_size")
+                            "train_image_size")
 
 tf.app.flags.DEFINE_integer('max_number_of_epochs', 70,
                             'The maximum number of training steps.')
@@ -141,10 +140,10 @@ tf.app.flags.DEFINE_integer('num_preprocessing_threads', 4,
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 
-tf.app.flags.DEFINE_integer("min_after_dequeue", 128, 
+tf.app.flags.DEFINE_integer("min_after_dequeue", 128,
                             "min nums data filename in queue")
 
-tf.app.flags.DEFINE_integer("capacity", 200, 
+tf.app.flags.DEFINE_integer("capacity", 200,
                             "capacity")
 
 
@@ -153,7 +152,7 @@ FLAGS = tf.app.flags.FLAGS
 
 def main(_):
     # create folders
-    #mkdir_if_missing(FLAGS.log_dir)
+    # mkdir_if_missing(FLAGS.log_dir)
     mkdir_if_missing(FLAGS.attention_map)
     # training
     eval_models.train()

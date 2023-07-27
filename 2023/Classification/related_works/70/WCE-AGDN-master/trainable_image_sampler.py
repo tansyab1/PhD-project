@@ -13,6 +13,7 @@ The comparison results of CGG + SGG, CGG only, and SGG only are shown in the TAB
 # import cv2
 import numpy as np
 import tensorflow as tf
+import tensorflow_addons as tfa
 # from matplotlib import pyplot as plt
 
 
@@ -152,11 +153,11 @@ def generate_structured_grid(saliency, batch_size, src_size, dst_size, grid_size
     # generate the 31*31 sampling grids to resample the feature maps, and further achieves transformation equivariance.
     sample_grids = tf.concat([src_xgrids, src_ygrids],
                              axis=-1)  # (8, 31, 31, 2)
-    src_grids = tf.image.resize_images(
+    src_grids = tf.image.resize(
         sample_grids, (dst_size, dst_size))  # (8, 128, 128, 2)
 
-    # src_xgrids = tf.image.resize_images(src_xgrids, (dst_size, dst_size)) # (8, 128, 128, 1)
-    # src_ygrids = tf.image.resize_images(src_ygrids, (dst_size, dst_size)) # (8, 128, 128, 1)
+    # src_xgrids = tf.image.resize(src_xgrids, (dst_size, dst_size)) # (8, 128, 128, 1)
+    # src_ygrids = tf.image.resize(src_ygrids, (dst_size, dst_size)) # (8, 128, 128, 1)
 
     # src_grids = tf.concat([src_xgrids, src_ygrids], axis = -1) # (8, 128, 128, 2)
 
@@ -198,7 +199,7 @@ def generate_pixel_grid(saliency, batch_size, src_size, dst_size, grid_size=31, 
     sample_grids = tf.concat([src_xgrids, src_ygrids],
                              axis=-1)  # (8, 31, 31, 2)
     # the last dimension denotes x and y.
-    src_grids = tf.image.resize_images(sample_grids, (dst_size, dst_size))
+    src_grids = tf.image.resize(sample_grids, (dst_size, dst_size))
 
     return sample_grids, src_grids
 
@@ -230,6 +231,6 @@ def get_resampled_images(image, saliency, batch_size, src_size, dst_size, paddin
     src_grids = (1.0 - lamda) * structured_src_grids + \
         lamda * pixel_wise_src_grids
 
-    resampled_image = tf.contrib.resampler.resampler(image, src_grids)
+    resampled_image = tfa.image.resampler(image, src_grids)
 
     return resampled_image

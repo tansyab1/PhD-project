@@ -20,6 +20,7 @@ def get_image_label_batch(config, shuffle, name):
         image_batch, label_batch = Data.read_processing_generate_image_label_batch()
     return image_batch, label_batch
 
+
 def count_trainable_params():
     total_parameters = 0
     a = []
@@ -33,6 +34,7 @@ def count_trainable_params():
     print("Total training params: %.1fM" % (total_parameters / 1e6))
     return total_parameters
 
+
 class ImageData:
 
     def __init__(self, load_size, channels):
@@ -42,13 +44,14 @@ class ImageData:
     def image_processing(self, filename):
         x = tf.read_file(filename)
         x_decode = tf.image.decode_jpeg(x, channels=self.channels)
-        img = tf.image.resize_images(x_decode, [self.load_size, self.load_size])
+        img = tf.image.resize_images(
+            x_decode, [self.load_size, self.load_size])
         img = tf.cast(img, tf.float32) / 127.5 - 1
 
         return img
 
 
-#def load_mnist(size=64):
+# def load_mnist(size=64):
 #    (train_data, train_labels), (test_data, test_labels) = mnist.load_data()
 #    train_data = normalize(train_data)
 #    test_data = normalize(test_data)
@@ -103,34 +106,40 @@ def preprocessing(x, size):
     x = normalize(x)
     return x
 
-def normalize(x) :
+
+def normalize(x):
     return x/127.5 - 1
+
 
 def save_images(images, size, image_path):
     return imsave(inverse_transform(images), size, image_path)
+
 
 def merge(images, size):
     images = np.nan_to_num(images)
     h, w = images.shape[1], images.shape[2]
     h, w = 128, 128
-    if (images.shape[3] in (3,4)):
+    if (images.shape[3] in (3, 4)):
         c = images.shape[3]
         img = np.zeros((h * size[0], w * size[1], c))
         for idx, image in enumerate(images):
             i = idx % size[1]
             j = idx // size[1]
-            img[j * h:j * h + h, i * w:i * w + w, :] = cv2.resize(image,(h,w))
+            img[j * h:j * h + h, i * w:i * w +
+                w, :] = cv2.resize(image, (h, w))
             #img[j * h:j * h + h, i * w:i * w + w, :] = image
         return img
-    elif images.shape[3]==1:
+    elif images.shape[3] == 1:
         img = np.zeros((h * size[0], w * size[1]))
         for idx, image in enumerate(images):
             i = idx % size[1]
             j = idx // size[1]
-            img[j * h:j * h + h, i * w:i * w + w] = cv2.resize(image,(h,w))
+            img[j * h:j * h + h, i * w:i * w + w] = cv2.resize(image, (h, w))
         return img
     else:
-        raise ValueError('in merge(images,size) images parameter ''must have dimensions: HxW or HxWx3 or HxWx4')
+        raise ValueError(
+            'in merge(images,size) images parameter ''must have dimensions: HxW or HxWx3 or HxWx4')
+
 
 def imsave(images, size, path):
     # image = np.squeeze(merge(images, size)) # 채널이 1인거 제거 ?
@@ -146,12 +155,15 @@ def check_folder(log_dir):
         os.makedirs(log_dir)
     return log_dir
 
+
 def show_all_variables():
     model_vars = tf.trainable_variables()
     slim.model_analyzer.analyze_vars(model_vars, print_info=True)
 
+
 def str2bool(x):
     return x.lower() in ('true')
+
 
 @add_arg_scope
 def conv2layer(images, kernel, stride, output_channel, activation='relu', padding_mode='SAME', bn=False,
@@ -166,7 +178,8 @@ def conv2layer(images, kernel, stride, output_channel, activation='relu', paddin
         #                          shape=[output_channel],
         #                          dtype=tf.float32,
         #                          initializer=tf.constant_initializer(0.1))
-        hidden = tf.layers.conv2d(images, output_channel, kernel, stride, padding_mode)
+        hidden = tf.layers.conv2d(
+            images, output_channel, kernel, stride, padding_mode)
         if bn:
             hidden = bn2(images=hidden, training=trainning, scope='bn')
         if activation == 'relu':
@@ -181,58 +194,65 @@ def conv2layer(images, kernel, stride, output_channel, activation='relu', paddin
         # else:
         #     return pre_activation
 
+
 @add_arg_scope
 def deconv2layer(images, kernel, stride, output_channel, activation='relu', padding_mode='SAME', bn=False, trainning=False, scope='coner2'):
     with tf.variable_scope(scope):
         # input_channel = images.get_shape().as_list()[3]
 
-        hidden = tf.layers.conv2d_transpose(images, output_channel, kernel, stride, padding_mode)
+        hidden = tf.layers.conv2d_transpose(
+            images, output_channel, kernel, stride, padding_mode)
         if bn:
             hidden = bn2(images=hidden, training=trainning, scope='bn')
         if activation == 'relu':
-            hidden =  tf.nn.relu(hidden)
+            hidden = tf.nn.relu(hidden)
             return hidden
         else:
             return hidden
+
 
 @add_arg_scope
 def pool2layer(images, kernel, stride, pooling_mode='max', padding_mode='SAME', scope='pool2'):
     with tf.variable_scope(scope):
         if pooling_mode == 'max':
             return tf.nn.max_pool(images, ksize=[1, kernel[0], kernel[1], 1], strides=[1, stride, stride, 1],
-                               padding=padding_mode, name="pooling1")
+                                  padding=padding_mode, name="pooling1")
         else:
             return tf.nn.avg_pool(images, ksize=[1, kernel[0], kernel[1], 1], strides=[1, stride, stride, 1],
                                   padding=padding_mode, name="pooling1")
-        
+
+
 @add_arg_scope
-def lrn(images,scope='lrn'):
+def lrn(images, scope='lrn'):
     with tf.variable_scope(scope):
         return tf.nn.lrn(images, depth_radius=4, bias=1.0, alpha=0.001 / 9.0,
-                              beta=0.75, name='lrn')
+                         beta=0.75, name='lrn')
+
 
 @add_arg_scope
 def bn2(images, training, scope):
     with tf.variable_scope(scope):
-        return batch_norm(inputs=images,scope=scope,
-                   updates_collections=None,
-                   decay=0.9,
-                   center=True,
-                   scale=True,
-                   zero_debias_moving_mean=True, is_training=training)
+        return batch_norm(inputs=images, scope=scope,
+                          updates_collections=None,
+                          decay=0.9,
+                          center=True,
+                          scale=True,
+                          zero_debias_moving_mean=True, is_training=training)
+
 
 @add_arg_scope
 def PReLU(x, scope):
     # PReLU(x) = x if x > 0, alpha*x otherwise
 
     alpha = tf.get_variable(scope + "/alpha", shape=[1],
-                initializer=tf.constant_initializer(0), dtype=tf.float32)
+                            initializer=tf.constant_initializer(0), dtype=tf.float32)
 
     output = tf.nn.relu(x) + alpha*(x - abs(x))*0.5
 
     return output
 
-@add_arg_scope# function for 2D spatial dropout:
+
+@add_arg_scope  # function for 2D spatial dropout:
 def spatial_dropout(x, drop_prob):
     # x is a tensor of shape [batch_size, height, width, channels]
 

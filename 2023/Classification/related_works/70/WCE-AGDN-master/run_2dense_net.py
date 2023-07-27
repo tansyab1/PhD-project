@@ -1,4 +1,5 @@
 import argparse
+
 # import tensorflow as tf
 
 """
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     print("Initialize the model..")
     model = DenseNet(**model_params)
     if args.train:
-        model.load_model()
+        # model.load_model()
         model.train_all_epochs(train_params)
     if args.test:
         if not args.train:

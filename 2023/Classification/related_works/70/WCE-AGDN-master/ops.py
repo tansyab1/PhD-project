@@ -3,7 +3,7 @@ This script contains some functions used by the AGDN model.
 Note that many function were written in the exploration process but not used in the model.
 """
 import tensorflow as tf
-import tensorflow.contrib as tf_contrib
+# import tensorflow.contrib as tf_contrib
 import numpy as np
 import cv2
 import os
@@ -149,7 +149,7 @@ def co_attention_layer(f1, f2):
     attention map of block4 to assign channel attention for block3.
     Then compute the attention map of block3 as the weight sum of all channels.
     """
-    with tf.variable_scope("Co_attention_layer"):
+    with tf.compat.v1.variable_scope("Co_attention_layer"):
         f1 = tf.nn.relu(f1)
         f2 = tf.nn.relu(f2)
 
@@ -183,8 +183,8 @@ def lesion_att_acc(img_index, gt_img, pixel_preds, pred_fg, prob, mode="Net1"):
     """
     Sum of attention in the intersection area of att_mask and gt / sum of attention in the att_mask area.
     """
-    print(np.max(gt_img), np.max(pred_fg), np.max(pixel_preds))
-    print(gt_img.shape, pred_fg.shape, pixel_preds.shape)
+    # print(np.max(gt_img), np.max(pred_fg), np.max(pixel_preds))
+    # print(gt_img.shape, pred_fg.shape, pixel_preds.shape)
     intersect = np.sum(gt_img * pred_fg)  # * pixel_preds
     # + np.sum(pixel_preds) - intersect * pixel_preds
     total_fg = np.sum(pred_fg)

@@ -19,7 +19,7 @@ weight_regularizer = None
 
 
 def conv(x, channels, kernel=4, stride=2, pad=0, pad_type='zero', use_bias=True, sn=False, scope='conv_0'):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         if pad_type == 'zero':
             x = tf.pad(x, [[0, 0], [pad, pad], [pad, pad], [0, 0]])
         if pad_type == 'reflect':
@@ -27,20 +27,16 @@ def conv(x, channels, kernel=4, stride=2, pad=0, pad_type='zero', use_bias=True,
                        pad, pad], [0, 0]], mode='REFLECT')
 
         if sn:
-            w = tf.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
-                                regularizer=weight_regularizer)
-            x = tf.nn.conv2d(input=x, filter=spectral_norm(w),
-                             strides=[1, stride, stride, 1], padding='VALID')
+            w = tf.compat.v1.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
+                                          regularizer=weight_regularizer)
+            x = tf.nn.conv2d(input=x, filters=spectral_norm(
+                w), strides=[1, stride, stride, 1], padding='VALID')
             if use_bias:
-                bias = tf.get_variable(
+                bias = tf.compat.v1.get_variable(
                     "bias", [channels], initializer=tf.constant_initializer(0.0))
                 x = tf.nn.bias_add(x, bias)
 
         else:
-            # x = tf.layers.conv2d(inputs=x, filters=channels,
-            #                     kernel_size=kernel, kernel_initializer=weight_init,
-            #                     kernel_regularizer=weight_regularizer,
-            #                     strides=stride, use_bias=use_bias)
             x = tf.contrib.layers.conv2d(inputs=x, num_outputs=channels, kernel_size=kernel,
                                          stride=stride, padding='VALID',
                                          activation_fn=None,
@@ -50,7 +46,7 @@ def conv(x, channels, kernel=4, stride=2, pad=0, pad_type='zero', use_bias=True,
 
 
 def atrous_conv2d(x, channels, kernel=3, rate=2, pad=0, pad_type='zero', use_bias=True, sn=False, scope='conv_0'):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         if pad_type == 'zero':
             x = tf.pad(x, [[0, 0], [pad, pad], [pad, pad], [0, 0]])
         if pad_type == 'reflect':
@@ -58,25 +54,25 @@ def atrous_conv2d(x, channels, kernel=3, rate=2, pad=0, pad_type='zero', use_bia
                        pad, pad], [0, 0]], mode='REFLECT')
 
         if sn:
-            w = tf.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
-                                regularizer=weight_regularizer)
+            w = tf.compat.v1.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
+                                          regularizer=weight_regularizer)
             x = tf.nn.atrous_conv2d(
                 value=x, filters=spectral_norm(w), rate=2, padding='SAME')
             if use_bias:
-                bias = tf.get_variable(
+                bias = tf.compat.v1.get_variable(
                     "bias", [channels], initializer=tf.constant_initializer(0.0))
                 x = tf.nn.bias_add(x, bias)
 
         else:
-            w = tf.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
-                                regularizer=weight_regularizer)
+            w = tf.compat.v1.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
+                                          regularizer=weight_regularizer)
             x = tf.nn.atrous_conv2d(value=x, filters=w, rate=2, padding='SAME')
 
     return x
 
 
 def atrous_pool2d(x, channels, kernel=3, rate=2, pad=0, pad_type='zero', use_bias=True, sn=False, scope='conv_0'):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         if pad_type == 'zero':
             x = tf.pad(x, [[0, 0], [pad, pad], [pad, pad], [0, 0]])
         if pad_type == 'reflect':
@@ -89,20 +85,20 @@ def atrous_pool2d(x, channels, kernel=3, rate=2, pad=0, pad_type='zero', use_bia
             x = tf.nn.atrous_conv2d(
                 value=x, filters=spectral_norm(w), rate=2, padding='SAME')
             if use_bias:
-                bias = tf.get_variable(
+                bias = tf.compat.v1.get_variable(
                     "bias", [channels], initializer=tf.constant_initializer(0.0))
                 x = tf.nn.bias_add(x, bias)
 
         else:
-            w = tf.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
-                                regularizer=weight_regularizer)
+            w = tf.compat.v1.get_variable("kernel", shape=[kernel, kernel, x.get_shape()[-1], channels], initializer=weight_init,
+                                          regularizer=weight_regularizer)
             x = tf.nn.atrous_conv2d(value=x, filters=w, rate=2, padding='SAME')
 
     return x
 
 
 def deconv(x, channels, kernel=4, stride=2, padding='SAME', use_bias=True, sn=False, scope='deconv_0'):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         x_shape = x.get_shape().as_list()
 
         if padding == 'SAME':
@@ -114,36 +110,35 @@ def deconv(x, channels, kernel=4, stride=2, padding='SAME', use_bias=True, sn=Fa
                 kernel - stride, 0), x_shape[2] * stride + max(kernel - stride, 0), channels]
 
         if sn:
-            w = tf.get_variable("kernel", shape=[kernel, kernel, channels, x.get_shape(
+            w = tf.compat.v1.get_variable("kernel", shape=[kernel, kernel, channels, x.get_shape(
             )[-1]], initializer=weight_init, regularizer=weight_regularizer)
-            x = tf.nn.conv2d_transpose(x, filter=spectral_norm(
+            x = tf.nn.conv2d_transpose(x, filters=spectral_norm(
                 w), output_shape=output_shape, strides=[1, stride, stride, 1], padding=padding)
 
             if use_bias:
-                bias = tf.get_variable(
+                bias = tf.compat.v1.get_variable(
                     "bias", [channels], initializer=tf.constant_initializer(0.0))
                 x = tf.nn.bias_add(x, bias)
 
         else:
-            x = tf.layers.conv2d_transpose(inputs=x, filters=channels,
-                                           kernel_size=kernel, kernel_initializer=weight_init, kernel_regularizer=weight_regularizer,
-                                           strides=stride, padding=padding, use_bias=use_bias)
+            x = tf.keras.layers.Conv2DTranspose(filters=channels, kernel_size=kernel, strides=stride, padding=padding,
+                                                activation=None, use_bias=use_bias, kernel_initializer=weight_init)(x)
 
         return x
 
 
 def fully_conneted(x, units, use_bias=True, sn=False, scope='fully_0'):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         x = flatten(x)
         shape = x.get_shape().as_list()
         channels = shape[-1]
 
         if sn:
-            w = tf.get_variable("kernel", [channels, units], tf.float32,
-                                initializer=weight_init, regularizer=weight_regularizer)
+            w = tf.compat.v1.get_variable("kernel", [channels, units], tf.float32,
+                                          initializer=weight_init, regularizer=weight_regularizer)
             if use_bias:
-                bias = tf.get_variable("bias", [units],
-                                       initializer=tf.constant_initializer(0.0))
+                bias = tf.compat.v1.get_variable("bias", [units],
+                                                 initializer=tf.constant_initializer(0.0))
 
                 x = tf.matmul(x, spectral_norm(w)) + bias
             else:
@@ -171,15 +166,22 @@ def hw_flatten(x):
 # Definition of the regular 2D convolutional
 def deform_conv(x, kernel_size, stride, output_channals, mode):
     if mode == 'offset':
-        layer_output = tf.layers.conv2d(
-            x, filters=output_channals, kernel_size=kernel_size, strides=stride, padding='SAME',
-            kernel_initializer=tf.zeros_initializer(), bias_initializer=tf.zeros_initializer())
+        layer_output = tf.keras.layers.Conv2D(filters=kernel_size*kernel_size*2,
+                                              kernel_size=kernel_size,
+                                              strides=stride,
+                                              padding='SAME',
+                                              kernel_initializer=tf.zeros_initializer(),
+                                              bias_initializer=tf.zeros_initializer())(x)
         layer_output = tf.clip_by_value(
             layer_output, -0.25*int(x.shape[1]), 0.25*int(x.shape[1]))
     if mode == 'weight':
-        layer_output = tf.layers.conv2d(
-            x, filters=output_channals, kernel_size=kernel_size, strides=stride, padding='SAME',
-            bias_initializer=tf.zeros_initializer())
+        layer_output = tf.keras.layers.Conv2D(filters=kernel_size*kernel_size*output_channals,
+                                              kernel_size=kernel_size,
+                                              strides=stride,
+                                              padding='SAME',
+                                              kernel_initializer=tf.zeros_initializer(),
+                                              bias_initializer=tf.zeros_initializer())(x)
+
     if mode == 'feature':
         #layer_output = tf.layers.conv2d(x, filters=output_channals, kernel_size=kernel_size, strides=kernel_size, padding='SAME', kernel_initializer = tf.constant_initializer(0.5), bias_initializer = tf.zeros_initializer())
         #layer_output = tf.layers.conv2d(x, filters=output_channals, kernel_size=kernel_size, strides=kernel_size, padding='SAME', initializer=weight_init,regularizer=weight_regularizer)
@@ -255,7 +257,7 @@ def reshape_x_offset(x_offset, kernel_size):
 
 def deform_con2v(input, num_outputs, kernel_size, stride, trainable, name, reuse):
     N = kernel_size ** 2
-    with tf.variable_scope(name, reuse=reuse):
+    with tf.compat.v1.variable_scope(name, reuse=reuse):
         bs, h, w, C = input.get_shape().as_list()
 
         # offset with shape [batch_size, h, w, 2N]
@@ -377,8 +379,8 @@ def spectral_norm(w, iteration=1):
     w_shape = w.shape.as_list()
     w = tf.reshape(w, [-1, w_shape[-1]])
 
-    u = tf.get_variable(
-        "u", [1, w_shape[-1]], initializer=tf.truncated_normal_initializer(), trainable=False)
+    u = tf.compat.v1.get_variable(
+        "u", [1, w_shape[-1]], initializer=tf.compat.v1.truncated_normal_initializer(), trainable=False)
 
     u_hat = u
     v_hat = None

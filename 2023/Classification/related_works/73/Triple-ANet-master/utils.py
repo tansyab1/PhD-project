@@ -14,11 +14,11 @@ from tflearn.layers.conv import global_avg_pool
 import utilsForTF
 
 
-def get_image_label_batch(config, shuffle, name):
-    with tf.name_scope('get_batch'):
-        Data = utilsForTF.Data_set(config, shuffle=shuffle, name=name)
-        image_batch, label_batch = Data.read_processing_generate_image_label_batch()
-    return image_batch, label_batch
+# def get_image_label_batch(config, shuffle, name):
+#     with tf.name_scope('get_batch'):
+#         Data = utilsForTF.Data_set(config, shuffle=shuffle, name=name)
+#         image_batch, label_batch = Data.read_processing_generate_image_label_batch()
+#     return image_batch, label_batch
 
 def count_trainable_params():
     total_parameters = 0

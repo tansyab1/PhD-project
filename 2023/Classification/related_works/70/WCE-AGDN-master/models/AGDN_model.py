@@ -1,17 +1,20 @@
 
 
-from trainable_image_sampler import get_resampled_images
-from high_low_res_data_provider import get_image_label_batch
-# import pandas as pd  # used to write and read csv files.
-import tensorflow as tf
-import numpy as np
-from datetime import timedelta
-from ops1 import deform_con2v, conv, hw_flatten
-from ops import generate_seg
-import shutil
-import time
-# import cv2
+from sklearn.metrics import accuracy_score
 import os
+import time
+import shutil
+from tqdm import tqdm
+from ops import generate_seg
+from ops1 import deform_con2v, conv, hw_flatten
+from datetime import timedelta
+import numpy as np
+from trainable_image_sampler import get_resampled_images
+from high_low_res_data_provider import Data_set
+# import pandas as pd  # used to write and read csv files.
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+# import cv2
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # assign the GPU.
 
 TF_VERSION = float('.'.join(tf.__version__.split('.')[:2]))
@@ -28,7 +31,7 @@ class DenseNet:
                  **kwargs):
 
         self.data_shape = (128, 128, 3)
-        self.n_classes = 3
+        self.n_classes = 8
         self.depth = depth
         self.growth_rate = growth_rate
         # how many features will be received after first convolution
@@ -68,13 +71,13 @@ class DenseNet:
         self.batches_step = 0
         self.batch_size = 8
 
-        self.num_train = 9688
-        self.num_test = 2400
+        self.num_train = 200
+        self.num_test = 48
 
         # self.num_train = 80
         # self.num_test =600
 
-        self.src_size = 320
+        self.src_size = 336
         self.dst_size = 128
 
         self.margin = 0.05
@@ -86,10 +89,10 @@ class DenseNet:
 
     def _initialize_session(self):
         """Initialize session, variables, saver"""
-        config = tf.ConfigProto()
+        # config = tf.compat.v1.ConfigProto()
         # restrict model GPU memory utilization to min required
-        config.gpu_options.allow_growth = True
-        self.sess = tf.Session(config=config)
+        # config.gpu_options.allow_growth = True
+        self.sess = tf.compat.v1.Session()
 
         # tf_ver = int(tf.__version__.split('.')[1])
         if TF_VERSION <= 0.10:
@@ -98,7 +101,7 @@ class DenseNet:
         else:
             self.sess.run(tf.global_variables_initializer())
             logswriter = tf.summary.FileWriter
-        self.saver = tf.train.Saver()
+        self.saver = tf.compat.v1.train.Saver()
         self.summary_writer = logswriter(self.logs_path)
 
     def _count_trainable_params(self):
@@ -119,10 +122,10 @@ class DenseNet:
             save_path = self._save_path
         except AttributeError:
             # save_path = 'saves/%s' % self.model_identifier
-            save_path = 'previous_ckpt/B2_3TOA_previous/' + self.which_split
+            save_path = 'previous_ckpts/'
             if not os.path.exists(save_path):
                 os.makedirs(save_path)
-            save_path = os.path.join(save_path, 'model.chkpt-1')
+            save_path = os.path.join(save_path, 'model')
             self._save_path = save_path
         return save_path
 
@@ -145,7 +148,9 @@ class DenseNet:
             self.model_type, self.growth_rate, self.depth)
 
     def save_model(self, global_step=None):
+        # save the model to the save path.
         self.saver.save(self.sess, self.save_path, global_step=global_step)
+        print("Model saved to %s" % self.save_path)
 
     def load_model(self):
         self.saver.restore(self.sess, self.save_path)
@@ -208,7 +213,7 @@ class DenseNet:
         - dropout, if required
         """
         # the function batch_norm, conv2d, dropout are defined in the following part.
-        with tf.variable_scope("composite_function"):
+        with tf.compat.v1.variable_scope("composite_function"):
             # BN
             output = self.batch_norm(_input)
             # ReLU
@@ -222,7 +227,7 @@ class DenseNet:
         return output
 
     def bottleneck(self, _input, out_features):
-        with tf.variable_scope("bottleneck"):
+        with tf.compat.v1.variable_scope("bottleneck"):
             output = self.batch_norm(_input)
             output = tf.nn.relu(output)
             inter_features = out_features * 4
@@ -255,7 +260,7 @@ class DenseNet:
         """Add N H_l internal layers"""
         output = _input
         for layer in range(layers_per_block[block]):
-            with tf.variable_scope("layer_%d" % layer):
+            with tf.compat.v1.variable_scope("layer_%d" % layer):
                 output = self.add_internal_layer(output, growth_rate)
         return output
 
@@ -277,7 +282,7 @@ class DenseNet:
         The Third-order Long-range Feature Aggregation module,
         containing deformable convolution and second-order covariance.
         """
-        with tf.variable_scope(scope, reuse=reuse):
+        with tf.compat.v1.variable_scope(scope, reuse=reuse):
 
             c_num = channels // de
 
@@ -307,7 +312,7 @@ class DenseNet:
             o = tf.reshape(o, shape=x.shape)  # [bs, h, w, C]
             output = gamma * o + x
 
-            print("TLFA output:", output)
+            # print("TLFA output:", output)
         return output
 
     # after block4, convert the 7*7 feature map to 1*1 by average pooling.
@@ -328,23 +333,23 @@ class DenseNet:
         # average pooling
         last_pool_kernel = int(output.get_shape()[-2])
         output = self.avg_pool(output, k=last_pool_kernel)
-        print(output.shape)
+        # print(output.shape)
         # FC
 
         features = tf.reshape(output, [self.batch_size, -1])
 
-        with tf.variable_scope("final_layer") as scope:
-            output = self.conv2d(output, out_features=3, kernel_size=1)
+        with tf.compat.v1.variable_scope("final_layer") as scope:
+            output = self.conv2d(output, out_features=8, kernel_size=1)
 
             scope.reuse_variables()
             spatial_output = self.conv2d(
-                spatial_features, out_features=3, kernel_size=1)
+                spatial_features, out_features=8, kernel_size=1)
             spatial_pred = tf.nn.softmax(spatial_output)  # (16, 14, 14, 3)
             # spatial_pred = tf.reshape(spatial_pred, [self.batch_size, -1, 3]) # (16, 196, 3)
-        print(output.shape, spatial_pred.shape)
+        # print(output.shape, spatial_pred.shape)
 
         logits = tf.reshape(output, [-1, self.n_classes])
-        print(features.shape, logits.shape)
+        # print(features.shape, logits.shape)
 
         return features, logits, spatial_pred
 
@@ -368,10 +373,12 @@ class DenseNet:
         # output = tf.contrib.layers.batch_norm(
         #     _input, scale=True, is_training=self.is_training,
         #     updates_collections=None)
-        output = tf.contrib.layers.batch_norm(
-            _input, decay=0.9, epsilon=1e-05,
-            center=True, scale=True, is_training=self.is_training,
-            updates_collections=None)
+        output = tf.keras.layers.BatchNormalization(
+            axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True,
+            beta_initializer='zeros', gamma_initializer='ones',
+            moving_mean_initializer='zeros', moving_variance_initializer='ones',
+            beta_regularizer=None, gamma_regularizer=None, beta_constraint=None,
+            gamma_constraint=None)(inputs=_input, training=self.is_training)
 
         return output
 
@@ -390,14 +397,14 @@ class DenseNet:
         return tf.get_variable(
             name=name,
             shape=shape,
-            initializer=tf.contrib.layers.variance_scaling_initializer())
+            initializer=tf.keras.initializers.he_normal())
         # an initializer that generates tensors with unit variance.
 
     def weight_variable_xavier(self, shape, name):
         return tf.get_variable(
             name,
             shape=shape,
-            initializer=tf.contrib.layers.xavier_initializer())
+            initializer=tf.keras.initializers.glorot_normal())
 
     def bias_variable(self, shape, name='bias'):
         initial = tf.constant(0.0, shape=shape)
@@ -472,29 +479,29 @@ class DenseNet:
         growth_rate = self.growth_rate
         layers_per_block = self.layers_per_block
 
-        with tf.variable_scope("Initial_convolution"):
+        with tf.compat.v1.variable_scope("Initial_convolution"):
             output = self.conv2d(
                 _input,
                 out_features=self.first_output_features,
                 kernel_size=3, strides=[1, 1, 1, 1])
-            print(output.shape)
+            # print(output.shape)
 
-        with tf.variable_scope("Initial_pooling"):
+        with tf.compat.v1.variable_scope("Initial_pooling"):
             output = tf.nn.max_pool(output, ksize=[1, 3, 3, 1], strides=[
                                     1, 2, 2, 1], padding='SAME')
-            print(output.shape)
+            # print(output.shape)
 
         # add N required blocks
         for block in range(self.total_blocks):
-            with tf.variable_scope("Block_%d" % block):
+            with tf.compat.v1.variable_scope("Block_%d" % block):
                 output = self.add_block(
                     block, output, growth_rate, layers_per_block)
-            print(output.shape)
+            # print(output.shape)
 
             if block != self.total_blocks - 1:
-                with tf.variable_scope("Transition_after_block_%d" % block):
+                with tf.compat.v1.variable_scope("Transition_after_block_%d" % block):
                     output = self.transition_layer(output)
-                    print(output.shape)
+                    # print(output.shape)
             #
             if block == 0:
                 output = self.TLFA(output, int(
@@ -516,7 +523,7 @@ class DenseNet:
         f_maps = output
 
         # the last block is followed by a "transition_to_classes" layer.
-        with tf.variable_scope("Transition_to_classes"):
+        with tf.compat.v1.variable_scope("Transition_to_classes"):
             features, logits, spatial_pred = self.transition_layer_to_classes(
                 f_maps)
 
@@ -524,7 +531,7 @@ class DenseNet:
 
     def _build_graph(self):
 
-        with tf.variable_scope("net1"):
+        with tf.compat.v1.variable_scope("net1"):
             f_maps1, fmaps1_b2, fmaps1_b3, self.features1, logits1, spatial_pred1 = self.network(
                 self.images)
             self.pred1 = tf.nn.softmax(logits1)
@@ -543,7 +550,8 @@ class DenseNet:
             padding_size=30,
             lamda=self.lamda))
 
-        # self.input2 = self.images
+        # print("input2:", self.input2.shape)
+        # print("images:", self.images.shape)
 
         self.resampled_s_map1 = get_resampled_images(
             self.s_map1, self.s_map1, self.batch_size, 31, 8, padding_size=30, lamda=self.lamda)
@@ -554,7 +562,7 @@ class DenseNet:
             resampled_saliency1, (128, 128))  # (8, 128, 128, 3)
         self.resampled_seg_map1 = generate_seg(self.resampled_saliency1)
 
-        with tf.variable_scope("net2"):
+        with tf.compat.v1.variable_scope("net2"):
             f_maps2, fmaps2_b2, fmaps2_b3, self.features2, logits2, spatial_pred2 = self.network(
                 self.input2)
             self.pred2 = tf.nn.softmax(logits2)
@@ -571,13 +579,14 @@ class DenseNet:
 
         total_fmaps = tf.concat(axis=3, values=(f_maps1, f_maps2))
 
-        with tf.variable_scope("Sum_branch"):
+        with tf.compat.v1.variable_scope("Sum_branch"):
             _, logits, _ = self.transition_layer_to_classes(total_fmaps)
             self.pred = tf.nn.softmax(logits)
 
         # weighted loss:
         class_weights = tf.constant([1, 1, 1])
         weights = tf.gather(class_weights, tf.argmax(self.labels, axis=-1))
+
         cross_entropy1 = tf.reduce_mean(tf.losses.softmax_cross_entropy(
             self.labels, logits1, weights=weights, label_smoothing=0.1))
         self.cross_entropy1 = cross_entropy1
@@ -593,13 +602,13 @@ class DenseNet:
             self.labels, logits, weights=weights, label_smoothing=0.1))
 
         self.grads = tf.gradients(self.cross_entropy2, self.images)[0]
-        print('gradients from loss2 to input1:', self.grads)
+        # print('gradients from loss2 to input1:', self.grads)
 
         # force the pred2 more accurate than pred1
         self.rank_loss_2_1 = self.rank_loss(self.pred1, self.pred2)
 
         rank_grad = tf.gradients(self.rank_loss_2_1, self.input2)[0]
-        print("gradients from rank_loss to input2:", rank_grad)
+        # print("gradients from rank_loss to input2:", rank_grad)
 
         self.TE_loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(
             tf.square(self.resampled_s_map1 - self.s_map2), axis=[1, 2, 3])))
@@ -617,10 +626,10 @@ class DenseNet:
             tf.square(self.resampled_s_map1 - self.s_map2), axis=[1, 2, 3])))
 
         self.grad1 = tf.gradients(self.sum_loss, self.images)[0]
-        print("gradients from sum loss to input1:", self.grad1)
+        # print("gradients from sum loss to input1:", self.grad1)
 
         self.grad2 = tf.gradients(self.sum_loss, self.input2)[0]
-        print("gradients from sum loss to input2:", self.grad2)
+        # print("gradients from sum loss to input2:", self.grad2)
 
         # regularize the variables that needs to be trained in Net1 or Net2.
         # var_list = [var for var in tf.trainable_variables()]
@@ -705,13 +714,12 @@ class DenseNet:
         Only save the model with highest accuracy2
         """
         best_acc = 0.0
-
-        self.train_high_image_batch, self.train_low_image_batch, self.train_label_batch = \
-            get_image_label_batch(
-                batch_size, self.which_split, shuffle=True, name='train')
-        self.test_high_image_batch, self.test_low_image_batch, self.test_label_batch = \
-            get_image_label_batch(
-                batch_size, self.which_split, shuffle=False, name='test1')
+        data_train = "./downstream_folds/train/"
+        data_val = "./downstream_folds/val/"
+        self.Data_train = Data_set(batch_size=batch_size, which_split=self.which_split,
+                                   shuffle=True, name='train', data_train=data_train)
+        self.Data_test = Data_set(batch_size=batch_size, which_split=self.which_split,
+                                  shuffle=True, name='test1', data_train=data_val)
 
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(self.sess, coord=coord)
@@ -759,9 +767,19 @@ class DenseNet:
                     print("Validation time per image:", str(
                         timedelta(seconds=val_time_per_image)))
 
-                    acc1 = np.mean(total_pred1 == total_labels)
-                    acc2 = np.mean(total_pred2 == total_labels)
-                    acc = np.mean(total_pred == total_labels)
+                    total_pred1 = total_pred1[0].tolist()
+                    total_pred2 = total_pred2[0].tolist()
+                    total_pred = total_pred[0].tolist()
+                    total_labels = total_labels[0].tolist()
+
+                    acc1 = accuracy_score(total_labels, total_pred1)
+                    acc2 = accuracy_score(total_labels, total_pred2)
+                    acc = accuracy_score(total_labels, total_pred)
+
+                    # print(total_labels)
+                    # print(total_pred)
+
+                    # print(acc1, acc2, acc)
 
                     if self.should_save_logs:
                         self.log_loss_accuracy(
@@ -778,7 +796,7 @@ class DenseNet:
                     str(timedelta(seconds=seconds_left))))
 
                 if self.should_save_model:
-                    if epoch >= 40 and epoch % 5 == 0:
+                    if epoch >= 0 and epoch % 1 == 0:
                         self.save_model(global_step=epoch)
 
                 if acc > best_acc:
@@ -815,6 +833,9 @@ class DenseNet:
         total_labels1 = []
 
         for i in range(self.num_train // batch_size):
+            self.train_high_image_batch, self.train_low_image_batch, self.train_label_batch = self.Data_train.next_iter()
+
+            # print("type", self.train_low_image_batch)
             high_images, low_images, labels = self.sess.run([
                 self.train_high_image_batch, self.train_low_image_batch, self.train_label_batch])
 
@@ -898,6 +919,7 @@ class DenseNet:
         gt_batch = np.zeros((batch_size, 128, 128, 1))
 
         for i in range(self.num_test // batch_size):
+            self.test_high_image_batch, self.test_low_image_batch, self.test_label_batch = self.Data_test.next_iter()
             test_high_images, test_low_images, test_labels = self.sess.run([
                 self.test_high_image_batch, self.test_low_image_batch, self.test_label_batch])
 
@@ -952,4 +974,4 @@ class DenseNet:
             total_pred.append(pred)
             total_labels.append(labels)
 
-            return total_pred1, total_pred2, total_pred, total_labels
+        return total_pred1, total_pred2, total_pred, total_labels
