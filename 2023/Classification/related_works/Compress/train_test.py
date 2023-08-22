@@ -5,6 +5,7 @@ import torch.nn as nn
 from optimizer import optim
 from pathlib import Path
 # from plot import trainTestPlot
+from sklearn.metrics import classification_report, matthews_corrcoef, confusion_matrix
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -159,3 +160,38 @@ class Training:
 
         # trainTestPlot(self.plot, train_accu, test_accu,
         #               train_losses, test_losses, self.model_name)
+
+    def test(self):
+        all_predicted = []
+        # load the best model for testing
+        self.model.load_state_dict(torch.load(
+            'model_store/'+self.model_name+'best-model-parameters.pt'))
+        # test the model
+        self.model.eval()
+        with torch.no_grad():
+            # correct = 0
+            total = 0
+            for images, labels in self.test_dataloader:
+                images = images.to(device)
+                labels = labels.to(device)
+                outputs = self.model(images)
+                # loss = criterion(outputs, labels)
+                # running_loss += loss.item()
+                _, predicted = torch.max(outputs.data, 1)
+                # print(predicted)
+                # print(labels)
+
+                total += labels.size(0)
+                # append batch prediction results
+                all_predicted.append(predicted.cpu().numpy())
+
+        # calculate overall accuracy, precision, recall, f1-score, mcc
+        mcc = matthews_corrcoef(labels.cpu().numpy(), predicted.cpu().numpy())
+        # save classification report and mcc to txt file
+        # make directory to save classification report
+        if not Path('classification_report/').exists():
+            Path('classification_report/').mkdir(parents=True, exist_ok=True)
+        with open('classification_report/'+self.model_name+'.txt', 'w') as f:
+            f.write(classification_report(
+                labels.cpu().numpy(), predicted.cpu().numpy()))
+            f.write('\nMCC: '+str(mcc))
