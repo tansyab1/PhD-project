@@ -13,15 +13,27 @@ values2 = get_average_channel_variance_by_depth(model2, x)
 values3 = get_average_channel_variance_by_depth(model3, x)
 fig = plt.figure(figsize=(20, 18))
 # plot 30 first values 
-plot(values[50:100], label='scale-dot')
-plot(values3[:50], label='scale-cosine')
-plot(values2[50:100], label='scale-soft-cosine')
-
+plot(values[50:100], label='scale-dot', linewidth = 2)
+plot(values3[:50], label='scale-cosine', linewidth = 2)
+plot(values2[50:100], label='scale-soft-cosine', linewidth = 3)
+plt.rc('xtick', labelsize=20)
+plt.rc('ytick', labelsize=20)
+plt.rc('axes', labelsize=20)
+plt.rc('legend', fontsize=20)
 # change the xticks to show the depth
 plt.xticks(range(0, 50), range(0, 50))
 plt.xlabel('Depth')
 plt.ylabel('Average channel variance')
 plt.legend()
+<<<<<<< HEAD:2023/Classification/WindowDilatedAttention-SSL/signal_propagation_plot-main/test
 # save the figure to eps file
 plt.savefig('resnet152.eps', format='eps')
 plt.show()
+=======
+# change text size of the xticks, yticks and labels
+
+plt.show()
+
+# save figure to eps format
+fig.savefig('signal_propagation_plot.eps', format='eps')
+>>>>>>> b61e694a0e0edf2148a48e77794b71e079d88156:2023/Classification/WindowDilatedAttention-SSL/scripts/signal_propagation_plot-main/test
