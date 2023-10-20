@@ -24,7 +24,7 @@ from functools import reduce
 # from google.colab.patches import cv2_imshow
 stdss = []
 names = []
-
+subs = []
 
 def Average(lst):
     return reduce(lambda a, b: a + b, lst) / len(lst)
@@ -32,9 +32,10 @@ def Average(lst):
 
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
-for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets/LVQ/uneven_illum/video*.avi")):
+for file in tqdm(glob.glob("/home/nguyentansy/Downloads/UI/*/*.mp4")):
     cap = cv2.VideoCapture(file)
     names.append(os.path.basename(file))
+    subs.append(os.path.basename(os.path.dirname(file)))
     # Check if camera opened successfully
     if (cap.isOpened() is False):
         print("Error opening video stream or file")
@@ -47,7 +48,7 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
         if ret is True:
             # Display the resulting frame
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            median = cv2.medianBlur(img[:, :, 2], img[:, :, 2].shape[0]//4)
+            median = cv2.medianBlur(img[:, :, 2], img[:, :, 2].shape[0]//4+1)
             ori = median.copy()
             equ = cv2.equalizeHist(median)
             res = np.zeros(equ.shape)
@@ -70,4 +71,4 @@ for file in tqdm(glob.glob("/home/nguyentansy/DATA/nguyentansy/PhD-work/Datasets
 
 with open('./ihed_test.csv', 'w') as f:
     writer = csv.writer(f, delimiter='\t')
-    writer.writerows(zip(names, stdss))
+    writer.writerows(zip(names, subs, stdss))

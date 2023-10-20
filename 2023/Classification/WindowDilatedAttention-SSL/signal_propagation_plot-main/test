@@ -22,8 +22,6 @@ plt.xticks(range(0, 50), range(0, 50))
 plt.xlabel('Depth')
 plt.ylabel('Average channel variance')
 plt.legend()
-# size of the labels and legend 
-
-plt.rcParams.update({'font.size': 22})
-
-plt.savefig("plot.png")
+# save the figure to eps file
+plt.savefig('resnet152.eps', format='eps')
+plt.show()
